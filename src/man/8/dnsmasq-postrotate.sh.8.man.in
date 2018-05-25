@@ -1,0 +1,35 @@
+NAME
+dnsmasq-postrotate.sh - postrotate script for dnsmasq
+SYNOPSIS
+dnsmasq-postrotate.sh [OPTION]
+DESCRIPTION
+For use as a postrotate script after logrotate has rotated logs. This script
+requests the dnsmasq daemon to write summary stats to the syslog and requests it
+to close and re-open it's log file which is necessary to start using the new log
+file.
+OPTIONS
+-h, --help  prints usage information
+
+-V, --version  prints version information
+EXIT STATUS
+0
+if OK,
+
+1
+on failure.
+AUTHOR
+Written by Mark Grant.
+REPORTING BUGS
+Report bugs to <m.grant.prg@gmail.com>
+COPYRIGHT
+Copyright 2018 Mark Grant.
+.br
+License GPLv3+: GNU GPL version 3 or later
+.br
+<http://gnu.org/licenses/gpl.html>.
+.br
+This is free software: you are free to change and redistribute it.
+.br
+There is NO WARRANTY, to the extent permitted by law.
+SEE ALSO
+logrotate(8)

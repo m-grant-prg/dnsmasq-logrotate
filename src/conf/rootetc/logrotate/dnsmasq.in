@@ -1,0 +1,13 @@
+@localstatedir@/log/dnsmasq.log
+{
+	rotate 7
+	daily
+	missingok
+	notifempty
+	compress
+	delaycompress
+	create 0640 dnsmasq root
+	postrotate
+		@sbindir@/dnsmasq-postrotate.sh
+	endscript
+}

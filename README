@@ -1,0 +1,132 @@
+--------
+Contents
+========
+
+1 ... Project Description
+
+2 ... AutoTools (configure and make) Installation
+
+3 ... Ubuntu Installation
+
+4 ... Debian and Raspbian Installation
+
+5 ... Utility Scripts
+
+
+
+-------------------------
+1 ... Project Description
+=========================
+
+This AutoTools project utilises the logrotate facillity to provide log rotation
+for dnsmasq.
+
+It places a logrotate control file in sysconfdir/logrotate.d and a post-rotate
+script file in sbindir.
+
+
+-------------------------------------------------
+2 ... AutoTools (configure and make) Installation
+=================================================
+
+a) ... Download either the source or distribution tarball (the .tar.gz file)
+	from:-
+	https://github.com/m-grant-prg/dnsmasq-logrotate/releases
+
+b) ... Extract the tarball preserving the directory structure.
+
+c) ... cd to the directory created.
+
+d) ... If you downloaded the source tarball type 'autoreconf -if'
+
+e) ... Type './configure'
+
+f) ... As root or sudo, type 'make install clean'
+
+(Quote marks are for textual clarity only).
+
+To uninstall the package:
+
+1 ... cd to the directory created in the above install process.
+
+2 ... As root or sudo, type 'make uninstall clean'
+
+
+-------------------------
+3 ... Ubuntu Installation
+=========================
+This script is available as an Ubuntu package hosted in a Personal Package
+Archive (PPA). If you add this PPA to your software sources then you can easily
+install, update and remove the package.
+
+To view the details of this PPA please follow the link below:-
+	https://code.launchpad.net/~m-grant-prg/+archive/ubuntu/utils
+
+To add this PPA to your system please type the following:-
+	sudo add-apt-repository ppa:m-grant-prg/utils
+	sudo apt-get update
+
+To install this script on your system for use please type the following:-
+	sudo apt-get update
+	sudo apt-get install dnsmasq-logrotate
+
+To uninstall this package at any time please type:-
+	sudo apt-get remove dnsmasq-logrotate
+
+
+--------------------------------------
+4 ... Debian and Raspbian Installation
+======================================
+Debian and Raspbian '.deb' packages can be downloaded from:-
+	https://github.com/m-grant-prg/dnsmasq-logrotate/releases
+
+They can then be installed using a utility such as GDebi which is available in
+the standard repos.
+
+
+---------------------
+5 ... Utility Scripts
+=====================
+In the project root directory there is 1 helper script; bootstrap.sh.
+
+bootstrap.sh
+------------
+This misleadingly named script bootstraps the project build and provides other
+useful features. The main options below are probably c, D, m and t.
+
+In AutoTools it is usually advisable to perform parallel builds. This means you
+build somewhere other than the project root. This is because building creates
+files and they would confuse the project root downwards. I always create a build
+directory straight off the project root, cd to there and do all build and git
+work from there, (.gitignore is already set to ignore such a directory).
+
+Assuming you adopt the preceding paragraph then a typical invocation of the
+script would be:-
+../bootstrap.sh --make ..
+The last '..' points the way to project root.
+
+The full list of arguments to bootstrap.sh are:-
+	-c, --distcheck perform a normal make distcheck.
+
+	-d, --debug build with appropriate debug flags.
+
+	-D, --dist perform a make dist.
+
+	-f, --distcheckfake run a make  distcheck  using  a  fake  AT  standard
+	directory as a substitute for an absolute path which distcheck does not
+	support.
+
+	-g, --gnulib run gnulib-tool --update. Checks for the existence of  the
+	cache  file  proj-root/m4/gnulib-cache.m4.  If  it  does  not exist the
+	update is not run.
+
+	-h, --help prints usage information.
+
+	-m, --make compile and link - plain make.
+
+	-s, --sparse pass --enable-sparse=yes to configure.
+
+	-t, --source-tarball perform a make srctarball to build a source
+	tarball.
+
+	-V, --version prints version information

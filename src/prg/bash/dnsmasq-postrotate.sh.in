@@ -1,0 +1,162 @@
+#! /usr/bin/env bash
+#########################################################################
+#									#
+#	dnsmasq-postrotate.sh is automatically generated,		#
+#		please do not modify!					#
+#									#
+#########################################################################
+
+#########################################################################
+#									#
+# Script ID: dnsmasq-postrotate.sh					#
+# Author: Copyright (C) 2018  Mark Grant				#
+#									#
+# Released under the GPLv3 only.					#
+# SPDX-License-Identifier: GPL-3.0					#
+#									#
+# Purpose:								#
+# To ask the daemon to re-open it's log file which is necessary after	#
+# rotating the logs. Also request the daemon to write summary stats to	#
+# the syslog.								#
+#									#
+# Syntax:	dnsmasq-postrotate.sh [ -h --help || -V --version ]	#
+#									#
+# Exit Codes:	0 - success						#
+#		1 - failure						#
+#									#
+# Further Info:								#
+#									#
+#########################################################################
+
+#########################################################################
+#									#
+# Changelog								#
+#									#
+# Date		Author	Version	Description				#
+#									#
+# 25/05/2018	MG	1.0.1	First release.				#
+#									#
+#########################################################################
+
+##################
+# Init variables #
+##################
+script_exit_code=0
+outputprefix="dnsmasq-postrotate.sh: "
+version="1.0.1"				# set version variable
+packageversion=@pkgversion@		# Version of the complete package
+
+
+#############
+# Functions #
+#############
+
+# Output $1 to stdout or stderr depending on $2.
+output()
+{
+	if [ $2 = 0 ]
+	then
+		echo "$1"
+	else
+		echo "$1" 1>&2
+	fi
+}
+
+# Standard function to test command error ($1 is $?) and exit if non-zero
+std_cmd_err_handler()
+{
+	if [ $1 != 0 ]
+	then
+		script_exit_code=$1
+		script_exit
+	fi
+}
+
+# Standard function to tidy up and return exit code
+script_exit()
+{
+	exit $script_exit_code
+}
+
+# Standard trap exit function
+trap_exit()
+{
+script_exit_code=1
+output "Script terminating due to trap received." 1
+script_exit
+}
+
+# Setup trap
+trap trap_exit SIGHUP SIGINT SIGTERM
+
+########
+# Main #
+########
+# Process command line arguments with GNU getopt.
+GETOPTTEMP=`getopt -o hV --long help,version -n "$0" -- "$@"`
+std_cmd_err_handler $?
+
+eval set -- "$GETOPTTEMP"
+std_cmd_err_handler $?
+
+while true
+do
+	case "$1" in
+	-h|--help)
+		echo "Usage is $0 [options]"
+		echo "	-h or --help displays usage information"
+		echo "	OR"
+		echo "	-V or --version displays version information"
+		shift
+		script_exit_code=0
+		script_exit
+		;;
+	-V|--version)
+		echo "$0 Script version "$version
+		echo "$0 Package version "$packageversion
+		shift
+		script_exit_code=0
+		script_exit
+		;;
+	--)	shift
+		break
+		;;
+	*)	script_exit_code=1
+		output "Internal error." 1
+		script_exit
+		;;
+	esac
+done
+
+# Script does not accept other arguments.
+if [ $# -gt 0 ]
+then
+	script_exit_code=1
+	output "Invalid argument." 1
+	script_exit
+fi
+
+pidfile=$(find /var/run/ -name dnsmasq.pid)
+std_cmd_err_handler $?
+
+if [[ "$pidfile" == "" || ! -f $pidfile ]]
+then
+	script_exit_code=1
+	output "dnsmasq daemon not running." 1
+	script_exit
+fi
+
+# Request the daemon to write summary stats to the syslog.
+kill -s SIGUSR1 $(cat $pidfile)
+std_cmd_err_handler $?
+
+output "Daemon requested to log summary stats." 0
+
+# Request the daemon to close and re-open it's log file.
+kill -s SIGUSR2 $(cat $pidfile)
+std_cmd_err_handler $?
+
+output "Daemon requested to close and re-open it's log file." 0
+
+script_exit_code=0
+script_exit

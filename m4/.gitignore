@@ -1,0 +1,5 @@
+# This .gitignore file is to ensure that this directory exists even if empty.
+# This is required because otherwise, after cloning, the project build will fail
+# citing this missing directory.
+# In other words, this is a git hack to satisfy AutoTools.
+
