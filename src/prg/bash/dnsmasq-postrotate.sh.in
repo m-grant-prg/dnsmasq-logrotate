@@ -35,6 +35,9 @@
 # Date		Author	Version	Description				#
 #									#
 # 25/05/2018	MG	1.0.1	First release.				#
+# 29/05/2018	MG	1.0.2	Make script run silently by default	#
+#				when error-free. Add verbose option.	#
+#				Log any output to syslog.		#
 #									#
 #########################################################################
 
@@ -43,8 +46,10 @@
 ##################
 script_exit_code=0
 outputprefix="dnsmasq-postrotate.sh: "
-version="1.0.1"				# set version variable
+version="1.0.2"				# set version variable
 packageversion=@pkgversion@		# Version of the complete package
+
+verbose=FALSE
 
 
 #############
@@ -56,10 +61,12 @@ output()
 {
 	if [ $2 = 0 ]
 	then
-		echo "$1"
+		echo "$outputprefix$1"
 	else
-		echo "$1" 1>&2
+		echo "$outputprefix$1" 1>&2
 	fi
+	logger "$outputprefix$1"
+	std_cmd_err_handler $?
 }
 
 # Standard function to test command error ($1 is $?) and exit if non-zero
@@ -93,7 +100,7 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 # Main #
 ########
 # Process command line arguments with GNU getopt.
-GETOPTTEMP=`getopt -o hV --long help,version -n "$0" -- "$@"`
+GETOPTTEMP=`getopt -o hvV --long help,verbose,version -n "$0" -- "$@"`
 std_cmd_err_handler $?
 
 eval set -- "$GETOPTTEMP"
@@ -106,10 +113,16 @@ do
 		echo "Usage is $0 [options]"
 		echo "	-h or --help displays usage information"
 		echo "	OR"
+		echo "	-v or --verbose verbose output"
+		echo "	OR"
 		echo "	-V or --version displays version information"
 		shift
 		script_exit_code=0
 		script_exit
+		;;
+	-v|--verbose)
+		verbose=TRUE
+		shift
 		;;
 	-V|--version)
 		echo "$0 Script version "$version
@@ -150,13 +163,19 @@ fi
 kill -s SIGUSR1 $(cat $pidfile)
 std_cmd_err_handler $?
 
-output "Daemon requested to log summary stats." 0
+if [ $verbose = TRUE ]
+then
+	output "Daemon requested to log summary stats." 0
+fi
 
 # Request the daemon to close and re-open it's log file.
 kill -s SIGUSR2 $(cat $pidfile)
 std_cmd_err_handler $?
 
-output "Daemon requested to close and re-open it's log file." 0
+if [ $verbose = TRUE ]
+then
+	output "Daemon requested to close and re-open it's log file." 0
+fi
 
 script_exit_code=0
 script_exit

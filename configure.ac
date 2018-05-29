@@ -31,10 +31,11 @@
 # Date		Author	Version	Description				#
 #									#
 # 24/05/2018	MG	1.0.1	First release.				#
+# 29/05/2018	MG	1.0.2	Add logger check for syslog entries.	#
 #									#
 #########################################################################
 
-AC_REVISION([$Revision: 1.0.1 $])
+AC_REVISION([$Revision: 1.0.2 $])
 
 AC_PREREQ([2.69])
 
@@ -225,6 +226,11 @@ fi
 AC_CHECK_PROG(FIND, find, yes, no)
 if test "x$FIND" = "xno" ; then
    	AC_MSG_ERROR([find not found])
+fi
+
+AC_CHECK_PROG([LOGGER], [logger], [yes], [no])
+if test "x$LOGGER" = "xno" ; then
+   	AC_MSG_ERROR([logger not found])
 fi
 
 # Checks for libraries.
