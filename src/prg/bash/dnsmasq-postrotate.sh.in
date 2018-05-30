@@ -19,7 +19,8 @@
 # rotating the logs. Also request the daemon to write summary stats to	#
 # the syslog.								#
 #									#
-# Syntax:	dnsmasq-postrotate.sh [ -h --help || -V --version ]	#
+# Syntax:	dnsmasq-postrotate.sh [ -h --help || -v --verbose	#
+#					|| -V --version ]		#
 #									#
 # Exit Codes:	0 - success						#
 #		1 - failure						#
