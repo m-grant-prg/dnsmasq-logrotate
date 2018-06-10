@@ -24,6 +24,14 @@ for dnsmasq.
 It places a logrotate control file in sysconfdir/logrotate.d and a post-rotate
 script file in sbindir.
 
+N.B.
+----
+At a source modification / development level, this project expects to reside in
+a git environment. This manifests itself in 2 places:-
+1) ... .gitignore files are included in the source.
+2) ... The make target, 'srctarball', relies on the command 'git am' so it will
+	fail if git is not installed or it is not in a git repository.
+
 
 -------------------------------------------------
 2 ... AutoTools (configure and make) Installation
