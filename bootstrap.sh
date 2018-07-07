@@ -17,15 +17,16 @@
 # Purpose:								#
 # To simplify the AutoTools distribution build.				#
 #									#
-# Syntax:	bootstrap.sh	[ -c || --distcheck ] ||		#
+# Syntax:	bootstrap.sh	[ -b || --build ] ||			#
+#				[ -c || --config ] ||			#
+#				[ -C || --distcheck ] ||		#
 #				[ -d || --debug ] ||			#
 #				[ -D || --dist ] ||			#
-#				[ -f || --distcheckfake ] ||		#
+#				[ -F || --distcheckfake ] ||		#
 #				[ -g || --gnulib ] ||			#
 #				[ -h || --help ] ||			#
-#				[ -m || --make ] ||			#
 #				[ -s || --sparse ] ||			#
-#				[ -t || --source-tarball ] ||		#
+#				[ -T || --source-tarball ] ||		#
 #				[ -V || --version-V ]			#
 #									#
 # Exit Codes:	0 - success						#
@@ -73,6 +74,8 @@
 #				Add stderr log file.			#
 # 07/04/2018	MG	1.3.4	Add -t --source-tarball CLA to build a	#
 #				source tarball.				#
+# 01/07/2018	MG	1.3.5	Separate configure from build actions	#
+#				and make options more standardised.	#
 #									#
 #########################################################################
 
@@ -80,15 +83,16 @@
 # Init variables #
 ##################
 script_exit_code=0
-version="1.3.4"			# set version variable
-packageversion=v1.2.7	# Version of the complete package
+version="1.3.5"			# set version variable
+packageversion=v1.2.9	# Version of the complete package
 
+build=FALSE
+config=FALSE
 debug=""
 dist=FALSE
 distcheck=FALSE
 distcheckfake=FALSE
 gnulib=FALSE
-make=FALSE
 sparse=""
 tarball=FALSE
 basedir="."
@@ -141,9 +145,9 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 # Main #
 ########
 # Process command line arguments with GNU getopt.
-tmp="getopt -o cdDfghmstV "
-tmp+="--long distcheck,debug,dist,distcheckfake,gnulib,help,make,sparse,"
-tmp+="source-tarball,version "
+tmp="getopt -o bcCdDFghsTV "
+tmp+="--long build,config,distcheck,debug,dist,distcheckfake,gnulib,help,"
+tmp+="sparse,source-tarball,version "
 tmp+="-n $0 -- $@"
 GETOPTTEMP=`eval $tmp`
 eval set -- "$GETOPTTEMP"
@@ -153,12 +157,28 @@ std_cmd_err_handler $?
 while true
 do
 	case "$1" in
-	-c|--distcheck)
-		if [ $dist = TRUE -o $distcheckfake = TRUE -o $make = TRUE \
+	-b|--build)
+		if [ $distcheck = TRUE -o $dist = TRUE \
+			-o $distcheckfake = TRUE -o $tarball = TRUE ]
+		then
+			script_exit_code=1
+			msg="Options b, C, D, F and T are mutually exclusive."
+			output "$msg" 1
+			script_exit
+		fi
+		build=TRUE
+		shift
+		;;
+	-c|--config)
+		config=TRUE
+		shift
+		;;
+	-C|--distcheck)
+		if [ $build = TRUE -o $dist = TRUE -o $distcheckfake = TRUE \
 			-o $tarball = TRUE ]
 		then
 			script_exit_code=1
-			msg="Options c, D, f, m and t are mutually exclusive."
+			msg="Options b, C, D, F and T are mutually exclusive."
 			output "$msg" 1
 			script_exit
 		fi
@@ -170,23 +190,23 @@ do
 		shift
 		;;
 	-D|--dist)
-		if [ $distcheck = TRUE -o $distcheckfake = TRUE \
-			-o $make = TRUE -o $tarball = TRUE ]
+		if [ $build = TRUE -o $distcheck = TRUE \
+			-o $distcheckfake = TRUE -o $tarball = TRUE ]
 		then
 			script_exit_code=1
-			msg="Options c, D, f, m and t are mutually exclusive."
+			msg="Options b, C, D, F and T are mutually exclusive."
 			output "$msg" 1
 			script_exit
 		fi
 		dist=TRUE
 		shift
 		;;
-	-f|--distcheckfake)
-		if [ $distcheck = TRUE -o $dist = TRUE -o $make = TRUE \
+	-F|--distcheckfake)
+		if [ $build = TRUE -o $distcheck = TRUE -o $dist = TRUE \
 			-o $tarball = TRUE ]
 		then
 			script_exit_code=1
-			msg="Options c, D, f, m and t are mutually exclusive."
+			msg="Options b, C, D, F and T are mutually exclusive."
 			output "$msg" 1
 			script_exit
 		fi
@@ -199,42 +219,31 @@ do
 		;;
 	-h|--help)
 		echo "Usage is:-"
-		echo "	-c or --distcheck perform normal distcheck"
+		echo "	-b or --build make the project"
+		echo "	-c or --config congigure the project"
+		echo "	-C or --distcheck perform normal distcheck"
 		echo "	-d or --debug build with appropriate debug flags"
 		echo "	-D or --dist perform a make dist"
-		echo "	-f or --distcheckfake fake a distcheck for fixed root"
+		echo "	-F or --distcheckfake fake a distcheck for fixed root"
 		echo "	-g or --gnulib run gnulib-tool --update"
 		echo "	-h or --help displays usage information"
-		echo "	-m or --make compile and link - plain make"
 		echo "	-s or --sparse build using sparse"
-		echo "	-t or --source-tarball create source tarball"
+		echo "	-T or --source-tarball create source tarball"
 		echo "	-V or --version displays version information"
 		shift
 		script_exit_code=0
 		script_exit
 		;;
-	-m|--make)
-		if [ $distcheck = TRUE -o $dist = TRUE \
-			-o $distcheckfake = TRUE -o $tarball = TRUE ]
-		then
-			script_exit_code=1
-			msg="Options c, D, f, m and t are mutually exclusive."
-			output "$msg" 1
-			script_exit
-		fi
-		make=TRUE
-		shift
-		;;
 	-s|--sparse)
 		sparse=" --enable-sparse=yes"
 		shift
 		;;
-	-t|--source-tarball)
-		if [ $distcheck = TRUE -o $dist = TRUE \
-			-o $distcheckfake = TRUE -o $make = TRUE ]
+	-T|--source-tarball)
+		if [ $build = TRUE -o $distcheck = TRUE -o $dist = TRUE \
+			-o $distcheckfake = TRUE ]
 		then
 			script_exit_code=1
-			msg="Options c, D, f, m and t are mutually exclusive."
+			msg="Options b, C, D, F and T are mutually exclusive."
 			output "$msg" 1
 			script_exit
 		fi
@@ -258,6 +267,26 @@ do
 	esac
 done
 
+if [ "$debug" != "" -o $distcheckfake = TRUE -o "$sparse" != "" ]
+then
+	if [ $config = FALSE ]
+	then
+		script_exit_code=1
+		msg="Options d, F and s require option c."
+		output "$msg" 1
+		script_exit
+	fi
+fi
+
+# One option has to be selected.
+if [ $build =  FALSE -a $config = FALSE -a $distcheck = FALSE -a $dist = FALSE \
+	-a $distcheckfake = FALSE -a $gnulib = FALSE -a $tarball = FALSE ]
+then
+	script_exit_code=1
+	output "Either b, c, C, D, F, g or T must be set." 1
+	script_exit
+fi
+
 # Script can accept 1 other argument, the base directory.
 if [ $# -gt 1 ]
 then
@@ -271,14 +300,6 @@ then
 	basedir=$1
 fi
 
-# One option has to be selected.
-if [ $distcheck = FALSE -a $dist = FALSE -a $distcheckfake = FALSE \
-	-a $make = FALSE -a $tarball = FALSE ]
-then
-	script_exit_code=1
-	output "Either c, D, f, m or t must be set." 1
-	script_exit
-fi
 
 # Create build error log.
 exec 2> >(tee build-stderr.txt >&2)
@@ -301,49 +322,62 @@ then
 	fi
 fi
 
-autoreconf -if $basedir
-status=$?
-output "autoreconf -if "$basedir" completed with exit status: $status" $status
-std_cmd_err_handler $status
-
-cmdline=$basedir"/configure --enable-silent-rules=yes"$debug$sparse
-
-if [ $distcheckfake = TRUE ]
+if [ $config = TRUE ]
 then
-	cmdline=$cmdline" --enable-distcheckfake=yes"
+	autoreconf -if $basedir
+	status=$?
+	msg="autoreconf -if "$basedir" completed with exit status: $status"
+	output "$msg" $status
+	std_cmd_err_handler $status
+
+	cmdline=$basedir"/configure --enable-silent-rules=yes"$debug$sparse
+
+	if [ $distcheckfake = TRUE ]
+	then
+		cmdline=$cmdline" --enable-distcheckfake=yes"
+	fi
+
+	eval "$cmdline"
+	status=$?
+	output "$cmdline completed with exit status: $status" $status
+	std_cmd_err_handler $status
 fi
 
-eval "$cmdline"
-status=$?
-output "$cmdline completed with exit status: $status" $status
-std_cmd_err_handler $status
+cmdline=""
+if [ $build = TRUE ]
+then
+	cmdline="make --quiet"
+fi
 
-cmdline="make --quiet"
 if [ $distcheck = TRUE ]
 then
-	cmdline=$cmdline" distcheck distclean"
+	cmdline="make --quiet distcheck clean"
 fi
 
 if [ $dist = TRUE ]
 then
-	cmdline=$cmdline" dist clean distclean"
+	cmdline="make --quiet dist clean"
 fi
 
 if [ $distcheckfake = TRUE ]
 then
-	cmdline=$cmdline" distcheck distclean"
+	cmdline="make --quiet distcheck clean"
 	cmdline=$cmdline" DISTCHECK_CONFIGURE_FLAGS=--enable-distcheckfake=yes"
 fi
 
 if [ $tarball = TRUE ]
 then
-	cmdline=$cmdline" srctarball distclean"
+	cmdline="make --quiet srctarball clean"
 fi
 
-eval "$cmdline"
-status=$?
-output "$cmdline completed with exit status: $status" $status
-std_cmd_err_handler $status
+# May get here with cmdline empty if, for example, only the -g option was set.
+if [ "$cmdline" != "" ]
+then
+	eval "$cmdline"
+	status=$?
+	output "$cmdline completed with exit status: $status" $status
+	std_cmd_err_handler $status
+fi
 
 
 script_exit_code=0

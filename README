@@ -100,7 +100,7 @@ In the project root directory there is 1 helper script; bootstrap.sh.
 bootstrap.sh
 ------------
 This misleadingly named script bootstraps the project build and provides other
-useful features. The main options below are probably c, D, m and t.
+useful features. The main options below are probably b, c, C, D and T.
 
 In AutoTools it is usually advisable to perform parallel builds. This means you
 build somewhere other than the project root. This is because building creates
@@ -110,31 +110,39 @@ work from there, (.gitignore is already set to ignore such a directory).
 
 Assuming you adopt the preceding paragraph then a typical invocation of the
 script would be:-
-../bootstrap.sh --make ..
+../bootstrap.sh --build ..
 The last '..' points the way to project root.
 
 The full list of arguments to bootstrap.sh are:-
-	-c, --distcheck perform a normal make distcheck.
+	-b, --build make the project.
+
+	-c, --config configure the project.
+
+	-C, --distcheck perform a normal make distcheck.
 
 	-d, --debug build with appropriate debug flags.
 
 	-D, --dist perform a make dist.
 
-	-f, --distcheckfake run a make  distcheck  using  a  fake  AT  standard
+	-F, --distcheckfake run a make distcheck using a fake AT standard
 	directory as a substitute for an absolute path which distcheck does not
 	support.
 
-	-g, --gnulib run gnulib-tool --update. Checks for the existence of  the
-	cache  file  proj-root/m4/gnulib-cache.m4.  If  it  does  not exist the
-	update is not run.
+	-g, --gnulib run gnulib-tool --update. Checks for the existence of the
+	cache file proj-root/m4/gnulib-cache.m4. If it does not exist the update
+	is not run.
 
 	-h, --help prints usage information.
 
-	-m, --make compile and link - plain make.
-
 	-s, --sparse pass --enable-sparse=yes to configure.
 
-	-t, --source-tarball perform a make srctarball to build a source
+	-T, --source-tarball perform a make srctarball to build a source
 	tarball.
 
 	-V, --version prints version information
+
+Options b build, C distcheck, D dist, F distcheckfake and T source-tarball are
+mutually exclusive.
+
+Options d debug, F distcheckfake and s sparse are enabled by configure so
+require option c config.
