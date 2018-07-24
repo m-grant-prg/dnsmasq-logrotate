@@ -1,36 +1,50 @@
-**/autom4te.cache/
+# AutoTools
+**/*.la
+**/*.lo
+**/*.o
+**/*.scan
+**/.deps/
+**/.dirstamp
+**/.libs/
 **/aclocal.*
+**/ar-lib
+**/autom4te.cache/
+**/depcomp
+**/compile
 **/config.guess
-**/config.sub
 **/config.h.in
+**/config.sub
 **/configure
+**/libtool
+**/ltmain.sh
 **/Makefile
 **/Makefile.in
 **/missing
 **/INSTALL
 **/install-sh
-**/*.tar.gz
-**/conffiles
+
+# Backup Files
 **/*~
 **/*.swp
-**/*.log
-**/*.scan
-**/depcomp
-**/compile
-**/.deps/
-**/dist
-**/build
-**/patches
-**/target
-**/ar-lib
-**/libtool
-**/ltmain.sh
-**/*.o
-**/*.lo
-**/*.la
-**/.libs/
-**/.dirstamp
+
+# C Extras
 **/cscope.*
-/nbproject/private/
-**/distribution
+
+# General
+**/*.log
+**/*.tar.gz
+**/patches
+
+# Java Extras
 **/Version.java
+
+# My Project Structure
+**/atbuild
+**/conffiles
+
+# NetBeans
+**/build
+**/dist
+**/distribution
+**/target
+/nbproject/private/
