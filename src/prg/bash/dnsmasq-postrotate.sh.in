@@ -39,11 +39,14 @@
 # 29/05/2018	MG	1.0.2	Make script run silently by default	#
 #				when error-free. Add verbose option.	#
 #				Log any output to syslog.		#
-# 27/07/2018	MG	1.0.3	If the daemon is not running it cannot	#
+# 28/07/2018	MG	1.0.3	If the daemon is not running it cannot	#
 #				be construed as an error, so terminate	#
 #				normally.				#
 #				Make find more robust - do not descend	#
-#				into non-readable directories.		#
+#				into non-readable directories. Do not	#
+#				descend into directories on other	#
+#				(mounted) filesystems. (e.g. avoids	#
+#				gvfs).					#
 #				Use AutoConf runstatedir substitution	#
 #				variable instead of hard-coded /var/run	#
 #									#
@@ -158,8 +161,11 @@ then
 fi
 
 # Establish if the daemon is running.
+# The xdev means do not descend into directories on other (mounted) filesystems.
+# (Which avoids problems on, for example, gvfs).
 # The prune and not readable means do not descend into non-readable directories.
-pidfile=$(find @runstatedir@ ! -readable -prune -o -name dnsmasq.pid -print)
+cmd="find @runstatedir@/ -xdev ! -readable -prune -o -name dnsmasq.pid -print"
+pidfile=$($cmd)
 std_cmd_err_handler $?
 
 if [[ "$pidfile" == "" || ! -f $pidfile ]]
