@@ -1,3 +1,18 @@
+2018-07-29 v 1.0.2 Mark Grant <m.grant.prg@gmail.com>
+	*  Find could fail on odd filesystems such as gvfs so avoid mounted
+	filesystems in pid file search by using -xdev option.
+	Use AutoConf substitution variable runstatedir instead of hard-coded
+	/var/run.
+	Update project root gitignore to latest.
+	Make pidfile find more robust - do not descend into directories which
+	are not readable.
+	Terminate normally if the daemon is not running, it is not an error!
+	Update bootstrap.sh to the latest version - v1.3.5
+	Add a nota bene in the README file concerning expecting a git
+	environment.
+	Emit an informative message prior to make srctarball.
+	dnsmasq-postrotate.sh now at v1.0.3
+
 2018-05-30 v 1.0.1 Mark Grant <m.grant.prg@gmail.com>
 	*  First release.
 	dnsmasq-postrotate.sh now at v1.0.2
