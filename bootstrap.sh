@@ -25,6 +25,7 @@
 #				[ -F || --distcheckfake ] ||		#
 #				[ -g || --gnulib ] ||			#
 #				[ -h || --help ] ||			#
+#				[ -H || --header-check ] ||		#
 #				[ -s || --sparse ] ||			#
 #				[ -T || --source-tarball ] ||		#
 #				[ -V || --version-V ]			#
@@ -76,6 +77,8 @@
 #				source tarball.				#
 # 01/07/2018	MG	1.3.5	Separate configure from build actions	#
 #				and make options more standardised.	#
+# 06/08/2018	MG	1.3.6	Add -H --header-check option.		#
+#				Change error log file to build log.	#
 #									#
 #########################################################################
 
@@ -83,8 +86,8 @@
 # Init variables #
 ##################
 script_exit_code=0
-version="1.3.5"			# set version variable
-packageversion=v1.2.9	# Version of the complete package
+version="1.3.6"			# set version variable
+packageversion=v1.2.10	# Version of the complete package
 
 build=FALSE
 config=FALSE
@@ -93,6 +96,7 @@ dist=FALSE
 distcheck=FALSE
 distcheckfake=FALSE
 gnulib=FALSE
+headercheck=""
 sparse=""
 tarball=FALSE
 basedir="."
@@ -145,9 +149,9 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 # Main #
 ########
 # Process command line arguments with GNU getopt.
-tmp="getopt -o bcCdDFghsTV "
+tmp="getopt -o bcCdDFghHsTV "
 tmp+="--long build,config,distcheck,debug,dist,distcheckfake,gnulib,help,"
-tmp+="sparse,source-tarball,version "
+tmp+="header-check,sparse,source-tarball,version "
 tmp+="-n $0 -- $@"
 GETOPTTEMP=`eval $tmp`
 eval set -- "$GETOPTTEMP"
@@ -227,12 +231,17 @@ do
 		echo "	-F or --distcheckfake fake a distcheck for fixed root"
 		echo "	-g or --gnulib run gnulib-tool --update"
 		echo "	-h or --help displays usage information"
+		echo "	-H or --header-check show include stack depth"
 		echo "	-s or --sparse build using sparse"
 		echo "	-T or --source-tarball create source tarball"
 		echo "	-V or --version displays version information"
 		shift
 		script_exit_code=0
 		script_exit
+		;;
+	-H|--header-check)
+		headercheck=" --enable-headercheck=yes"
+		shift
 		;;
 	-s|--sparse)
 		sparse=" --enable-sparse=yes"
@@ -267,12 +276,13 @@ do
 	esac
 done
 
-if [ "$debug" != "" -o $distcheckfake = TRUE -o "$sparse" != "" ]
+if [ "$debug" != "" -o $distcheckfake = TRUE -o "$headercheck" != "" \
+	-o "$sparse" != "" ]
 then
 	if [ $config = FALSE ]
 	then
 		script_exit_code=1
-		msg="Options d, F and s require option c."
+		msg="Options d, F, H and s require option c."
 		output "$msg" 1
 		script_exit
 	fi
@@ -301,8 +311,8 @@ then
 fi
 
 
-# Create build error log.
-exec 2> >(tee build-stderr.txt >&2)
+# Create build log.
+exec 1> >(tee build-output.txt) 2>&1
 
 
 # Now the main processing.
@@ -330,7 +340,8 @@ then
 	output "$msg" $status
 	std_cmd_err_handler $status
 
-	cmdline=$basedir"/configure --enable-silent-rules=yes"$debug$sparse
+	cmdline=$basedir"/configure --enable-silent-rules=yes"$debug$headercheck
+	cmdline+=$sparse
 
 	if [ $distcheckfake = TRUE ]
 	then
