@@ -28,7 +28,8 @@
 #				[ -H || --header-check ] ||		#
 #				[ -s || --sparse ] ||			#
 #				[ -T || --source-tarball ] ||		#
-#				[ -V || --version-V ]			#
+#				[ -v || --verbose ] ||			#
+#				[ -V || --version ]			#
 #									#
 # Exit Codes:	0 - success						#
 #		1 - failure.						#
@@ -79,6 +80,7 @@
 #				and make options more standardised.	#
 # 06/08/2018	MG	1.3.6	Add -H --header-check option.		#
 #				Change error log file to build log.	#
+# 22/08/2018	MG	1.3.7	Add verbose option.			#
 #									#
 #########################################################################
 
@@ -86,9 +88,10 @@
 # Init variables #
 ##################
 script_exit_code=0
-version="1.3.6"			# set version variable
-packageversion=v1.2.10	# Version of the complete package
+version="1.3.7"			# set version variable
+packageversion=v1.2.11	# Version of the complete package
 
+# Set defaults
 build=FALSE
 config=FALSE
 debug=""
@@ -99,6 +102,9 @@ gnulib=FALSE
 headercheck=""
 sparse=""
 tarball=FALSE
+verbose=FALSE
+verboseconfig=" --enable-silent-rules=yes"
+verbosemake=" --quiet"
 basedir="."
 cmdline=""
 
@@ -149,9 +155,9 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 # Main #
 ########
 # Process command line arguments with GNU getopt.
-tmp="getopt -o bcCdDFghHsTV "
+tmp="getopt -o bcCdDFghHsTvV "
 tmp+="--long build,config,distcheck,debug,dist,distcheckfake,gnulib,help,"
-tmp+="header-check,sparse,source-tarball,version "
+tmp+="header-check,sparse,source-tarball,verbose,version "
 tmp+="-n $0 -- $@"
 GETOPTTEMP=`eval $tmp`
 eval set -- "$GETOPTTEMP"
@@ -234,6 +240,7 @@ do
 		echo "	-H or --header-check show include stack depth"
 		echo "	-s or --sparse build using sparse"
 		echo "	-T or --source-tarball create source tarball"
+		echo "	-v or --verbose emit extra information"
 		echo "	-V or --version displays version information"
 		shift
 		script_exit_code=0
@@ -259,6 +266,12 @@ do
 		tarball=TRUE
 		shift
 		;;
+	-v|--verbose)
+		verbose=TRUE
+		verboseconfig=""
+		verbosemake=""
+		shift
+		;;
 	-V|--version)
 		echo "Script version "$version
 		echo "Package version "$packageversion
@@ -277,12 +290,12 @@ do
 done
 
 if [ "$debug" != "" -o $distcheckfake = TRUE -o "$headercheck" != "" \
-	-o "$sparse" != "" ]
+	-o "$sparse" != "" -o "$verbose" = TRUE ]
 then
 	if [ $config = FALSE ]
 	then
 		script_exit_code=1
-		msg="Options d, F, H and s require option c."
+		msg="Options d, F, H, s and v require option c."
 		output "$msg" 1
 		script_exit
 	fi
@@ -320,7 +333,8 @@ if [ $gnulib = TRUE ]
 then
 	if [ -f $basedir/m4/gnulib-cache.m4 ]
 	then
-		cmdline="gnulib-tool --update --quiet --quiet --dir="$basedir
+		cmdline="gnulib-tool --update"$verbosemake$verbosemake
+		cmdline+=" --dir="$basedir
 		eval "$cmdline"
 		status=$?
 		output "$cmdline completed with exit status: $status" $status
@@ -340,8 +354,7 @@ then
 	output "$msg" $status
 	std_cmd_err_handler $status
 
-	cmdline=$basedir"/configure --enable-silent-rules=yes"$debug$headercheck
-	cmdline+=$sparse
+	cmdline=$basedir"/configure"$verboseconfig$debug$headercheck$sparse
 
 	if [ $distcheckfake = TRUE ]
 	then
@@ -357,28 +370,28 @@ fi
 cmdline=""
 if [ $build = TRUE ]
 then
-	cmdline="make --quiet"
+	cmdline="make"$verbosemake
 fi
 
 if [ $distcheck = TRUE ]
 then
-	cmdline="make --quiet distcheck clean"
+	cmdline="make"$verbosemake" distcheck clean"
 fi
 
 if [ $dist = TRUE ]
 then
-	cmdline="make --quiet dist clean"
+	cmdline="make"$verbosemake" dist clean"
 fi
 
 if [ $distcheckfake = TRUE ]
 then
-	cmdline="make --quiet distcheck clean"
+	cmdline="make"$verbosemake" distcheck clean"
 	cmdline=$cmdline" DISTCHECK_CONFIGURE_FLAGS=--enable-distcheckfake=yes"
 fi
 
 if [ $tarball = TRUE ]
 then
-	cmdline="make --quiet srctarball clean"
+	cmdline="make"$verbosemake" srctarball clean"
 fi
 
 # May get here with cmdline empty if, for example, only the -g option was set.
