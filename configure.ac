@@ -48,7 +48,7 @@ AC_PREREQ([2.69])
 #
 ########################
 
-AC_INIT(Logrotate for dnsmasq, v1.0.3,
+AC_INIT(Logrotate for dnsmasq, v1.0.4,
 	m.grant.prg@gmail.com, dnsmasq-logrotate)
 
 AC_SUBST(pkgversion, $PACKAGE_VERSION)
