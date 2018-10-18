@@ -1,3 +1,6 @@
+----------------------------
+DNSMASQ Log Rotation Project
+============================
 --------
 Contents
 ========
@@ -6,11 +9,9 @@ Contents
 
 2 ... AutoTools (configure and make) Installation
 
-3 ... Ubuntu Installation
+3 ... Ubuntu, Debian and Raspbian Installation
 
-4 ... Debian and Raspbian Installation
-
-5 ... Utility Scripts
+4 ... Utility Scripts
 
 
 
@@ -39,7 +40,8 @@ a git environment. This manifests itself in 2 places:-
 
 a) ... Download either the source or distribution tarball (the .tar.gz file)
 	from:-
-	https://github.com/m-grant-prg/dnsmasq-logrotate/releases
+
+https://github.com/m-grant-prg/dnsmasq-logrotate/releases
 
 b) ... Extract the tarball preserving the directory structure.
 
@@ -60,40 +62,16 @@ To uninstall the package:
 2 ... As root or sudo, type 'make uninstall clean'
 
 
--------------------------
-3 ... Ubuntu Installation
-=========================
-This script is available as an Ubuntu package hosted in a Personal Package
-Archive (PPA). If you add this PPA to your software sources then you can easily
-install, update and remove the package.
+----------------------------------------------
+3 ... Ubuntu, Debian and Raspbian Installation
+==============================================
+Please refer to the relevant installation section on the wiki at:-
 
-To view the details of this PPA please follow the link below:-
-	https://code.launchpad.net/~m-grant-prg/+archive/ubuntu/utils
-
-To add this PPA to your system please type the following:-
-	sudo add-apt-repository ppa:m-grant-prg/utils
-	sudo apt-get update
-
-To install this script on your system for use please type the following:-
-	sudo apt-get update
-	sudo apt-get install dnsmasq-logrotate
-
-To uninstall this package at any time please type:-
-	sudo apt-get remove dnsmasq-logrotate
-
-
---------------------------------------
-4 ... Debian and Raspbian Installation
-======================================
-Debian and Raspbian '.deb' packages can be downloaded from:-
-	https://github.com/m-grant-prg/dnsmasq-logrotate/releases
-
-They can then be installed using a utility such as GDebi which is available in
-the standard repos.
+https://github.com/m-grant-prg/dnsmasq-logrotate/wiki
 
 
 ---------------------
-5 ... Utility Scripts
+4 ... Utility Scripts
 =====================
 In the project root directory there is 1 helper script; bootstrap.sh.
 
@@ -146,3 +124,4 @@ mutually exclusive.
 
 Options d debug, F distcheckfake and s sparse are enabled by configure so
 require option c config.
+
