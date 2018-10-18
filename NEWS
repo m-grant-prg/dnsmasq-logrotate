@@ -1,3 +1,7 @@
+Release 1.0.4 2018-10-18
+Add markdown symlink to README file for better presentation at Github.
+Update README file to refer to the new project wiki.
+
 Release 1.0.3 2018-08-26
 Minor project infrastructure changes. No functional changes.
 

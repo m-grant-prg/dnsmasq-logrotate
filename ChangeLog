@@ -1,3 +1,9 @@
+2018-10-18 v 1.0.4 Mark Grant <m.grant.prg@gmail.com>
+	*  Add markdown symlink to README file for better presentation at
+	Github.
+	Update README file to refer to the new project wiki.
+	dnsmasq-postrotate.sh still at v1.0.3
+
 2018-08-26 v 1.0.3 Mark Grant <m.grant.prg@gmail.com>
 	*  Minor project infrastructure changes. No functional changes.
 	dnsmasq-postrotate.sh still at v1.0.3
