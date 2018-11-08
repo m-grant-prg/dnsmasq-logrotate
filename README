@@ -53,6 +53,10 @@ e) ... Type './configure'
 
 f) ... As root or sudo, type 'make install clean'
 
+g) ... Edit the first line of sysconfdir/logrotate.d/dnsmasq to reflect the
+location of your dnsmasq log file, ('log-facility=' line in
+sysconfdir/dnsmasq.conf).
+
 (Quote marks are for textual clarity only).
 
 To uninstall the package:
