@@ -49,6 +49,7 @@
 #				gvfs).					#
 #				Use AutoConf runstatedir substitution	#
 #				variable instead of hard-coded /var/run	#
+# 30/11/2018	MG	1.0.4	Refactor help output into a function.	#
 #									#
 #########################################################################
 
@@ -57,7 +58,7 @@
 ##################
 script_exit_code=0
 outputprefix="dnsmasq-postrotate.sh: "
-version="1.0.3"				# set version variable
+version="1.0.4"				# set version variable
 packageversion=@pkgversion@		# Version of the complete package
 
 verbose=FALSE
@@ -66,6 +67,19 @@ verbose=FALSE
 #############
 # Functions #
 #############
+
+# -h --help output.
+usage ()
+{
+cat << EOF
+Usage is $0 [options]
+	-h or --help displays usage information
+	OR
+	-v or --verbose verbose output
+	OR
+	-V or --version displays version information
+EOF
+}
 
 # Output $1 to stdout or stderr depending on $2.
 output()
@@ -121,12 +135,7 @@ while true
 do
 	case "$1" in
 	-h|--help)
-		echo "Usage is $0 [options]"
-		echo "	-h or --help displays usage information"
-		echo "	OR"
-		echo "	-v or --verbose verbose output"
-		echo "	OR"
-		echo "	-V or --version displays version information"
+		usage
 		shift
 		script_exit_code=0
 		script_exit
