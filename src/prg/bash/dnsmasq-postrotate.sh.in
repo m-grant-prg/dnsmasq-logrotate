@@ -49,7 +49,8 @@
 #				gvfs).					#
 #				Use AutoConf runstatedir substitution	#
 #				variable instead of hard-coded /var/run	#
-# 30/11/2018	MG	1.0.4	Refactor help output into a function.	#
+# 03/12/2018	MG	1.0.4	Refactor help output into a function.	#
+#				Do not hard code outputprefix contents.	#
 #									#
 #########################################################################
 
@@ -57,7 +58,7 @@
 # Init variables #
 ##################
 script_exit_code=0
-outputprefix="dnsmasq-postrotate.sh: "
+outputprefix="$(basename $0): "
 version="1.0.4"				# set version variable
 packageversion=@pkgversion@		# Version of the complete package
 
