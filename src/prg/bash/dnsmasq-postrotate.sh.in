@@ -49,8 +49,9 @@
 #				gvfs).					#
 #				Use AutoConf runstatedir substitution	#
 #				variable instead of hard-coded /var/run	#
-# 03/12/2018	MG	1.0.4	Refactor help output into a function.	#
+# 09/12/2018	MG	1.0.4	Refactor help output into a function.	#
 #				Do not hard code outputprefix contents.	#
+#				Make verbose a 'true' boolean.		#
 #									#
 #########################################################################
 
@@ -62,7 +63,7 @@ outputprefix="$(basename $0): "
 version="1.0.4"				# set version variable
 packageversion=@pkgversion@		# Version of the complete package
 
-verbose=FALSE
+verbose=false
 
 
 #############
@@ -142,7 +143,7 @@ do
 		script_exit
 		;;
 	-v|--verbose)
-		verbose=TRUE
+		verbose=true
 		shift
 		;;
 	-V|--version)
@@ -181,7 +182,7 @@ std_cmd_err_handler $?
 if [[ "$pidfile" == "" || ! -f $pidfile ]]
 then
 	script_exit_code=0
-	if [ $verbose = TRUE ]
+	if $verbose
 	then
 		output "dnsmasq daemon not running." 0
 	fi
@@ -192,7 +193,7 @@ fi
 kill -s SIGUSR1 $(cat $pidfile)
 std_cmd_err_handler $?
 
-if [ $verbose = TRUE ]
+if $verbose
 then
 	output "Daemon requested to log summary stats." 0
 fi
@@ -201,7 +202,7 @@ fi
 kill -s SIGUSR2 $(cat $pidfile)
 std_cmd_err_handler $?
 
-if [ $verbose = TRUE ]
+if $verbose
 then
 	output "Daemon requested to close and re-open it's log file." 0
 fi
