@@ -86,8 +86,7 @@ EOF
 # Output $1 to stdout or stderr depending on $2.
 output()
 {
-	if [ $2 = 0 ]
-	then
+	if [ $2 = 0 ]; then
 		echo "$outputprefix$1"
 	else
 		echo "$outputprefix$1" 1>&2
@@ -99,8 +98,7 @@ output()
 # Standard function to test command error ($1 is $?) and exit if non-zero
 std_cmd_err_handler()
 {
-	if [ $1 != 0 ]
-	then
+	if [ $1 != 0 ]; then
 		script_exit_code=$1
 		script_exit
 	fi
@@ -164,8 +162,7 @@ do
 done
 
 # Script does not accept other arguments.
-if [ $# -gt 0 ]
-then
+if [ $# -gt 0 ]; then
 	script_exit_code=1
 	output "Invalid argument." 1
 	script_exit
@@ -179,8 +176,7 @@ cmd="find @runstatedir@/ -xdev ! -readable -prune -o -name dnsmasq.pid -print"
 pidfile=$($cmd)
 std_cmd_err_handler $?
 
-if [[ "$pidfile" == "" || ! -f $pidfile ]]
-then
+if [[ "$pidfile" == "" || ! -f $pidfile ]]; then
 	script_exit_code=0
 	if $verbose
 	then
@@ -193,8 +189,7 @@ fi
 kill -s SIGUSR1 $(cat $pidfile)
 std_cmd_err_handler $?
 
-if $verbose
-then
+if $verbose; then
 	output "Daemon requested to log summary stats." 0
 fi
 
@@ -202,8 +197,7 @@ fi
 kill -s SIGUSR2 $(cat $pidfile)
 std_cmd_err_handler $?
 
-if $verbose
-then
+if $verbose; then
 	output "Daemon requested to close and re-open it's log file." 0
 fi
 
