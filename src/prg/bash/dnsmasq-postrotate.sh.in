@@ -131,8 +131,7 @@ std_cmd_err_handler $?
 eval set -- "$GETOPTTEMP"
 std_cmd_err_handler $?
 
-while true
-do
+while true; do
 	case "$1" in
 	-h|--help)
 		usage
@@ -178,8 +177,7 @@ std_cmd_err_handler $?
 
 if [[ "$pidfile" == "" || ! -f $pidfile ]]; then
 	script_exit_code=0
-	if $verbose
-	then
+	if $verbose; then
 		output "dnsmasq daemon not running." 0
 	fi
 	script_exit
