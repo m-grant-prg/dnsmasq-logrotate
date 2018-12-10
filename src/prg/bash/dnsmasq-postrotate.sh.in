@@ -54,6 +54,7 @@
 #				Make verbose a 'true' boolean.		#
 #				Make relevant script-wide variables	#
 #				readonly.				#
+#				Refactor CL processing into a function.	#
 #									#
 #########################################################################
 
@@ -123,51 +124,62 @@ script_exit
 # Setup trap
 trap trap_exit SIGHUP SIGINT SIGTERM
 
+# Process command line arguments with GNU getopt.
+# Parameter - command line
+# No return value
+proc_CL()
+{
+	local GETOPTTEMP
+
+	GETOPTTEMP=`getopt -o hvV --long help,verbose,version -n "$0" -- "$@"`
+	std_cmd_err_handler $?
+
+	eval set -- "$GETOPTTEMP"
+	std_cmd_err_handler $?
+
+	while true; do
+		case "$1" in
+		-h|--help)
+			usage
+			shift
+			script_exit_code=0
+			script_exit
+			;;
+		-v|--verbose)
+			verbose=true
+			shift
+			;;
+		-V|--version)
+			echo "$0 Script version "$version
+			echo "$0 Package version "$packageversion
+			shift
+			script_exit_code=0
+			script_exit
+			;;
+		--)	shift
+			break
+			;;
+		*)	script_exit_code=1
+			output "Internal error." 1
+			script_exit
+			;;
+		esac
+	done
+
+	# Script does not accept other arguments.
+	if [ $# -gt 0 ]; then
+		script_exit_code=1
+		output "Invalid argument." 1
+		script_exit
+	fi
+}
+
+
 ########
 # Main #
 ########
-# Process command line arguments with GNU getopt.
-GETOPTTEMP=`getopt -o hvV --long help,verbose,version -n "$0" -- "$@"`
-std_cmd_err_handler $?
 
-eval set -- "$GETOPTTEMP"
-std_cmd_err_handler $?
-
-while true; do
-	case "$1" in
-	-h|--help)
-		usage
-		shift
-		script_exit_code=0
-		script_exit
-		;;
-	-v|--verbose)
-		verbose=true
-		shift
-		;;
-	-V|--version)
-		echo "$0 Script version "$version
-		echo "$0 Package version "$packageversion
-		shift
-		script_exit_code=0
-		script_exit
-		;;
-	--)	shift
-		break
-		;;
-	*)	script_exit_code=1
-		output "Internal error." 1
-		script_exit
-		;;
-	esac
-done
-
-# Script does not accept other arguments.
-if [ $# -gt 0 ]; then
-	script_exit_code=1
-	output "Invalid argument." 1
-	script_exit
-fi
+proc_CL $@
 
 # Establish if the daemon is running.
 # The xdev means do not descend into directories on other (mounted) filesystems.
@@ -203,3 +215,4 @@ fi
 
 script_exit_code=0
 script_exit
+
