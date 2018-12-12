@@ -10,6 +10,9 @@ file.
 OPTIONS
 -h, --help  prints usage information
 
+-t, --trace  print information showing how the interrogation of configuration
+files and the CL result in the pid and log-facility values to use
+
 -v, --verbose  emits operational status messages
 
 -V, --version  prints version information

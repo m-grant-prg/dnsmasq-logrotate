@@ -19,7 +19,8 @@
 # rotating the logs. Also request the daemon to write summary stats to	#
 # the syslog.								#
 #									#
-# Syntax:	dnsmasq-postrotate.sh [ -h --help || -v --verbose	#
+# Syntax:	dnsmasq-postrotate.sh [ -h --help || -t --trace 	#
+#					|| -v --verbose			#
 #					|| -V --version ]		#
 #									#
 # Exit Codes:	0 - success						#
@@ -49,12 +50,17 @@
 #				gvfs).					#
 #				Use AutoConf runstatedir substitution	#
 #				variable instead of hard-coded /var/run	#
-# 10/12/2018	MG	1.0.4	Refactor help output into a function.	#
+# 11/12/2018	MG	1.0.4	Refactor help output into a function.	#
 #				Do not hard code outputprefix contents.	#
 #				Make verbose a 'true' boolean.		#
 #				Make relevant script-wide variables	#
 #				readonly.				#
 #				Refactor CL processing into a function.	#
+#				Enhance the pid and log-facility search	#
+#				to conform to dnsmasq rules on		#
+#				conf-file and conf-dir parameters and	#
+#				the CL. Also add a trace CLA to show	#
+#				progress of analysis.			#
 #									#
 #########################################################################
 
@@ -66,6 +72,9 @@ readonly outputprefix="$(basename $0): "
 readonly version="1.0.4"			# script version
 readonly packageversion=@pkgversion@		# package version
 
+loglocation=""
+pidnum=""
+trace=false
 verbose=false
 
 
@@ -80,22 +89,29 @@ cat << EOF
 Usage is $0 [options]
 	-h or --help displays usage information
 	OR
+	-t or --trace output the analysis of configuration parameters
+	OR
 	-v or --verbose verbose output
 	OR
 	-V or --version displays version information
 EOF
 }
 
-# Output $1 to stdout or stderr depending on $2.
+# If $3 == 0 always output $1 to stdout or stderr depending on $2. If $3 == 1
+# then output only if $verbose is true. If $3 == 2 then output only if $trace is
+# true.
 output()
 {
-	if [ $2 = 0 ]; then
-		echo "$outputprefix$1"
-	else
-		echo "$outputprefix$1" 1>&2
+	if [[ $3 = 0 ]] || ([[ $3 = 1 ]] && $verbose) \
+		|| ([[ $3 = 2 ]] && $trace); then
+		if [ $2 = 0 ]; then
+			echo "$outputprefix$1"
+		else
+			echo "$outputprefix$1" 1>&2
+		fi
+		logger "$outputprefix$1"
+		std_cmd_err_handler $?
 	fi
-	logger "$outputprefix$1"
-	std_cmd_err_handler $?
 }
 
 # Standard function to test command error ($1 is $?) and exit if non-zero
@@ -117,7 +133,7 @@ script_exit()
 trap_exit()
 {
 script_exit_code=1
-output "Script terminating due to trap received." 1
+output "Script terminating due to trap received." 1 0
 script_exit
 }
 
@@ -130,8 +146,11 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 proc_CL()
 {
 	local GETOPTTEMP
+	local tmpGETOPTTEMP
 
-	GETOPTTEMP=`getopt -o hvV --long help,verbose,version -n "$0" -- "$@"`
+	tmpGETOPTTEMP="getopt -o htvV --long help,trace,verbose,version "
+	tmpGETOPTTEMP+="-n "$0" -- ""$@"
+	GETOPTTEMP=`$tmpGETOPTTEMP`
 	std_cmd_err_handler $?
 
 	eval set -- "$GETOPTTEMP"
@@ -144,6 +163,10 @@ proc_CL()
 			shift
 			script_exit_code=0
 			script_exit
+			;;
+		-t|--trace)
+			trace=true
+			shift
 			;;
 		-v|--verbose)
 			verbose=true
@@ -160,7 +183,7 @@ proc_CL()
 			break
 			;;
 		*)	script_exit_code=1
-			output "Internal error." 1
+			output "Internal error." 1 0
 			script_exit
 			;;
 		esac
@@ -169,10 +192,280 @@ proc_CL()
 	# Script does not accept other arguments.
 	if [ $# -gt 0 ]; then
 		script_exit_code=1
-		output "Invalid argument." 1
+		output "Invalid argument." 1 0
 		script_exit
 	fi
 }
+
+# Process a conf-dir parameter - a directory and masks.
+# $1 - A conf-dir parameter.
+# No return value.
+proc_conf_dir ()
+{
+	local index
+	local array=()
+	local find_cmd
+	local tmp_conf_list
+	local msg
+	local IFS_old=$IFS
+
+	IFS+=","
+	read -r -a array <<< "$1"
+	output "Processing conf-dir ${array[0]}" 0 2
+	find_cmd="find ${array[0]} -maxdepth 1 -mindepth 1 "
+	# ${! finds the array index
+	for index in "${!array[@]}"; do
+		if [ $index == 0 ]; then
+			continue
+		fi
+		if [[ ${array[index]} = \** ]]; then
+			find_cmd+="-name ${array[index]} "
+		else
+			find_cmd+="! -name *${array[index]} "
+
+		fi
+	done
+	tmp_conf_list=`eval $find_cmd 2>/dev/null | xargs`
+	next_conf_file_list+=$tmp_conf_list" "
+	output "Find command used was: $find_cmd" 0 2
+	msg="conf-files $tmp_conf_list from ${array[0]} added to the "
+	msg+="list to process"
+	output "$msg" 0 2
+
+	IFS=$IFS_old
+}
+
+# Parse the command line only for the parameters of interest.
+# $@ - The dnsmasq command line.
+# No return value.
+cmd_line_parse()
+{
+	local cmd
+	local GETOPTTEMP
+	local msg
+
+	cmd="getopt -q -o 7:8:C:x: --long conf-dir:,log-facility:,conf-file:,"
+	cmd+="pid-file: -n $0 -- $@"
+	GETOPTTEMP=`eval $cmd`
+	eval set -- "$GETOPTTEMP"
+
+	while true; do
+		case "$1" in
+		-7|--conf-dir)
+			msg="conf-dir $2 found on command line and "
+			msg+="being processed"
+			output "$msg" 0 2
+			proc_conf_dir $2
+			shift 2
+			;;
+		-8|--log-facility)
+			cmd_line_loglocation=$2
+			output "log-facility $2 found on command line" 0 2
+			shift 2
+			;;
+		-C|--conf-file)
+			msg="conf-file $2 found on command line and "
+			msg+="overrides default $init_conffile. $2 "
+			msg+="added to the list to process, if present"
+			output "$msg" 0 2
+			init_conffile="$(ls $2 2>/dev/null) "
+			if [[ "$init_conffile" != " " ]]; then
+				output "$2 found" 0 2
+			else
+				output "$2 not found" 0 2
+			fi
+			shift 2
+			;;
+		-x|--pid-file)
+			cmd_line_pidfile=$2
+			output "pid-file $2 found on command line" 0 2
+			shift 2
+			;;
+		--)	shift
+			break
+			;;
+		*)	echo "error"
+			exit 1
+			;;
+		esac
+	done
+}
+
+# Process a conf file.
+# $1 - A conf-file parameter (A config filename).
+# No return value.
+proc_conf_file()
+{
+	local input=()
+	local tmp_conffile
+	local msg
+	local oldIFS=$IFS
+	IFS="="
+
+	output "Processing conf-file $1" 0 2
+	exec 3<$1
+	while read -u3 -ra input; do
+		# Ignore comment lines and blank lines.
+		if [[ ${input[0]} = "#"* || ! ${input[0]} ]]; then
+			continue
+		fi
+
+		case ${input[0]} in
+		conf-dir)
+			msg="conf-dir ${input[1]} found and being "
+			msg+="processed"
+			output "$msg" 0 2
+			proc_conf_dir ${input[1]}
+			;;
+		log-facility)
+			# If already found, skip
+			if [[ ! $loglocation ]]; then
+				loglocation=${input[1]}
+				msg="log-facility ${input[1]} found in "
+				msg+="$1"
+				output "$msg" 0 2
+			fi
+			;;
+		conf-file)
+			msg="conf-file ${input[1]} found and added to "
+			msg+="the list to process, if present"
+			output "$msg" 0 2
+			tmp_conffile="$(ls ${input[1]} 2>/dev/null) "
+			next_conf_file_list+=$tmp_conffile
+			if [[ $tmp_conffile != " " ]]; then
+				output "${input[1]} found" 0 2
+			else
+				output "${input[1]} not found" 0 2
+			fi
+			;;
+		pid-file)
+			# If already found, skip
+			if [[ ! $pidfile ]]; then
+				pidfile=${input[1]}
+				msg="pid-file ${input[1]} found in $1"
+				output "$msg" 0 2
+			fi
+			;;
+		*)
+			# Not interested in any other parameters so just fall
+			# through to next parameter
+			;;
+		esac
+	done
+	exec 3<&-
+
+	IFS=$oldIFS
+}
+
+# Process the aggregated list of conf files from next_conf_file_list.
+# $@ - The list of conf-files to process.
+# No return value.
+proc_conf_file_list()
+{
+	local conffile
+
+	next_conf_file_list=""
+	for conffile in $@; do
+		proc_conf_file $conffile
+	done
+}
+
+# Last resort to solve pid-file.
+# No parameters.
+# No return value.
+pid_last_resort()
+{
+	local cmd
+
+	# A general find to locate a pid file. The xdev means do not descend
+	# into directories on other (mounted) filesystems. (Which avoids
+	# problems on, for example, gvfs).
+	# The prune and not readable means do not descend into non-readable
+	# directories.
+	cmd="find @runstatedir@/ -xdev ! -readable -prune -o -name dnsmasq.pid "
+	cmd+="-print"
+	pidfile=$($cmd 2>/dev/null)
+
+	[[ ! $pidfile ]] && pidfile=$ps_pid_file
+}
+
+# Retrieve the setup of desired config options via config files and CL.
+# No parameters.
+# No return value.
+proc_get_setup()
+{
+	cmd_line_loglocation=""
+	pidfile=""
+	cmd_line_pidfile=""
+	ps_pid_file=/tmp/$$.$(basename $0)
+	init_conffile=""
+	next_conf_file_list=""
+
+	local cmd_line
+
+	# Set initial conf-file to man-page stated default, if present. May
+	# later be overridden by the CL.
+	init_conffile="$(ls @sysconfdir@/dnsmasq.conf 2>/dev/null) "
+	output "default conf is $init_conffile" 0 2
+
+	cmd_line=$(ps --no-headers -C dnsmasq -o args)
+
+	if [[ ! $cmd_line ]]; then
+		output "cmd_line is empty string" 0 2
+	fi
+
+	if [[ $cmd_line ]]; then
+		ps --no-headers -C dnsmasq -o pid  > $ps_pid_file
+		cmd_line_parse $cmd_line
+	else
+		ps_pid_file=""
+	fi
+
+	# The man page states that a conf-file on the CL is an alternative to
+	# the default, so if present, override default.
+	next_conf_file_list="$init_conffile $next_conf_file_list "
+
+	while [[ $next_conf_file_list ]]; do
+		# If we have both, stop looking
+		if [[ $loglocation && $pidfile ]]; then
+			 break
+		fi
+		proc_conf_file_list $next_conf_file_list
+	done
+
+	# If not found use command line values, if present.
+	[[ ! $loglocation ]] && loglocation=$cmd_line_loglocation
+	[[ ! $pidfile ]] && pidfile=$cmd_line_pidfile
+
+	# To be an alternative log file name, the entry must contain a '/'
+	# character. This is mandated by dnsmasq.
+	if [[ $loglocation && $loglocation != *"/"* ]]; then
+		loglocation=""
+	fi
+
+	# If still no pid-file found, time for last resort.
+	if [[ ! $pidfile ]]; then
+		pid_last_resort
+	fi
+
+	if [[ $pidfile ]]; then
+		pidnum=$(cat $pidfile)
+	fi
+	# Remove temp pid file.
+	rm -f $ps_pid_file
+
+	output "Final loglocation is $loglocation" 0 2
+	output "Final pidfile is $pidfile" 0 2
+	output "Final pidnum is $pidnum" 0 2
+
+	unset cmd_line_loglocation
+	unset pidfile
+	unset cmd_line_pidfile
+	unset ps_pid_file
+	unset init_conffile
+	unset next_conf_file_list
+}
+
 
 
 ########
@@ -181,37 +474,25 @@ proc_CL()
 
 proc_CL $@
 
-# Establish if the daemon is running.
-# The xdev means do not descend into directories on other (mounted) filesystems.
-# (Which avoids problems on, for example, gvfs).
-# The prune and not readable means do not descend into non-readable directories.
-cmd="find @runstatedir@/ -xdev ! -readable -prune -o -name dnsmasq.pid -print"
-pidfile=$($cmd)
-std_cmd_err_handler $?
+proc_get_setup
 
-if [[ "$pidfile" == "" || ! -f $pidfile ]]; then
+if [[ ! $pidnum ]]; then
 	script_exit_code=0
-	if $verbose; then
-		output "dnsmasq daemon not running." 0
-	fi
+	output "dnsmasq daemon not running." 0 1
 	script_exit
 fi
 
 # Request the daemon to write summary stats to the syslog.
-kill -s SIGUSR1 $(cat $pidfile)
+kill -s SIGUSR1 $pidnum
 std_cmd_err_handler $?
 
-if $verbose; then
-	output "Daemon requested to log summary stats." 0
-fi
+output "Daemon requested to log summary stats." 0 1
 
 # Request the daemon to close and re-open it's log file.
-kill -s SIGUSR2 $(cat $pidfile)
+kill -s SIGUSR2 $pidnum
 std_cmd_err_handler $?
 
-if $verbose; then
-	output "Daemon requested to close and re-open it's log file." 0
-fi
+output "Daemon requested to close and re-open it's log file." 0 1
 
 script_exit_code=0
 script_exit
