@@ -50,7 +50,7 @@
 #				gvfs).					#
 #				Use AutoConf runstatedir substitution	#
 #				variable instead of hard-coded /var/run	#
-# 11/12/2018	MG	1.0.4	Refactor help output into a function.	#
+# 12/12/2018	MG	1.0.4	Refactor help output into a function.	#
 #				Do not hard code outputprefix contents.	#
 #				Make verbose a 'true' boolean.		#
 #				Make relevant script-wide variables	#
@@ -61,6 +61,8 @@
 #				conf-file and conf-dir parameters and	#
 #				the CL. Also add a trace CLA to show	#
 #				progress of analysis.			#
+#				Add function to retrieve the current	#
+#				log location from the log rotate file.	#
 #									#
 #########################################################################
 
@@ -72,7 +74,9 @@ readonly outputprefix="$(basename $0): "
 readonly version="1.0.4"			# script version
 readonly packageversion=@pkgversion@		# package version
 
+readonly logrotatefile="@sysconfdir@/logrotate.d/dnsmasq"
 loglocation=""
+oldloglocation=""
 pidnum=""
 trace=false
 verbose=false
@@ -389,6 +393,30 @@ pid_last_resort()
 	[[ ! $pidfile ]] && pidfile=$ps_pid_file
 }
 
+# Retrieve the current log file location from the log rotate file.
+# No parameters.
+# No return value.
+get_oldloglocation()
+{
+	local inputline
+
+	if [[ ! -f $logrotatefile ]]; then
+		output "Log rotate file $logrotatefile does not exist." 1 0
+		script_exit_code=1
+		script_exit
+	fi
+
+	exec 4<$logrotatefile
+	while read -u4 -r inputline
+	do
+		if [[ $inputline != "#"* && $inputline ]]; then
+			break
+		fi
+	done
+	oldloglocation=$inputline
+	exec 4<&-
+}
+
 # Retrieve the setup of desired config options via config files and CL.
 # No parameters.
 # No return value.
@@ -443,6 +471,8 @@ proc_get_setup()
 		loglocation=""
 	fi
 
+	get_oldloglocation
+
 	# If still no pid-file found, time for last resort.
 	if [[ ! $pidfile ]]; then
 		pid_last_resort
@@ -454,6 +484,7 @@ proc_get_setup()
 	# Remove temp pid file.
 	rm -f $ps_pid_file
 
+	output "Current loglocation is $oldloglocation" 0 2
 	output "Final loglocation is $loglocation" 0 2
 	output "Final pidfile is $pidfile" 0 2
 	output "Final pidnum is $pidnum" 0 2
