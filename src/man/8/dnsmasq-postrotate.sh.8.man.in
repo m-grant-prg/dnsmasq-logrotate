@@ -10,6 +10,8 @@ file.
 OPTIONS
 -h, --help  prints usage information
 
+-v, --verbose  emits operational status messages
+
 -V, --version  prints version information
 EXIT STATUS
 0
@@ -33,3 +35,4 @@ This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 SEE ALSO
 logrotate(8)
+
