@@ -564,7 +564,7 @@ setup_logrotate()
 
 	# Replace file.
 	rm -f $logrotatefile
-	mv  -f $logrotatefile.tmp $logrotatefile
+	mv -f $logrotatefile.tmp $logrotatefile
 }
 
 
