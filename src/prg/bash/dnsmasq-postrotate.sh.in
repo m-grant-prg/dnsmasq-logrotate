@@ -181,6 +181,7 @@ proc_CL()
 			;;
 		-t|--trace)
 			trace=true
+			verbose=true
 			shift
 			;;
 		-v|--verbose)
