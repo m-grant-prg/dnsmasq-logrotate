@@ -20,7 +20,7 @@
 # the syslog.								#
 #									#
 # Syntax:	dnsmasq-postrotate.sh [ -h --help || -p --post-rotate	#
-#					|| -t --trace		 	#
+#					|| -s --setup || -t --trace 	#
 #					|| -v --verbose			#
 #					|| -V --version ]		#
 #									#
@@ -66,6 +66,9 @@
 #				log location from the log rotate file.	#
 #				Refactor postrotate functionality into	#
 #				a function with a CLA.			#
+#				Add setup function to populate		#
+#				logrotate file with correct log file	#
+#				location.				#
 #									#
 #########################################################################
 
@@ -82,6 +85,7 @@ loglocation=""
 oldloglocation=""
 pidnum=""
 postrotate=false
+setup=false
 trace=false
 verbose=false
 
@@ -98,6 +102,8 @@ Usage is $0 [options]
 	-h or --help displays usage information
 	OR
 	-p or --post-rotate perform post-rotate function
+	OR
+	-s or --setup perform logrotate file setup
 	OR
 	-t or --trace output the analysis of configuration parameters
 	OR
@@ -158,7 +164,7 @@ proc_CL()
 	local GETOPTTEMP
 	local tmpGETOPTTEMP
 
-	tmpGETOPTTEMP="getopt -o hptvV --long help,post-rotate,trace,"
+	tmpGETOPTTEMP="getopt -o hpstvV --long help,post-rotate,setup,trace,"
 	tmpGETOPTTEMP+="verbose,version "
 	tmpGETOPTTEMP+="-n "$0" -- ""$@"
 	GETOPTTEMP=`$tmpGETOPTTEMP`
@@ -177,6 +183,10 @@ proc_CL()
 			;;
 		-p|--post-rotate)
 			postrotate=true
+			shift
+			;;
+		-s|--setup)
+			setup=true
 			shift
 			;;
 		-t|--trace)
@@ -525,6 +535,41 @@ signal_dnsmasq()
 	output "Daemon requested to close and re-open it's log file." 0 1
 }
 
+# Replace the first live line of the logrotate file with the value discovered
+# for log-facility.
+# No parameters.
+# No return value.
+setup_logrotate()
+{
+	if [[ ! -f $logrotatefile ]]; then
+		output "Log rotate file $logrotatefile does not exist." 1 0
+		script_exit_code=1
+		script_exit
+	fi
+
+	# Copy up to first live line.
+	exec 4<$logrotatefile
+	while read -u4 -r inputline
+	do
+		if [[ $inputline != "#"* && $inputline ]]; then
+			break
+		fi
+		echo "$inputline" >> "$logrotatefile.tmp"
+	done
+	# Replace first live line.
+	echo "$loglocation" >> "$logrotatefile.tmp"
+	# Copy rest of file.
+	while read -u4 -r inputline
+	do
+		echo "$inputline" >> "$logrotatefile.tmp"
+	done
+	exec 4<&-
+
+	# Replace file.
+	rm -f $logrotatefile
+	mv  -f $logrotatefile.tmp $logrotatefile
+}
+
 
 
 ########
@@ -534,6 +579,14 @@ signal_dnsmasq()
 proc_CL $@
 
 proc_get_setup
+
+if $setup ; then
+	if [[ $oldloglocation != $loglocation ]]; then
+		setup_logrotate
+	else
+		output "No change required in logrotate file." 0 1
+	fi
+fi
 
 if [[ ! $pidnum ]]; then
 	script_exit_code=0
