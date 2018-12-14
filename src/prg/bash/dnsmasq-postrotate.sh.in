@@ -429,8 +429,7 @@ get_oldloglocation()
 	fi
 
 	exec 4<$logrotatefile
-	while read -u4 -r inputline
-	do
+	while read -u4 -r inputline; do
 		if [[ $inputline != "#"* && $inputline ]]; then
 			break
 		fi
@@ -549,8 +548,7 @@ setup_logrotate()
 
 	# Copy up to first live line.
 	exec 4<$logrotatefile
-	while read -u4 -r inputline
-	do
+	while read -u4 -r inputline; do
 		if [[ $inputline != "#"* && $inputline ]]; then
 			break
 		fi
@@ -559,8 +557,7 @@ setup_logrotate()
 	# Replace first live line.
 	echo "$loglocation" >> "$logrotatefile.tmp"
 	# Copy rest of file.
-	while read -u4 -r inputline
-	do
+	while read -u4 -r inputline; do
 		echo "$inputline" >> "$logrotatefile.tmp"
 	done
 	exec 4<&-
