@@ -19,7 +19,8 @@
 # rotating the logs. Also request the daemon to write summary stats to	#
 # the syslog.								#
 #									#
-# Syntax:	dnsmasq-postrotate.sh [ -h --help || -t --trace 	#
+# Syntax:	dnsmasq-postrotate.sh [ -h --help || -p --post-rotate	#
+#					|| -t --trace		 	#
 #					|| -v --verbose			#
 #					|| -V --version ]		#
 #									#
@@ -50,7 +51,7 @@
 #				gvfs).					#
 #				Use AutoConf runstatedir substitution	#
 #				variable instead of hard-coded /var/run	#
-# 12/12/2018	MG	1.0.4	Refactor help output into a function.	#
+# 14/12/2018	MG	1.0.4	Refactor help output into a function.	#
 #				Do not hard code outputprefix contents.	#
 #				Make verbose a 'true' boolean.		#
 #				Make relevant script-wide variables	#
@@ -63,6 +64,8 @@
 #				progress of analysis.			#
 #				Add function to retrieve the current	#
 #				log location from the log rotate file.	#
+#				Refactor postrotate functionality into	#
+#				a function with a CLA.			#
 #									#
 #########################################################################
 
@@ -78,6 +81,7 @@ readonly logrotatefile="@sysconfdir@/logrotate.d/dnsmasq"
 loglocation=""
 oldloglocation=""
 pidnum=""
+postrotate=false
 trace=false
 verbose=false
 
@@ -92,6 +96,8 @@ usage ()
 cat << EOF
 Usage is $0 [options]
 	-h or --help displays usage information
+	OR
+	-p or --post-rotate perform post-rotate function
 	OR
 	-t or --trace output the analysis of configuration parameters
 	OR
@@ -152,7 +158,8 @@ proc_CL()
 	local GETOPTTEMP
 	local tmpGETOPTTEMP
 
-	tmpGETOPTTEMP="getopt -o htvV --long help,trace,verbose,version "
+	tmpGETOPTTEMP="getopt -o hptvV --long help,post-rotate,trace,"
+	tmpGETOPTTEMP+="verbose,version "
 	tmpGETOPTTEMP+="-n "$0" -- ""$@"
 	GETOPTTEMP=`$tmpGETOPTTEMP`
 	std_cmd_err_handler $?
@@ -167,6 +174,10 @@ proc_CL()
 			shift
 			script_exit_code=0
 			script_exit
+			;;
+		-p|--post-rotate)
+			postrotate=true
+			shift
 			;;
 		-t|--trace)
 			trace=true
@@ -497,6 +508,22 @@ proc_get_setup()
 	unset next_conf_file_list
 }
 
+# Signal dnsmasq to write stats and open and close its logfile.
+# No parameters.
+# No return value.
+signal_dnsmasq()
+{
+	# Request the daemon to write summary stats to the syslog.
+	kill -s SIGUSR1 $pidnum
+	std_cmd_err_handler $?
+	output "Daemon requested to log summary stats." 0 1
+
+	# Request the daemon to close and re-open it's log file.
+	kill -s SIGUSR2 $pidnum
+	std_cmd_err_handler $?
+	output "Daemon requested to close and re-open it's log file." 0 1
+}
+
 
 
 ########
@@ -513,17 +540,9 @@ if [[ ! $pidnum ]]; then
 	script_exit
 fi
 
-# Request the daemon to write summary stats to the syslog.
-kill -s SIGUSR1 $pidnum
-std_cmd_err_handler $?
-
-output "Daemon requested to log summary stats." 0 1
-
-# Request the daemon to close and re-open it's log file.
-kill -s SIGUSR2 $pidnum
-std_cmd_err_handler $?
-
-output "Daemon requested to close and re-open it's log file." 0 1
+if $postrotate ; then
+	signal_dnsmasq
+fi
 
 script_exit_code=0
 script_exit
