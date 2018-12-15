@@ -1,3 +1,20 @@
+2018-12-15 v 1.0.7 Mark Grant <m.grant.prg@gmail.com>
+	* Update man page for post-rotate and setup CLAs
+	Update logrotate file to run script with -p CLA
+	Add setup function to write log location
+	If trace is true force verbose true
+	Refactor postrotate code into function and add CLA
+	Add function to retrieve the current log location
+	Follow dnsmasq rules for conf-file and conf-dir
+	Add missing option -v --verbose to the man page
+	Refactor Command Line processing into a function
+	Make relevant variables readonly
+	Adopt C-like loop coding style
+	Adopt if ... then on same line convention
+	Make variable verbose a proper boolean
+	Do not hard code variable outputprefix content
+	Refactor help text into function
+
 2018-11-08 v 1.0.6 Mark Grant <m.grant.prg@gmail.com>
 	*  In the AutoTools installation section of README add an instruction to
 	edit the first line of the logrotate file after installation to reflect
