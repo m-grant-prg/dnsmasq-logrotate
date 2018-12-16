@@ -22,31 +22,54 @@
 # To use this facility run:-						#
 # make distcheck DISTCHECK_CONFIGURE_FLAGS=--enable-distcheckfake=yes	#
 #									#
+# Layout: (Only relevant sections will exist).				#
+# ChangeLog : High level ChangeLog					#
+# SECTION  1: Initialisation & Setup					#
+# SECTION  2: Architecture, target and host checks			#
+# SECTION  3: Command line arguments					#
+# SECTION  4: Check for programs					#
+# SECTION  5: Check for libraries					#
+# SECTION  6: Check for header files					#
+# SECTION  7: Check for types						#
+# SECTION  8: Check for structures					#
+# SECTION  9: Check for compiler characteristics			#
+# SECTION 10: Check for library functions				#
+# SECTION 11: Check for pkg-config files				#
+# SECTION 12: Check for system services					#
+# SECTION 13: Additional checks & variables				#
+# SECTION 14: Specify the output files					#
+#									#
 #########################################################################
 
 #########################################################################
 #									#
-# Changelog								#
+# ChangeLog								#
 #									#
 # Date		Author	Version	Description				#
 #									#
 # 24/05/2018	MG	1.0.1	First release.				#
 # 29/05/2018	MG	1.0.2	Add logger check for syslog entries.	#
+# 16/12/2018	MG	1.0.3	Re-vamp to new standard layout.		#
 #									#
 #########################################################################
 
-AC_REVISION([$Revision: 1.0.2 $])
+
+#########################################
+#					#
+# SECTION  1: Initialisation & Setup	#
+#					#
+#########################################
+
+AC_REVISION([$Revision: 1.0.3 $])
 
 AC_PREREQ([2.69])
 
 
-########################
 #
 # The package version in ac init will be used to create an output variable which
 # can be used by ac output and / or the sed setup below to substitute bookmarks
 # in source files.
 #
-########################
 
 AC_INIT(Logrotate for dnsmasq, v1.0.7,
 	m.grant.prg@gmail.com, dnsmasq-logrotate)
@@ -54,7 +77,34 @@ AC_INIT(Logrotate for dnsmasq, v1.0.7,
 AC_SUBST(pkgversion, $PACKAGE_VERSION)
 
 
-########################
+#
+# Passes the options to all am files. Puts objects in the sub-directory
+# containing the source. Forces tar to use --format=posix in make dist.
+# This also checks :-	BSD install	make variable set	mkdir -p
+#			gawk
+#
+
+AM_INIT_AUTOMAKE(-Wall -Werror subdir-objects tar-pax)
+
+
+#
+# Standard macros will be automatically placed in m4.
+# Programmer defined macros should be placed in, say, m4extra which allows us
+# to exclude the standard macros from being git tracked. This other directory
+# must be specified as an include option in the Makefile.am ACLOCAL_AMFLAGS
+# e.g.
+# ACLOCAL_AMFLAGS = -I m4 -I m4extra
+#
+
+AC_CONFIG_MACRO_DIR(m4)
+
+
+#########################################
+#					#
+# SECTION  3: Command line arguments	#
+#					#
+#########################################
+
 #
 # If a file location has to be fixed, e.g. /etc/foo.conf and never
 # /usr/local/etc/foo.conf, then make distcheck will fail. Setting this flag
@@ -63,7 +113,6 @@ AC_SUBST(pkgversion, $PACKAGE_VERSION)
 # eg /usr/local/etc/foo.conf.
 # and hence succeed.
 #
-########################
 
 AC_ARG_ENABLE(distcheckfake,
 	--enable-distcheckfake    Enable running of distcheck,
@@ -84,7 +133,111 @@ else
 fi
 
 
-########################
+#########################################
+#					#
+# SECTION  4: Check for programs	#
+#					#
+#########################################
+
+#
+# The small set of tools you can expect to find on any machine.
+#
+# awk		date		grep		od
+# basename	diff		join		rm
+# cat		dirname		ln		rmdir
+# cc		egrep		ls		sed
+# chgrp		expr		mkdir		sleep
+# chown		expr (‘|’)	mkfifo		sort
+# chmod		expr (‘:’)	mknod		tar
+# cmp		fgrep		mktemp		touch
+# cp		find		mv		tr
+#
+# (For further information including limitations to the above, see Section 11.15
+# in the GNU AutoConf Manual).
+#
+
+# Basic and AutoTools program checks.
+AC_MSG_NOTICE(checking for basic programs that have AutoConf checks)
+AC_PROG_AWK
+AC_PROG_EGREP
+AC_PROG_FGREP
+AC_PROG_GREP
+AC_PROG_LN_S
+AC_PROG_MKDIR_P
+AC_PROG_SED
+
+AC_MSG_NOTICE(checking for some standard AutoTools required programs)
+AC_PROG_INSTALL
+AC_PROG_RANLIB
+
+
+#
+# If using am init automake, gl early or lt init the following programs are
+# automatically checked:-
+#
+# am init automake
+#	BSD install	mkdir -p	gawk
+#
+# gl early
+#	ar	grep	egrep	ranlib
+#
+# lt init
+#	fgrep	ranlib	sed
+#
+
+# Build required program checks
+AC_MSG_NOTICE(checking for particular programs required by this build)
+AC_CHECK_PROG(TXT2MAN, txt2man, yes, no)
+if test "x$TXT2MAN" = "xno" ; then
+   	AC_MSG_ERROR(txt2man not found)
+fi
+
+AC_CHECK_PROG(TXT2MANWRAP, txt2manwrap, yes, no)
+if test "x$TXT2MANWRAP" = "xno" ; then
+   	AC_MSG_ERROR(txt2manwrap not found)
+fi
+
+
+AC_MSG_NOTICE(checking for particular programs required at build and run time)
+AC_CHECK_PROG(BASH, bash, yes, no)
+if test "x$BASH" = "xno" ; then
+   	AC_MSG_ERROR(bash not found)
+fi
+
+
+AC_MSG_NOTICE(checking for particular programs required at run time)
+AC_CHECK_PROG(PS, ps, yes, no)
+if test "x$PS" = "xno" ; then
+	AC_MSG_WARN(ps not found - needed at run time)
+fi
+
+AC_CHECK_PROG(KILL, kill, yes, no)
+if test "x$KILL" = "xno" ; then
+   	AC_MSG_WARN(kill not found - needed at run time)
+fi
+
+AC_CHECK_PROG(GETOPT, getopt, yes, no)
+if test "x$GETOPT" = "xno" ; then
+	AC_MSG_WARN(getopt not found - needed at run time)
+fi
+
+AC_CHECK_PROG(LOGGER, logger, yes, no)
+if test "x$LOGGER" = "xno" ; then
+   	AC_MSG_WARN(logger not found - needed at run time)
+fi
+
+AC_CHECK_PROG(DNSMASQ, dnsmasq, yes, no)
+if test "x$DNSMASQ" = "xno" ; then
+   	AC_MSG_WARN(dnsmasq not found - needed at run time)
+fi
+
+
+#################################################
+#						#
+# SECTION 13: Additional checks & variables	#
+#						#
+#################################################
+
 #
 # Now set up a sed sequence to substitute bookmarks in script files with either
 # standard GNU Directory Variables, or with programmer-defined variables set up
@@ -120,9 +273,8 @@ fi
 #	pkglibdir	${libdir}/${PACKAGE}
 #	pkglibexecdir	${libexecdir}/${PACKAGE}
 #
-########################
 
-AC_SUBST([edit], ["sed \
+AC_SUBST([edit], ["$SED \
 		-e 's|@logrotateloc[@]|\$(logrotateloc)|g' \
 		-e 's|@pkgversion[@]|\$(pkgversion)|g' \
 		-e 's|@prefix[@]|\$(prefix)|g' \
@@ -154,96 +306,11 @@ AC_SUBST([edit], ["sed \
 		-e 's|@pkglibexecdir[@]|\$(pkglibexecdir)|g'"])
 
 
-# Passes the options to all am files. Puts objects in the sub-directory
-# containing the source. Forces tar to use --format=posix in make dist.
-# This also checks :-	BSD install	make variable set	mkdir -p
-#			gawk
-AM_INIT_AUTOMAKE(-Wall -Werror subdir-objects tar-pax)
-
-
-########################
-#
-# Standard macros will be automatically placed in m4.
-# Programmer defined macros should be placed in, say, m4extra which allows us
-# to exclude the standard macros from being git tracked. This other directory
-# must be specified as an include option in the Makefile.am ACLOCAL_AMFLAGS
-# e.g.
-# ACLOCAL_AMFLAGS = -I m4 -I m4extra
-#
-########################
-
-AC_CONFIG_MACRO_DIR(m4)
-
-
-########################
-#
-# Checks for programs.
-# If using am init automake, gl early or lt init the following programs are
-# automatically checked:-
-#
-# am init automake
-#	BSD install	mkdir -p	gawk
-#
-# gl early
-#	ar	grep	egrep	ranlib
-#
-# lt init
-#	fgrep	ranlib	sed
-#
-# Particular and generic program checks follow:
-#
-########################
-
-AC_MSG_NOTICE(checking for particular programs required by this application)
-AC_PROG_SED
-
-AC_MSG_NOTICE(checking for generic programs required by this application)
-AC_CHECK_PROG(TAR, tar, yes, no)
-if test "x$TAR" = "xno" ; then
-	AC_MSG_ERROR(tar not found)
-fi
-
-AC_CHECK_PROG(GETOPT, getopt, yes, no)
-if test "x$GETOPT" = "xno" ; then
-	AC_MSG_ERROR(getopt not found)
-fi
-
-AC_CHECK_PROG(BASH, bash, yes, no)
-if test "x$BASH" = "xno" ; then
-   	AC_MSG_ERROR(bash not found)
-fi
-
-AC_CHECK_PROG(TXT2MAN, txt2man, yes, no)
-if test "x$TXT2MAN" = "xno" ; then
-   	AC_MSG_ERROR(txt2man not found)
-fi
-
-AC_CHECK_PROG(TXT2MANWRAP, txt2manwrap, yes, no)
-if test "x$TXT2MANWRAP" = "xno" ; then
-   	AC_MSG_ERROR(txt2manwrap not found)
-fi
-
-AC_CHECK_PROG(FIND, find, yes, no)
-if test "x$FIND" = "xno" ; then
-   	AC_MSG_ERROR([find not found])
-fi
-
-AC_CHECK_PROG([LOGGER], [logger], [yes], [no])
-if test "x$LOGGER" = "xno" ; then
-   	AC_MSG_ERROR([logger not found])
-fi
-
-# Checks for libraries.
-
-# Checks for C header files.
-
-# Checks for C++ header files.
-
-# Checks for typedefs, structures, and compiler characteristics.
-
-# Checks for library functions.
-
-# Checks for pkg-config files.
+########################################
+#					#
+# SECTION 14: Specify the output files	#
+#					#
+#########################################
 
 # Project Makefiles to create.
 AC_CONFIG_FILES([Makefile
@@ -252,3 +319,4 @@ AC_CONFIG_FILES([Makefile
 		src/conf/rootetc/logrotate/Makefile])
 
 AC_OUTPUT
+
