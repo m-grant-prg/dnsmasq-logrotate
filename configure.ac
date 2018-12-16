@@ -312,6 +312,13 @@ AC_SUBST([edit], ["$SED \
 #					#
 #########################################
 
+#
+# Non-Makefile files to generate.
+# AC_CONFIG_FILES should not be used to substitute AutoConf Installation
+# Directory Variables, (bindir and friends), except in Makefiles and pkg-config
+# files. See GNU AutoConf manual section 4.8.2 Installation Directory Variables.
+#
+
 # Project Makefiles to create.
 AC_CONFIG_FILES([Makefile
 		src/prg/bash/Makefile
