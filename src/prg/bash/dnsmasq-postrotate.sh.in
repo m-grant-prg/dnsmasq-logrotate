@@ -69,6 +69,8 @@
 #				Add setup function to populate		#
 #				logrotate file with correct log file	#
 #				location.				#
+# 21/12/2018	MG	1.0.5	Use more standard printf instead of	#
+#				echo.					#
 #									#
 #########################################################################
 
@@ -76,7 +78,7 @@
 # Script-wide variables #
 #########################
 script_exit_code=0
-readonly outputprefix="$(basename $0): "
+readonly outputprefix="$(basename $0):"
 readonly version="1.0.4"			# script version
 readonly packageversion=@pkgversion@		# package version
 
@@ -121,11 +123,11 @@ output()
 	if [[ $3 = 0 ]] || ([[ $3 = 1 ]] && $verbose) \
 		|| ([[ $3 = 2 ]] && $trace); then
 		if [ $2 = 0 ]; then
-			echo "$outputprefix$1"
+			printf "%s %s\n" $outputprefix "$1"
 		else
-			echo "$outputprefix$1" 1>&2
+			printf "%s %s\n" $outputprefix "$1" 1>&2
 		fi
-		logger "$outputprefix$1"
+		logger "$outputprefix $1"
 		std_cmd_err_handler $?
 	fi
 }
@@ -199,8 +201,8 @@ proc_CL()
 			shift
 			;;
 		-V|--version)
-			echo "$0 Script version "$version
-			echo "$0 Package version "$packageversion
+			printf "%s Script version %s\n" $0 $version
+			printf "%s Package version %s\n" $0 $packageversion
 			shift
 			script_exit_code=0
 			script_exit
@@ -552,13 +554,13 @@ setup_logrotate()
 		if [[ $inputline != "#"* && $inputline ]]; then
 			break
 		fi
-		echo "$inputline" >> "$logrotatefile.tmp"
+		 printf "%s\n" "$inputline" >> "$logrotatefile.tmp"
 	done
 	# Replace first live line.
-	echo "$loglocation" >> "$logrotatefile.tmp"
+	printf "%s\n" "$loglocation" >> "$logrotatefile.tmp"
 	# Copy rest of file.
 	while read -u4 -r inputline; do
-		echo "$inputline" >> "$logrotatefile.tmp"
+		printf "%s\n" "$inputline" >> "$logrotatefile.tmp"
 	done
 	exec 4<&-
 
