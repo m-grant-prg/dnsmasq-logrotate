@@ -24,8 +24,29 @@
 #					|| -v --verbose			#
 #					|| -V --version ]		#
 #									#
-# Exit Codes:	0 - success						#
-#		1 - failure						#
+# Exit codes used:-							#
+# Bash standard Exit Codes:	0 - success				#
+#				1 - general failure			#
+# User-defined exit code range is 64 - 113				#
+#	C/C++ Semi-standard exit codes from sysexits.h range is 64 - 78	#
+#		EX_USAGE	64	command line usage error	#
+#		EX_DATAERR	65	data format error		#
+#		EX_NOINPUT	66	cannot open input		#
+#		EX_NOUSER	67	addressee unknown		#
+#		EX_NOHOST	68	host name unknown		#
+#		EX_UNAVAILABLE	69	service unavailable		#
+#		EX_SOFTWARE	70	internal software error		#
+#		EX_OSERR	71	system error (e.g., can't fork)	#
+#		EX_OSFILE	72	critical OS file missing	#
+#		EX_CANTCREAT	73	can't create (user) output file	#
+#		EX_IOERR	74	input/output error		#
+#		EX_TEMPFAIL	75	temp failure; user is invited	#
+#					to retry			#
+#		EX_PROTOCOL	76	remote error in protocol	#
+#		EX_NOPERM	77	permission denied		#
+#		EX_CONFIG	78	configuration error		#
+#	User-defined (here) exit codes range 79 - 113:			#
+#		None							#
 #									#
 # Further Info:								#
 #									#
@@ -74,6 +95,7 @@
 #				Remove script_exit_code variable 	#
 #				propogating the exit code as a function	#
 #				argument instead.			#
+#				Introduce more meaningful exit codes.	#
 #									#
 #########################################################################
 
@@ -164,12 +186,16 @@ script_exit()
 # No return value.
 trap_exit()
 {
-output "Script terminating due to trap received." 1 0
-script_exit 1
+	local exit_code=$?
+	local msg
+
+	msg="Script terminating with exit code $exit_code due to trap received."
+	output "$msg" 1 0
+	script_exit $exit_code
 }
 
 # Setup trap.
-trap trap_exit SIGHUP SIGINT SIGTERM
+trap trap_exit SIGHUP SIGINT SIGQUIT SIGTERM
 
 # Process command line arguments with GNU getopt.
 # Parameters -	$1 is the command line.
@@ -222,7 +248,7 @@ proc_CL()
 			break
 			;;
 		*)	output "Internal error." 1 0
-			script_exit 1
+			script_exit 64
 			;;
 		esac
 	done
@@ -230,7 +256,7 @@ proc_CL()
 	# Script does not accept other arguments.
 	if [ $# -gt 0 ]; then
 		output "Invalid argument." 1 0
-		script_exit 1
+		script_exit 64
 	fi
 }
 
@@ -435,7 +461,7 @@ get_oldloglocation()
 
 	if [[ ! -f $logrotatefile ]]; then
 		output "Log rotate file $logrotatefile does not exist." 1 0
-		script_exit 1
+		script_exit 72
 	fi
 
 	exec 4<$logrotatefile
@@ -552,7 +578,7 @@ setup_logrotate()
 {
 	if [[ ! -f $logrotatefile ]]; then
 		output "Log rotate file $logrotatefile does not exist." 1 0
-		script_exit 1
+		script_exit 72
 	fi
 
 	# Copy up to first live line.
