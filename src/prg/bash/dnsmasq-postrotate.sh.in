@@ -90,7 +90,7 @@
 #				Add setup function to populate		#
 #				logrotate file with correct log file	#
 #				location.				#
-# 21/12/2018	MG	1.0.5	Use more standard printf instead of	#
+# 22/12/2018	MG	1.0.5	Use more standard printf instead of	#
 #				echo.					#
 #				Remove script_exit_code variable 	#
 #				propogating the exit code as a function	#
@@ -461,7 +461,7 @@ get_oldloglocation()
 
 	if [[ ! -f $logrotatefile ]]; then
 		output "Log rotate file $logrotatefile does not exist." 1 0
-		script_exit 72
+		script_exit 66
 	fi
 
 	exec 4<$logrotatefile
@@ -578,7 +578,7 @@ setup_logrotate()
 {
 	if [[ ! -f $logrotatefile ]]; then
 		output "Log rotate file $logrotatefile does not exist." 1 0
-		script_exit 72
+		script_exit 66
 	fi
 
 	# Copy up to first live line.
