@@ -70,7 +70,7 @@ AC_PREREQ([2.69])
 # can be used by ac output and / or the sed setup below to substitute bookmarks
 # in source files.
 #
-AC_INIT(Logrotate for dnsmasq, v1.0.7,
+AC_INIT(Logrotate for dnsmasq, v1.0.8,
 	m.grant.prg@gmail.com, dnsmasq-logrotate)
 
 AC_MSG_NOTICE(initialisation and setup)
