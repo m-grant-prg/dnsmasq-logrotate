@@ -59,8 +59,15 @@ EXIT STATUS
 0
 if OK,
 
-1
+>1
 on failure.
+
+64 Invalid arguments
+
+66 Logrotate file not found
+
+Error codes caught from commands within the script are returned as the exit code
+to this script.
 AUTHOR
 Written by Mark Grant.
 REPORTING BUGS
