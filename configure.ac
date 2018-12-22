@@ -50,7 +50,7 @@
 #									#
 # 24/05/2018	MG	1.0.1	First release.				#
 # 29/05/2018	MG	1.0.2	Add logger check for syslog entries.	#
-# 20/12/2018	MG	1.0.3	Re-vamp to new standard layout.		#
+# 22/12/2018	MG	1.0.3	Re-vamp to new standard layout.		#
 #									#
 #########################################################################
 
@@ -203,6 +203,16 @@ if test "x$BASH" = "xno" ; then
 fi
 
 AC_MSG_NOTICE(checking for particular programs required at run time)
+AC_CHECK_PROG(ECHO, echo, yes, no)
+if test "x$ECHO" = "xno" ; then
+	AC_MSG_WARN(echo not found - needed at run time)
+fi
+
+AC_CHECK_PROG(PRINTF, printf, yes, no)
+if test "x$PRINTF" = "xno" ; then
+	AC_MSG_WARN(printf not found - needed at run time)
+fi
+
 AC_CHECK_PROG(PS, ps, yes, no)
 if test "x$PS" = "xno" ; then
 	AC_MSG_WARN(ps not found - needed at run time)
@@ -211,6 +221,11 @@ fi
 AC_CHECK_PROG(KILL, kill, yes, no)
 if test "x$KILL" = "xno" ; then
    	AC_MSG_WARN(kill not found - needed at run time)
+fi
+
+AC_CHECK_PROG(FIND, find, yes, no)
+if test "x$FIND" = "xno" ; then
+   	AC_MSG_WARN(find not found - needed at run time)
 fi
 
 AC_CHECK_PROG(GETOPT, getopt, yes, no)
