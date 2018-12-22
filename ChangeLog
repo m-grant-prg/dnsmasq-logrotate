@@ -1,3 +1,14 @@
+2018-12-22 v 1.0.8 Mark Grant <m.grant.prg@gmail.com>
+	*  configure.ac Add checks for echo, printf and find
+	Update Errors section of man page
+	Use EX_NOINPUT for missing logrotate file
+	Introduce more meaningful exit codes
+	Propogate exit code as function argument
+	Replace echo with more standardised printf
+	Fine tune new configure.ac format
+	Add non-Makefiles with AC_CONFIG_FILES comment
+	Re-format configure.ac to new standard format
+
 2018-12-15 v 1.0.7 Mark Grant <m.grant.prg@gmail.com>
 	* Update man page for post-rotate and setup CLAs
 	Update logrotate file to run script with -p CLA
