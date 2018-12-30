@@ -103,7 +103,7 @@
 # Script-wide variables #
 #########################
 readonly outputprefix="$(basename $0):"
-readonly version="1.0.4"			# script version
+readonly version="1.0.5"			# script version
 readonly packageversion=@pkgversion@		# package version
 
 readonly logrotatefile="@sysconfdir@/logrotate.d/dnsmasq"
