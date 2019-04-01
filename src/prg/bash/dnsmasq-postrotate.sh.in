@@ -97,6 +97,8 @@
 #				argument instead.			#
 #				Introduce more meaningful exit codes.	#
 # 01/04/2019	MG	1.0.6	Tidy getopt and $@ processing.		#
+#				When processing conf-dir use only	#
+#				normal files.				#
 #									#
 #########################################################################
 
@@ -275,7 +277,7 @@ proc_conf_dir ()
 	IFS+=","
 	read -r -a array <<< "$1"
 	output "Processing conf-dir ${array[0]}" 0 2
-	find_cmd="find ${array[0]} -maxdepth 1 -mindepth 1 "
+	find_cmd="find ${array[0]} -type f -maxdepth 1 -mindepth 1 "
 	# ${! finds the array index
 	for index in "${!array[@]}"; do
 		if [ $index == 0 ]; then
