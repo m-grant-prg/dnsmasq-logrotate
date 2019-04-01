@@ -9,7 +9,7 @@
 #########################################################################
 #									#
 # Script ID: dnsmasq-postrotate.sh					#
-# Author: Copyright (C) 2018  Mark Grant				#
+# Author: Copyright (C) 2018-2019  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0					#
@@ -96,6 +96,7 @@
 #				propogating the exit code as a function	#
 #				argument instead.			#
 #				Introduce more meaningful exit codes.	#
+# 01/04/2019	MG	1.0.6	Tidy getopt and $@ processing.		#
 #									#
 #########################################################################
 
@@ -103,7 +104,7 @@
 # Script-wide variables #
 #########################
 readonly outputprefix="$(basename $0):"
-readonly version=1.0.5				# script version
+readonly version=1.0.6				# script version
 readonly packageversion=@pkgversion@		# package version
 
 readonly logrotatefile="@sysconfdir@/logrotate.d/dnsmasq"
@@ -207,8 +208,7 @@ proc_CL()
 
 	tmpGETOPTTEMP="getopt -o hpstvV --long help,post-rotate,setup,trace,"
 	tmpGETOPTTEMP+="verbose,version "
-	tmpGETOPTTEMP+="-n "$0" -- ""$@"
-	GETOPTTEMP=`$tmpGETOPTTEMP`
+	GETOPTTEMP=`$tmpGETOPTTEMP -n "$0" -- "$@"`
 	std_cmd_err_handler $?
 
 	eval set -- "$GETOPTTEMP"
@@ -308,8 +308,10 @@ cmd_line_parse()
 	local msg
 
 	cmd="getopt -q -o 7:8:C:x: --long conf-dir:,log-facility:,conf-file:,"
-	cmd+="pid-file: -n $0 -- $@"
-	GETOPTTEMP=`eval $cmd`
+	cmd+="pid-file:"
+	GETOPTTEMP=`$cmd -n "$0" -- "$@"`
+	std_cmd_err_handler $?
+
 	eval set -- "$GETOPTTEMP"
 
 	while true; do
@@ -428,7 +430,7 @@ proc_conf_file_list()
 	local conffile
 
 	next_conf_file_list=""
-	for conffile in $@; do
+	for conffile in "$@"; do
 		proc_conf_file $conffile
 	done
 }
@@ -608,7 +610,7 @@ setup_logrotate()
 # Main #
 ########
 
-proc_CL $@
+proc_CL "$@"
 
 proc_get_setup
 
