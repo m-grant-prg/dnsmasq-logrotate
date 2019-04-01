@@ -1,0 +1,2 @@
+conf-file=@sysconfdir@/dnsmasq.d/level1/mg1.conf
+

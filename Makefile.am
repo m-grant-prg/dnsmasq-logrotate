@@ -2,7 +2,7 @@
 #########################################################################
 #									#
 # Script ID: ./Makefile.am						#
-# Author: Copyright (C) 2018  Mark Grant				#
+# Author: Copyright (C) 2018-2019  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0					#
@@ -23,6 +23,7 @@
 # 31/10/2018	MG	1.0.3	Change srctarball target to build with	#
 #				src between package name and version in	#
 #				filename.				#
+# 01/04/2019	MG	1.0.4	Add test-data build.			#
 #									#
 #########################################################################
 
@@ -31,6 +32,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 
 SUBDIRS = src/prg/bash
+SUBDIRS += src/prg/test-data/etc
 SUBDIRS += src/man/8
 SUBDIRS += src/conf/rootetc/logrotate
 

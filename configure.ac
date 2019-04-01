@@ -1,7 +1,7 @@
 #########################################################################
 #									#
 # Script ID: ./configure.ac						#
-# Author: Copyright (C) 2018  Mark Grant				#
+# Author: Copyright (C) 2018-2019  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0					#
@@ -51,6 +51,7 @@
 # 24/05/2018	MG	1.0.1	First release.				#
 # 29/05/2018	MG	1.0.2	Add logger check for syslog entries.	#
 # 22/12/2018	MG	1.0.3	Re-vamp to new standard layout.		#
+# 01/04/2019	MG	1.0.4	Add test-data build.			#
 #									#
 #########################################################################
 
@@ -61,7 +62,7 @@
 #					#
 #########################################
 
-AC_REVISION([$Revision: 1.0.3 $])
+AC_REVISION([$Revision: 1.0.4 $])
 
 AC_PREREQ([2.69])
 
@@ -337,6 +338,7 @@ AC_MSG_NOTICE(processing output files)
 # Project Makefiles to create.
 AC_CONFIG_FILES([Makefile
 		src/prg/bash/Makefile
+		src/prg/test-data/etc/Makefile
 		src/man/8/Makefile
 		src/conf/rootetc/logrotate/Makefile])
 

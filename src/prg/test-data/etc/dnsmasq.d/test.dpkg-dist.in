@@ -1,0 +1,5 @@
+# This file, due to it's extension, should be ignored. To prove it the config
+# file below does not exist.
+
+conf-file=@sysconfdir@/no-such-file.conf
+
