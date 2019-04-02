@@ -266,7 +266,7 @@ AC_MSG_NOTICE(processing additional checks and variables)
 #		sbindir	${exec_prefix}/sbin	system admin executables
 #		libexecdir	${exec_prefix}/libexec	program executables
 #		libdir	${exec_prefix}/lib	object code libraries
-#	sysconfdir	 ${prefix}/etc	read-only single-machine data
+#	sysconfdir	${prefix}/etc	read-only single-machine data
 #	sharedstatedir	${prefix}/com	modifiable architecture-independent data
 #	localstatedir	${prefix}/var	modifiable single-machine data
 #	runstatedir	${localstatedir}/run
