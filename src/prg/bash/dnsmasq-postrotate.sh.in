@@ -507,7 +507,7 @@ proc_get_setup()
 
 	if [[ $cmd_line ]]; then
 		ps --no-headers -C dnsmasq -o pid  > $ps_pid_file
-		cmd_line_parse $cmd_line
+		cmd_line_parse "$cmd_line"
 	else
 		ps_pid_file=""
 	fi
