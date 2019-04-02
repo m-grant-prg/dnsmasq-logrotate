@@ -210,8 +210,8 @@ proc_CL()
 	local tmpGETOPTTEMP
 
 	tmpGETOPTTEMP="getopt -o hpstvV --long help,post-rotate,setup,trace,"
-	tmpGETOPTTEMP+="verbose,version "
-	GETOPTTEMP=`$tmpGETOPTTEMP -n "$0" -- "$@"`
+	tmpGETOPTTEMP+="verbose,version -n $0 -- $@"
+	GETOPTTEMP=$($tmpGETOPTTEMP)
 	std_cmd_err_handler $?
 
 	eval set -- "$GETOPTTEMP"
@@ -312,11 +312,13 @@ cmd_line_parse()
 	local msg
 
 	cmd="getopt -q -o 7:8:C:x: --long conf-dir:,log-facility:,conf-file:,"
-	cmd+="pid-file:"
-	GETOPTTEMP=`$cmd -n "$0" -- "$@"`
-	std_cmd_err_handler $?
+	cmd+="pid-file: -n $0 -- $@"
+	# No error checking of the following as errors expected (partial options
+	# specified).
+	GETOPTTEMP=$($cmd)
 
 	eval set -- "$GETOPTTEMP"
+	std_cmd_err_handler $?
 
 	while true; do
 		case "$1" in
@@ -507,7 +509,7 @@ proc_get_setup()
 
 	if [[ $cmd_line ]]; then
 		ps --no-headers -C dnsmasq -o pid  > $ps_pid_file
-		cmd_line_parse "$cmd_line"
+		cmd_line_parse $cmd_line
 	else
 		ps_pid_file=""
 	fi
