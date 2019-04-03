@@ -51,7 +51,8 @@
 # 24/05/2018	MG	1.0.1	First release.				#
 # 29/05/2018	MG	1.0.2	Add logger check for syslog entries.	#
 # 22/12/2018	MG	1.0.3	Re-vamp to new standard layout.		#
-# 01/04/2019	MG	1.0.4	Add test-data build.			#
+# 03/04/2019	MG	1.0.4	Add test-data build.			#
+#				Remove leading v from package version.	#
 #									#
 #########################################################################
 
@@ -71,7 +72,7 @@ AC_PREREQ([2.69])
 # can be used by ac output and / or the sed setup below to substitute bookmarks
 # in source files.
 #
-AC_INIT(Logrotate for dnsmasq, v1.0.8,
+AC_INIT(Logrotate for dnsmasq, 1.0.8,
 	m.grant.prg@gmail.com, dnsmasq-logrotate)
 
 AC_MSG_NOTICE(initialisation and setup)

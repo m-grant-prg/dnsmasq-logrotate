@@ -24,6 +24,9 @@
 #				filename.				#
 # 03/04/2019	MG	1.0.4	Add test-data build.			#
 #				Remove shebang.				#
+#				Change source tarball name to be the	#
+#				same as that in GitHub releases. This	#
+#				aids integrating with rpm generation.	#
 #									#
 #########################################################################
 
@@ -39,7 +42,7 @@ SUBDIRS += src/conf/rootetc/logrotate
 
 srctarball:
 	@cwd="$${PWD}" && \
-	targ="$${cwd}/@PACKAGE_TARNAME@-src-@PACKAGE_VERSION@.tar.gz" && \
+	targ="$${cwd}/@PACKAGE_TARNAME@-@PACKAGE_VERSION@.tar.gz" && \
 	cd @srcdir@ && \
 	echo "making srctarball from @srcdir@" && \
 	echo "GA	$${targ}" && \
