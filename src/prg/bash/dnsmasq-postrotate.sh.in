@@ -96,9 +96,10 @@
 #				propogating the exit code as a function	#
 #				argument instead.			#
 #				Introduce more meaningful exit codes.	#
-# 01/04/2019	MG	1.0.6	Tidy getopt and $@ processing.		#
+# 03/04/2019	MG	1.0.6	Tidy getopt and $@ processing.		#
 #				When processing conf-dir use only	#
 #				normal files.				#
+#				Ensure numerics use (( ... )).		#
 #									#
 #########################################################################
 
@@ -154,9 +155,9 @@ EOF
 # No return value.
 output()
 {
-	if [[ $3 = 0 ]] || ([[ $3 = 1 ]] && $verbose) \
-		|| ([[ $3 = 2 ]] && $trace); then
-		if [ $2 = 0 ]; then
+	if (( ! $3 )) || ((( $3 == 1 )) && $verbose) \
+		|| ((( $3 == 2 )) && $trace); then
+		if (( ! $2 )); then
 			printf "%s %s\n" $outputprefix "$1"
 		else
 			printf "%s %s\n" $outputprefix "$1" 1>&2
@@ -171,7 +172,7 @@ output()
 # No return value.
 std_cmd_err_handler()
 {
-	if [ $1 != 0 ]; then
+	if (( $1 )); then
 		script_exit $1
 	fi
 }
@@ -256,7 +257,7 @@ proc_CL()
 	done
 
 	# Script does not accept other arguments.
-	if [ $# -gt 0 ]; then
+	if (( $# > 0 )); then
 		output "Invalid argument." 1 0
 		script_exit 64
 	fi
