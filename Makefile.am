@@ -27,6 +27,8 @@
 #				Change source tarball name to be the	#
 #				same as that in GitHub releases. This	#
 #				aids integrating with rpm generation.	#
+#				Add install of standard GNU files like	#
+#				AUTHORS, etc.				#
 #									#
 #########################################################################
 
@@ -38,6 +40,13 @@ SUBDIRS = src/prg/bash
 SUBDIRS += src/prg/test-data/etc
 SUBDIRS += src/man/8
 SUBDIRS += src/conf/rootetc/logrotate
+
+
+doc_DATA = AUTHORS ChangeLog COPYING NEWS README
+
+
+EXTRA_DIST = $(srcdir)/AUTHORS $(srcdir)/ChangeLog $(srcdir)/COPYING \
+		$(srcdir)/NEWS $(srcdir)/README
 
 
 srctarball:
