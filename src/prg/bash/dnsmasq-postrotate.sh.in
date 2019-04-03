@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! @bashlocation@
 #########################################################################
 #									#
 #	dnsmasq-postrotate.sh is automatically generated,		#
@@ -100,6 +100,8 @@
 #				When processing conf-dir use only	#
 #				normal files.				#
 #				Ensure numerics use (( ... )).		#
+#				Replace #! env bash with absolute path	#
+#				via configure.				#
 #									#
 #########################################################################
 

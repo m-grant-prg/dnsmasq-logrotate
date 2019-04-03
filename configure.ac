@@ -53,6 +53,7 @@
 # 22/12/2018	MG	1.0.3	Re-vamp to new standard layout.		#
 # 03/04/2019	MG	1.0.4	Add test-data build.			#
 #				Remove leading v from package version.	#
+#				Pass bash path to scripts and Makefiles	#
 #									#
 #########################################################################
 
@@ -199,9 +200,9 @@ if test "x$TXT2MANWRAP" = "xno" ; then
 fi
 
 AC_MSG_NOTICE(checking for particular programs required at build and run time)
-AC_CHECK_PROG(BASH, bash, yes, no)
+AC_PATH_PROG(BASH, bash, no)
 if test "x$BASH" = "xno" ; then
-   	AC_MSG_ERROR(bash not found)
+	AC_MSG_ERROR(bash not found)
 fi
 
 AC_MSG_NOTICE(checking for particular programs required at run time)
@@ -290,6 +291,7 @@ AC_MSG_NOTICE(processing additional checks and variables)
 #	pkglibexecdir	${libexecdir}/${PACKAGE}
 #
 AC_SUBST([edit], ["$SED \
+		-e 's|@bashlocation[@]|\$(BASH)|g' \
 		-e 's|@logrotateloc[@]|\$(logrotateloc)|g' \
 		-e 's|@pkgversion[@]|\$(pkgversion)|g' \
 		-e 's|@prefix[@]|\$(prefix)|g' \
