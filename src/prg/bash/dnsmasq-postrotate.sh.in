@@ -267,7 +267,7 @@ proc_CL()
 # No return value.
 proc_conf_dir ()
 {
-	local index
+	local -i index
 	local array=()
 	local find_cmd
 	local tmp_conf_list
