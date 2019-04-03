@@ -1,4 +1,3 @@
-#! /usr/bin/env bash
 #########################################################################
 #									#
 # Script ID: src/prg/test-data/etc/Makefile.am				#
@@ -18,7 +17,8 @@
 #									#
 # Date		Author	Version	Description				#
 #									#
-# 01/04/2019	MG	1.0.1	First release.				#
+# 03/04/2019	MG	1.0.1	First release.				#
+#				Remove shebang.				#
 #									#
 #########################################################################
 

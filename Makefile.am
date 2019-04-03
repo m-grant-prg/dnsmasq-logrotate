@@ -1,4 +1,3 @@
-#! /usr/bin/env bash
 #########################################################################
 #									#
 # Script ID: ./Makefile.am						#
@@ -23,7 +22,8 @@
 # 31/10/2018	MG	1.0.3	Change srctarball target to build with	#
 #				src between package name and version in	#
 #				filename.				#
-# 01/04/2019	MG	1.0.4	Add test-data build.			#
+# 03/04/2019	MG	1.0.4	Add test-data build.			#
+#				Remove shebang.				#
 #									#
 #########################################################################
 
