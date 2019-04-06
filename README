@@ -12,7 +12,7 @@ Contents
 
 2 ... AutoTools (configure and make) Installation
 
-3 ... Ubuntu, Debian and Raspbian Installation
+3 ... Installation of Distro-Native Packages
 
 4 ... Utility Scripts
 
@@ -69,10 +69,11 @@ To uninstall the package:
 2 ... As root or sudo, type 'make uninstall clean'
 
 
-----------------------------------------------
-3 ... Ubuntu, Debian and Raspbian Installation
-==============================================
-Please refer to the relevant installation section on the wiki at:-
+--------------------------------------------
+3 ... Installation of Distro-Native Packages
+============================================
+Installation packages native to different distributions are available, please
+refer to the relevant installation section on the wiki at:-
 
 https://github.com/m-grant-prg/dnsmasq-logrotate/wiki
 
