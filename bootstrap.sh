@@ -127,6 +127,8 @@
 #				Add missing error check after getopt.	#
 #				Replace #! env bash with absolute path	#
 #				via configure.				#
+# 05/04/2019	MG	1.4.2	Just execute getopt command AOT eval.	#
+#				Setup trap as early as possible.	#
 #									#
 #########################################################################
 
@@ -134,8 +136,8 @@
 # Init variables #
 ##################
 
-readonly version=1.4.1			# set version variable
-readonly packageversion=1.3.1	# Version of the complete package
+readonly version=1.4.2			# set version variable
+readonly packageversion=1.3.2	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -238,6 +240,9 @@ trap_exit()
 	script_exit $exit_code
 }
 
+# Setup trap
+trap trap_exit SIGHUP SIGINT SIGQUIT SIGTERM
+
 # Process command line arguments with GNU getopt.
 # Parameters -	$1 is the command line.
 # No return value.
@@ -252,7 +257,7 @@ proc_CL()
 	tmp+="gnulib,help,header-check,sparse,source-tarball,testing-hacks,"
 	tmp+="verbose,version "
 	tmp+="-n $script_name -- $@"
-	GETOPTTEMP=`eval $tmp`
+	GETOPTTEMP=$($tmp)
 	std_cmd_err_handler $?
 
 	eval set -- "$GETOPTTEMP"
@@ -489,9 +494,6 @@ proc_make()
 ########
 # Main #
 ########
-
-# Setup trap
-trap trap_exit SIGHUP SIGINT SIGQUIT SIGTERM
 
 proc_CL $@
 
