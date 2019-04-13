@@ -281,7 +281,7 @@ proc_conf_dir ()
 	read -r -a array <<< "$1"
 	output "Processing conf-dir ${array[0]}" 0 2
 	find_cmd="find ${array[0]} -type f -maxdepth 1 -mindepth 1 "
-	# ${! finds the array index
+	# ${! finds the array index}
 	for index in "${!array[@]}"; do
 		if [ $index == 0 ]; then
 			continue
