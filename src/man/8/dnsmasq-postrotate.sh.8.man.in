@@ -3,13 +3,38 @@ dnsmasq-postrotate.sh - postrotate script for dnsmasq
 SYNOPSIS
 dnsmasq-postrotate.sh [OPTION]
 DESCRIPTION
-Used as a postrotate script after logrotate has rotated logs. This script
-requests the dnsmasq daemon to write summary stats to the syslog and requests it
-to close and re-open it's log file which is necessary to start using the new log
-file.
+The dnsmasq-postrotate.sh script has two functions; a setup function and a post-rotate function.
 
-Other functionality is to setup the logrotate file with the correct location of
-the dnsmasq log file.
+Running dnsmasq-postrotate.sh with the --setup option interrogates the dnsmasq configuration and command line to locate the log file and write this location in the logrotate control file. This is run during the package installation and should be run after configuration changes to dnsmasq.
+
+In normal day-to-day operation after logrotate has rotated the log file dnsmasq-postrotate.sh is run with the --post-rotate option whereby SIGUSR1 and SIGUSR2 are sent to dnsmasq to ask it to dump stats to the log file and to close and reopen it's log file.
+
+During setup the script must determine the log file location and during post-rotate the script must determine the dnsmasq pid file. The two file locations can be specified to dnsmasq with the log-facility and pid-file options. These can be provided via a configuration file or on the command line. Configuration files can be nested via the conf-file and / or conf-dir options. The logic for finding these directives is as follows:-
+
+	a)	Configuration files are processed sequentially and in the
+		order they are found.
+
+	b)	The first instance of each directive found is used, in
+		fact processing of configuration files terminates
+		immediately if both directives are found.
+
+	c)	The first configuration file is either the default,
+		sysconfdir/dnsmasq.conf, or if the commmand line contains
+		the option -C then the filename specified there is used.
+
+	d)	Any configuration files specified by conf-file, or found
+		in a conf-dir directory are appended to the list of
+		configuration files to process in the order in which they
+		are found.
+
+	e)	If not found in any configuration file then any command
+		line specification of these options is used in place of
+		the missing directive. (Configuration file value
+		overriding command line option is behaviour specified in
+		the dnsmasq man page).
+
+	f)	If no pid file is found then as a last resort the pid of
+		the running dnsmasq instance is determined and used.
 OPTIONS
 -h, --help  prints usage information
 
@@ -17,8 +42,8 @@ OPTIONS
 stats and closing and re-opening the log file
 
 -s, --setup  determine the location of the log file and write this to the
-logrotate file. (Please refer to the DNSMASQ CONFIG FILE AND COMMAND LINE
-PROCESSING section below)
+logrotate file. (Please refer to the DESCRIPTION section above for the logic of
+how it finds this location)
 
 -t, --trace  print information showing how the interrogation of configuration
 files and the CL result in the pid and log-facility values to use
@@ -26,35 +51,6 @@ files and the CL result in the pid and log-facility values to use
 -v, --verbose  emits operational status messages
 
 -V, --version  prints version information
-DNSMASQ CONFIG FILE AND COMMAND LINE PROCESSING
-Three starting rules:-  1 ... Start by looking for and processing, if present,
-@sysconfdir@/dnsmasq.conf.
-.br
-2 ... A config file entry trumps a command line option.
-.br
-3 ... The first log-facility and pid-file entries are taken as the final value.
-No further searching takes place for an already found parameter.
-.br
-
-dnsmasq.conf, config-file and config-dir processing  Starting from dnsmasq.conf
-mentioned above, the file is scanned for pid-file, log-facility, conf-file and
-conf-dir entries. For as long as at least one parameter, (log-facility or
-pid-file), has not been found, searches will continue using conf-file and
-conf-dir entries until either both parameters are found or new config files are
-exhausted.
-.br
-command line  The dnsmasq daemon command line is also parsed and if it contains
-either parameter which has not been discovered in a conf-file, then it is taken
-as the final value.
-.br
-
-pid last resort  If the pid-file parameter still has not been found then a
-search is made for dnnsmasq.pid anywhere under the @runstatedir@ location. If
-found this is used as the final version.
-.br
-If a pid-file is still not found then the actual process id of the running
-dnsmasq daemon is used as the final version.
-
 EXIT STATUS
 0
 if OK,
