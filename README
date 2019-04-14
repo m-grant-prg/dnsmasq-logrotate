@@ -88,13 +88,20 @@ c) ... cd to the directory created.
 
 d) ... If you downloaded the source tarball type 'autoreconf -if'
 
-e) ... Type './configure'
+e) ... If your dnsmasq.conf file and logrotate.d directory are where AutoTools
+can find them then type
+
+	'./configure'
+
+OR, as is more likely:-
+
+You want to find these files in their standard GNU/Linux locations then type
+
+	'./configure sysconfdir=/etc localstatedir=/var'
 
 f) ... As root or sudo, type 'make install clean'
 
-g) ... Edit the first line of sysconfdir/logrotate.d/dnsmasq to reflect the
-location of your dnsmasq log file, ('log-facility=' line in
-sysconfdir/dnsmasq.conf).
+g) ... As root or sudo, type 'dnsmasq-postrotate.sh --setup'
 
 (Quote marks are for textual clarity only).
 
