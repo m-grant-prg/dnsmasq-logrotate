@@ -22,11 +22,47 @@ Contents
 1 ... Project Description
 =========================
 
-This AutoTools project utilises the logrotate facillity to provide log rotation
+This AutoTools project utilises the logrotate facility to provide log rotation
 for dnsmasq.
 
 It places a logrotate control file in sysconfdir/logrotate.d and a post-rotate
 script file in sbindir.
+
+
+Overview
+--------
+The dnsmasq-postrotate.sh script has two functions; a setup function and a post-rotate function.
+
+Running dnsmasq-postrotate.sh with the --setup option interrogates the dnsmasq configuration and command line to locate the log file and write this location in the logrotate control file. This is run during the package installation and should be run after configuration changes to dnsmasq.
+
+In normal day-to-day operation after logrotate has rotated the log file dnsmasq-postrotate.sh is run with the --post-rotate option whereby SIGUSR1 and SIGUSR2 are sent to dnsmasq to ask it to dump stats to the log file and to close and reopen it's log file.
+
+During setup the script must determine the log file location and during post-rotate the script must determine the dnsmasq pid file. The two file locations can be specified to dnsmasq with the log-facility and pid-file options. These can be provided via a configuration file or on the command line. Configuration files can be nested via the conf-file and / or conf-dir options. The logic for finding these directives is as follows:-
+
+	a)	Configuration files are processed sequentially and in the
+		order they are found.
+
+	b)	The first instance of each directive found is used, in
+		fact processing of configuration files terminates
+		immediately if both directives are found.
+
+	c)	The first configuration file is either the default,
+		sysconfdir/dnsmasq.conf, or if the commmand line contains
+		the option -C then the filename specified there is used.
+
+	d)	Any configuration files specified by conf-file, or found
+		in a conf-dir directory are appended to the list of
+		configuration files to process in the order in which they
+		are found.
+
+	e)	If not found in any configuration file then any command
+		line specification of these options is used in place of
+		the missing directive. (Configuration file value
+		overriding command line option is behaviour specified in
+		the dnsmasq man page).
+
+	f)	If no pid file is found then as a last resort the pid of
+		the running dnsmasq instance is determined and used.
 
 N.B.
 ----
