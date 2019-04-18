@@ -1,3 +1,26 @@
+2019-04-18 v 1.0.9 Mark Grant <m.grant.prg@gmail.com>
+	*  README: Update AT installation procedure
+	Rewrite man page DESCRIPTION section
+	README: Rewrite processing description
+	README: Update bootstrap.sh description to v1.4.2
+	README: Make package install references generic
+	README: Add Copyright statement
+	Update Copyright statement
+	Update bootstrap.sh to v1.4.2
+	Install standard GNU files eg AUTHOR etc
+	Replace #! env bash with abs path from configure
+	Correct package versioning
+	Remove shebangs from Makefile.ams
+	Ensure numerics use (( ... ))
+	Make local variable exit_code integer
+	Make local index variable integer
+	Use $($cmd) AOT obsoleted back-ticks around getopt
+	Ensure command line is quoted for cmd_line_parse()
+	Add test-data
+	Ensure only normal files are processed in conf-dir
+	Tidy getopt and $@ processing
+	dnsmasq-postrotate.sh now at v1.0.6
+
 2018-12-22 v 1.0.8 Mark Grant <m.grant.prg@gmail.com>
 	*  configure.ac Add checks for echo, printf and find
 	Update Errors section of man page
