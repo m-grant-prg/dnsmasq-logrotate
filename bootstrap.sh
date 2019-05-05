@@ -129,15 +129,20 @@
 #				via configure.				#
 # 05/04/2019	MG	1.4.2	Just execute getopt command AOT eval.	#
 #				Setup trap as early as possible.	#
+# 30/04/2019	MG	1.4.3	Correct getopt CL for proper quoting.	#
+#				Ensure variables used as input to other	#
+#				commands are inputised and evaluated	#
+#				with eval.				#
 #									#
 #########################################################################
+
 
 ##################
 # Init variables #
 ##################
 
-readonly version=1.4.2			# set version variable
-readonly packageversion=1.3.2	# Version of the complete package
+readonly version=1.4.3			# set version variable
+readonly packageversion=1.3.3	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -255,9 +260,8 @@ proc_CL()
 	tmp="getopt -o abcCdDFghHstTvV "
 	tmp+="--long at-only,build,config,distcheck,debug,dist,distcheckfake,"
 	tmp+="gnulib,help,header-check,sparse,source-tarball,testing-hacks,"
-	tmp+="verbose,version "
-	tmp+="-n $script_name -- $@"
-	GETOPTTEMP=$($tmp)
+	tmp+="verbose,version"
+	GETOPTTEMP=$($tmp -n "$script_name" -- "$@")
 	std_cmd_err_handler $?
 
 	eval set -- "$GETOPTTEMP"
@@ -390,11 +394,13 @@ proc_CL()
 
 	# First non-option argument which is not an option argument is the base
 	# directory, all others are passed straight to the configure command
-	# line, (to support things like  --prefix=... etc).
+	# line, (to support things like  --prefix=... etc). Both of these need
+	# to be inputised before they are passed on in order to maintain
+	# original quoting. They can then be 'eval'ed.
 	if (( $# )); then
-		basedir=$1
+		basedir=${1@Q}
 		shift
-		configcli_extra_args=" $@"
+		configcli_extra_args=" "${@@Q}
 	fi
 }
 
@@ -430,7 +436,8 @@ proc_config()
 	local msg
 	local status
 
-	autoreconf -if $basedir
+	cmdline="autoreconf -if $basedir"
+	eval "$cmdline"
 	status=$?
 	msg="autoreconf -if "$basedir" completed with exit status: $status"
 	output "$msg" $status
@@ -495,7 +502,7 @@ proc_make()
 # Main #
 ########
 
-proc_CL $@
+proc_CL "$@"
 
 # Create build log.
 exec 1> >(tee build-output.txt) 2>&1
