@@ -56,6 +56,7 @@
 #				Pass bash path to scripts and Makefiles	#
 # 10/08/2019	MG	1.0.5	Improve configure CLA description in	#
 #				header comments above.			#
+#				Correct AC_MSG_NOTICE texts.		#
 #									#
 #########################################################################
 
@@ -129,10 +130,10 @@ AM_CONDITIONAL(DISTCHECKFAKE, test x$distcheckfake = xtrue)
 
 if test "x${distcheckfake}" = xtrue; then
 	AC_SUBST(logrotateloc, "$sysconfdir/logrotate.d")
-	AC_MSG_NOTICE(Using substitute paths to facilitate distcheck.)
+	AC_MSG_NOTICE(using substitute paths to facilitate distcheck)
 else
 	AC_SUBST(logrotateloc, "/etc/logrotate.d")
-	AC_MSG_NOTICE(Using distcheck incompatible absolute based paths.)
+	AC_MSG_NOTICE(using distcheck incompatible absolute based paths)
 fi
 
 
