@@ -57,6 +57,7 @@
 # 10/08/2019	MG	1.0.5	Improve configure CLA description in	#
 #				header comments above.			#
 #				Correct AC_MSG_NOTICE texts.		#
+#				Correct ARG_ENABLE help text.		#
 #									#
 #########################################################################
 
@@ -119,7 +120,7 @@ AC_MSG_NOTICE(processing command line arguments)
 # and hence succeed.
 #
 AC_ARG_ENABLE(distcheckfake,
-	--enable-distcheckfake    Enable running of distcheck,
+	AS_HELP_STRING([--enable-distcheckfake], [enable running of distcheck]),
 	[case "${enableval}" in
 		yes) distcheckfake=true ;;
 		no)  distcheckfake=false ;;
