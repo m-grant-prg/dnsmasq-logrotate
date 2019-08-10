@@ -102,6 +102,7 @@
 #				Ensure numerics use (( ... )).		#
 #				Replace #! env bash with absolute path	#
 #				via configure.				#
+# 10/08/2019	MG	1.0.7	Correct getopt CL for proper quoting.	#
 #									#
 #########################################################################
 
@@ -109,7 +110,7 @@
 # Script-wide variables #
 #########################
 readonly outputprefix="$(basename $0):"
-readonly version=1.0.6				# script version
+readonly version=1.0.7				# script version
 readonly packageversion=@pkgversion@		# package version
 
 readonly logrotatefile="@sysconfdir@/logrotate.d/dnsmasq"
@@ -212,8 +213,8 @@ proc_CL()
 	local tmpGETOPTTEMP
 
 	tmpGETOPTTEMP="getopt -o hpstvV --long help,post-rotate,setup,trace,"
-	tmpGETOPTTEMP+="verbose,version -n $0 -- $@"
-	GETOPTTEMP=$($tmpGETOPTTEMP)
+	tmpGETOPTTEMP+="verbose,version"
+	GETOPTTEMP=$($tmpGETOPTTEMP -n "$0" -- "$@")
 	std_cmd_err_handler $?
 
 	eval set -- "$GETOPTTEMP"
@@ -313,10 +314,10 @@ cmd_line_parse()
 	local msg
 
 	cmd="getopt -q -o 7:8:C:x: --long conf-dir:,log-facility:,conf-file:,"
-	cmd+="pid-file: -n $0 -- $@"
+	cmd+="pid-file:"
 	# No error checking of the following as errors expected (partial options
 	# specified).
-	GETOPTTEMP=$($cmd)
+	GETOPTTEMP=$($cmd -n "$0" -- "$@")
 
 	eval set -- "$GETOPTTEMP"
 	std_cmd_err_handler $?
@@ -510,7 +511,7 @@ proc_get_setup()
 
 	if [[ $cmd_line ]]; then
 		ps --no-headers -C dnsmasq -o pid  > $ps_pid_file
-		cmd_line_parse $cmd_line
+		cmd_line_parse "$cmd_line"
 	else
 		ps_pid_file=""
 	fi
