@@ -1,3 +1,16 @@
+2019-09-19 v1.0.10 Mark Grant <m.grant.prg@gmail.com>
+	*  travis: Reinstate default build environment
+	at: Update bootstrap.sh to v1.4.5
+	at: configure.ac: Correct ARG_ENABLE help text
+	at: configure.ac: Correct AC_MSG_NOTICE messages
+	at: configure.ac: Improve CLA comments at TOF
+	travis: Initial Travis CI build test setup
+	at: Fix make distcheck using enable-distcheckfake
+	README: Point bootstrap.sh part at acmbuild wiki
+	git: Update project root gitignore to v1.0.2
+	Correct getopt CL build WRT quoting
+	dnsmasq-postrotate.sh now at v1.0.7
+
 2019-04-18 v 1.0.9 Mark Grant <m.grant.prg@gmail.com>
 	*  README: Update AT installation procedure
 	Rewrite man page DESCRIPTION section
