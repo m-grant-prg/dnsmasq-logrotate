@@ -27,6 +27,7 @@
 #				[ -h || --help ] ||			#
 #				[ -H || --header-check ] ||		#
 #				[ -K || --check ] ||			#
+#				[ -p || --parallel-jobs ] ||		#
 #				[ -s || --sparse ] ||			#
 #				[ -t || --testing-hacks ] ||		#
 #				[ -T || --source-tarball ] ||		#
@@ -138,6 +139,12 @@
 # 25/06/2019	MG	1.4.5	Remove distcheckfake option. Now done	#
 #				by distcheck with configure flags in	#
 #				top level makefile.			#
+# 28/10/2019	MG	1.4.6	Move script_exit() before it is used.	#
+#				Cannot test for existence of file with	#
+#				a variable which has retained quotes,	#
+#				so introduce unquoted basedirunq.	#
+# 01/12/2019	MG	1.4.7	Add parallel jobs option to pass to	#
+#				make as --jobs				#
 #									#
 #########################################################################
 
@@ -146,8 +153,8 @@
 # Init variables #
 ##################
 
-readonly version=1.4.5			# set version variable
-readonly packageversion=1.3.6	# Version of the complete package
+readonly version=1.4.7			# set version variable
+readonly packageversion=1.3.9	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -159,13 +166,15 @@ dist=false
 distcheck=false
 gnulib=false
 headercheck=""
+par_jobs=""
 sparse=""
 tarball=false
 testinghacks=""
 verbose=false
 verboseconfig=" --enable-silent-rules=yes"
 verbosemake=" --quiet"
-basedir="."
+basedir="."			# Retain quotes
+basedirunq=$basedir		# Without retaining quotes
 configcli_extra_args=""
 
 
@@ -194,6 +203,9 @@ Usage:- acmbuild.sh / $0 [options] [-- configure options to pass on]
 	-h or --help displays usage information
 	-H or --header-check show include stack depth
 	-K or --check run make check
+	-p[X] or --parallel-jobs[=X] number of jobs to pass to make as --jobs=
+		If not specified make is sequential
+		If no value X is given then defaults to nproc
 	-s or --sparse build using sparse
 	-t or --testing-hacks some build changes may be required for testing
 		purposes. e.g. A script may invoke a project jar file which
@@ -219,6 +231,14 @@ output()
 	fi
 }
 
+# Standard function to tidy up and return exit code.
+# Parameters - 	$1 is the exit code.
+# No return value.
+script_exit()
+{
+	exit $1
+}
+
 # Standard function to test command error and exit if non-zero.
 # Parameters - 	$1 is the exit code, (normally $? from the preceeding command).
 # No return value.
@@ -227,14 +247,6 @@ std_cmd_err_handler()
 	if (( $1 )); then
 		script_exit $1
 	fi
-}
-
-# Standard function to tidy up and return exit code.
-# Parameters - 	$1 is the exit code.
-# No return value.
-script_exit()
-{
-	exit $1
 }
 
 # Standard trap exit function.
@@ -262,10 +274,10 @@ proc_CL()
 	local script_name="acmbuild.sh/bootstrap.sh"
 	local tmp
 
-	tmp="getopt -o abcCdDghHKstTvV "
+	tmp="getopt -o abcCdDghHKp::stTvV "
 	tmp+="--long at-only,build,check,config,distcheck,debug,dist,gnulib,"
-	tmp+="help,header-check,sparse,source-tarball,testing-hacks,verbose,"
-	tmp+="version"
+	tmp+="help,header-check,parallel-jobs::,sparse,source-tarball,"
+	tmp+="testing-hacks,verbose,version"
 	GETOPTTEMP=$($tmp -n "$script_name" -- "$@")
 	std_cmd_err_handler $?
 
@@ -328,6 +340,14 @@ proc_CL()
 		-H|--header-check)
 			headercheck=" --enable-headercheck=yes"
 			shift
+			;;
+		-p|--parallel-jobs)
+			if [[ -z "$2" ]]; then
+				par_jobs=" --jobs=$(nproc)"
+			else
+				par_jobs=" --jobs=$2"
+			fi
+			shift 2
 			;;
 		-K|--check)
 			if $distcheck || $dist || $tarball; then
@@ -401,6 +421,7 @@ proc_CL()
 	# original quoting. They can then be 'eval'ed.
 	if (( $# )); then
 		basedir=${1@Q}
+		basedirunq="$1"		# Unquoted version
 		shift
 		configcli_extra_args=" "${@@Q}
 	fi
@@ -415,7 +436,7 @@ proc_gnulib()
 	local msg
 	local status
 
-	if [[ -f $basedir/m4/gnulib-cache.m4 ]]; then
+	if [[ -f "$basedirunq/m4/gnulib-cache.m4" ]]; then
 		cmdline="gnulib-tool --update"$verbosemake$verbosemake
 		cmdline+=" --dir="$basedir
 		eval "$cmdline"
@@ -463,26 +484,26 @@ proc_make()
 	local status
 
 	if $build ; then
-		cmdline="make"$verbosemake
+		cmdline="make"$verbosemake$par_jobs
 	fi
 
 	if $check ; then
 		if [[ ! $cmdline ]]; then
-			cmdline="make"$verbosemake
+			cmdline="make"$verbosemake$par_jobs
 		fi
 		cmdline+=" check"
 	fi
 
 	if $distcheck ; then
-		cmdline="make"$verbosemake" distcheck clean"
+		cmdline="make"$verbosemake$par_jobs" distcheck clean"
 	fi
 
 	if $dist ; then
-		cmdline="make"$verbosemake" dist clean"
+		cmdline="make"$verbosemake$par_jobs" dist clean"
 	fi
 
 	if $tarball ; then
-		cmdline="make"$verbosemake" srctarball clean"
+		cmdline="make"$verbosemake$par_jobs" srctarball clean"
 	fi
 
 	# May get here with cmdline empty if, for example, only the -g option
