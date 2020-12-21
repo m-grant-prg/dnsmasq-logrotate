@@ -1,3 +1,11 @@
+2020-12-21 v1.0.11 Mark Grant <m.grant.prg@gmail.com>
+	*  at: lxcu: Add lxc test build setup
+	travis: Bionic is the new minimum release
+	at: README: Correct git command
+	at: Update bootstrap.sh to v1.4.7
+	bash: Move script_exit() before it is used
+	dnsmasq-postrotate.sh now at v1.0.8
+
 2019-09-19 v1.0.10 Mark Grant <m.grant.prg@gmail.com>
 	*  travis: Reinstate default build environment
 	at: Update bootstrap.sh to v1.4.5
