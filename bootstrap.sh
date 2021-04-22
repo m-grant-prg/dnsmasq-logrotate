@@ -9,7 +9,7 @@
 #########################################################################
 #									#
 # Script ID: bootstrap.sh						#
-# Author: Copyright (C) 2014-2019  Mark Grant				#
+# Author: Copyright (C) 2014-2019, 2021  Mark Grant			#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0					#
@@ -27,6 +27,7 @@
 #				[ -h || --help ] ||			#
 #				[ -H || --header-check ] ||		#
 #				[ -K || --check ] ||			#
+#				[ -m || --menu-config ] ||		#
 #				[ -p || --parallel-jobs ] ||		#
 #				[ -s || --sparse ] ||			#
 #				[ -t || --testing-hacks ] ||		#
@@ -145,6 +146,8 @@
 #				so introduce unquoted basedirunq.	#
 # 01/12/2019	MG	1.4.7	Add parallel jobs option to pass to	#
 #				make as --jobs				#
+# 14/04/2021	MG	1.4.8	Add menu-config option to invoke menu	#
+#				of configurable options.		#
 #									#
 #########################################################################
 
@@ -153,8 +156,8 @@
 # Init variables #
 ##################
 
-readonly version=1.4.7			# set version variable
-readonly packageversion=1.3.9	# Version of the complete package
+readonly version=1.4.8			# set version variable
+readonly packageversion=1.3.11	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -166,6 +169,7 @@ dist=false
 distcheck=false
 gnulib=false
 headercheck=""
+menuconfig=false
 par_jobs=""
 sparse=""
 tarball=false
@@ -203,6 +207,7 @@ Usage:- acmbuild.sh / $0 [options] [-- configure options to pass on]
 	-h or --help displays usage information
 	-H or --header-check show include stack depth
 	-K or --check run make check
+	-m or --menu-config Invoke menu of configurable options
 	-p[X] or --parallel-jobs[=X] number of jobs to pass to make as --jobs=
 		If not specified make is sequential
 		If no value X is given then defaults to nproc
@@ -274,10 +279,10 @@ proc_CL()
 	local script_name="acmbuild.sh/bootstrap.sh"
 	local tmp
 
-	tmp="getopt -o abcCdDghHKp::stTvV "
-	tmp+="--long at-only,build,check,config,distcheck,debug,dist,gnulib,"
-	tmp+="help,header-check,parallel-jobs::,sparse,source-tarball,"
-	tmp+="testing-hacks,verbose,version"
+	tmp="getopt -o abcCdDghHKmp::stTvV "
+	tmp+="--long at-only,build,check,config,distcheck,debug,dist,gnulib"
+	tmp+=",help,header-check,menu-config,parallel-jobs::,sparse"
+	tmp+=",source-tarball,testing-hacks,verbose,version"
 	GETOPTTEMP=$($tmp -n "$script_name" -- "$@")
 	std_cmd_err_handler $?
 
@@ -341,14 +346,6 @@ proc_CL()
 			headercheck=" --enable-headercheck=yes"
 			shift
 			;;
-		-p|--parallel-jobs)
-			if [[ -z "$2" ]]; then
-				par_jobs=" --jobs=$(nproc)"
-			else
-				par_jobs=" --jobs=$2"
-			fi
-			shift 2
-			;;
 		-K|--check)
 			if $distcheck || $dist || $tarball; then
 				msg="Options C, D, K and T are mutually "
@@ -358,6 +355,24 @@ proc_CL()
 			fi
 			check=true
 			shift
+			;;
+		-m|--menu-config)
+			which whiptail > /dev/null
+			status=$?
+			if (( $status != 0 )); then
+				output "Please first install whiptail." 1
+				script_exit 64
+			fi
+			menuconfig=true
+			shift
+			;;
+		-p|--parallel-jobs)
+			if [[ -z "$2" ]]; then
+				par_jobs=" --jobs=$(nproc)"
+			else
+				par_jobs=" --jobs=$2"
+			fi
+			shift 2
 			;;
 		-s|--sparse)
 			sparse=" --enable-sparse=yes"
@@ -414,6 +429,12 @@ proc_CL()
 		script_exit 64
 	fi
 
+	# menu-config can only be selected with config
+	if $menuconfig && ! $config; then
+		output "Option c must be selected with option m." 1
+		script_exit 64
+	fi
+
 	# First non-option argument which is not an option argument is the base
 	# directory, all others are passed straight to the configure command
 	# line, (to support things like  --prefix=... etc). Both of these need
@@ -423,7 +444,7 @@ proc_CL()
 		basedir=${1@Q}
 		basedirunq="$1"		# Unquoted version
 		shift
-		configcli_extra_args=" "${@@Q}
+		configcli_extra_args+=" "${@@Q}
 	fi
 }
 
@@ -448,6 +469,25 @@ proc_gnulib()
 		msg+="missing $basedir/m4/gnulib-cache.m4"
 		output "$msg" 0
 	fi
+}
+
+# Process the configurable options menu
+# No parameters
+# No return value
+proc_menuconfig()
+{
+	local msg
+
+	if [[ ! -f $basedirunq/configurable-options.sh \
+		|| ! -r $basedirunq/configurable-options.sh \
+		|| ! -x $basedirunq/configurable-options.sh ]]; then
+		msg="The script configurable-options.sh must; exist in the"
+		msg+=" project root directory, be readable and be executable."
+		output "$msg" 1
+		script_exit 77
+	fi
+	configcli_extra_args+=$($basedirunq/configurable-options.sh)
+	std_cmd_err_handler $?
 }
 
 # Process configure
@@ -531,6 +571,10 @@ exec 1> >(tee build-output.txt) 2>&1
 # Now the main processing.
 if $gnulib ; then
 	proc_gnulib
+fi
+
+if $menuconfig; then
+	proc_menuconfig
 fi
 
 if $config ; then
