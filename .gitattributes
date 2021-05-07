@@ -1,0 +1,8 @@
+*.c	diff=cpp
+*.h	diff=cpp
+*.html	diff=html
+*.java	diff=java
+*.md	diff=markdown
+*.sh	diff=bash
+*.sh.in	diff=bash
+
