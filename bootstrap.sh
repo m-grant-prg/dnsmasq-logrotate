@@ -148,6 +148,11 @@
 #				make as --jobs				#
 # 14/04/2021	MG	1.4.8	Add menu-config option to invoke menu	#
 #				of configurable options.		#
+# 28/05/2021	MG	1.4.9	Process menuconfig before using tee for	#
+#				the build log as menuconfig may involve	#
+#				dialog and redirection.			#
+#				Use a temporary file to get result back	#
+#				from configurable-options.sh		#
 #									#
 #########################################################################
 
@@ -156,8 +161,8 @@
 # Init variables #
 ##################
 
-readonly version=1.4.8			# set version variable
-readonly packageversion=1.3.11	# Version of the complete package
+readonly version=1.4.9			# set version variable
+readonly packageversion=1.3.12	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -477,6 +482,7 @@ proc_gnulib()
 proc_menuconfig()
 {
 	local msg
+	local readonly tmp_file=/tmp/$$.$(basename $0).tmp
 
 	if [[ ! -f $basedirunq/configurable-options.sh \
 		|| ! -r $basedirunq/configurable-options.sh \
@@ -486,7 +492,11 @@ proc_menuconfig()
 		output "$msg" 1
 		script_exit 77
 	fi
-	configcli_extra_args+=$($basedirunq/configurable-options.sh)
+	$basedirunq/configurable-options.sh $tmp_file
+	std_cmd_err_handler $?
+	configcli_extra_args+=$(cat < $tmp_file)
+	std_cmd_err_handler $?
+	rm -f $tmp_file
 	std_cmd_err_handler $?
 }
 
@@ -565,16 +575,16 @@ proc_make()
 
 proc_CL "$@"
 
-# Create build log.
-exec 1> >(tee build-output.txt) 2>&1
-
 # Now the main processing.
-if $gnulib ; then
-	proc_gnulib
-fi
-
 if $menuconfig; then
 	proc_menuconfig
+fi
+
+# Create build log after menuconfig which may use dialog and redirections.
+exec 1> >(tee build-output.txt) 2>&1
+
+if $gnulib ; then
+	proc_gnulib
 fi
 
 if $config ; then
