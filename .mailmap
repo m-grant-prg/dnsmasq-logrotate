@@ -1,7 +1,27 @@
-#
-# For format details, see "MAPPING AUTHORS" in "man git-shortlog".
-#
-# Please keep this list dictionary sorted.
-#
+#########################################################################
+#									#
+# File ID: ./.mailmap							#
+# Author: Copyright (C) 2021  Mark Grant				#
+#									#
+# Released under the GPLv3 only.					#
+# SPDX-License-Identifier: GPL-3.0					#
+#									#
+# N.B.									#
+# For format details, see "MAPPING AUTHORS" in "man git-shortlog".	#
+#									#
+# Please keep this list dictionary sorted.				#
+#									#
+#########################################################################
+
+#########################################################################
+#									#
+# Changelog								#
+#									#
+# Date		Author	Version	Description				#
+#									#
+# 02/11/2021	MG	1.0.1	First versioned release.		#
+#									#
+#########################################################################
+
 Mark Grant <m.grant.prg@gmail.com> <m.grant.prg.01@gmail.com>
 
