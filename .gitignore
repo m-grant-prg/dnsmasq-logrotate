@@ -30,6 +30,7 @@
 #				Refine AutoTools section.		#
 # 27/09/2021	MG	1.0.4	Add exclusion of tags temporary files.	#
 # 28/09/2021	MG	1.0.5	Add exclusion of .bak files.		#
+# 02/11/2021	MG	1.0.6	Create editor section and add .vimrc	#
 #									#
 #########################################################################
 
@@ -62,7 +63,6 @@ test-driver
 # Backup Files
 **/*~
 **/*.bak
-**/*.swp
 
 # C Extras
 **/cscope.*
@@ -70,6 +70,10 @@ test-driver
 # Ctags
 **/tags
 **/tags.*
+
+# Editors
+**/*.swp
+**/*.vimrc
 
 # General
 **/*.log
