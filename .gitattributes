@@ -1,3 +1,23 @@
+#########################################################################
+#									#
+# File ID: ./.gitattributes						#
+# Author: Copyright (C) 2021  Mark Grant				#
+#									#
+# Released under the GPLv3 only.					#
+# SPDX-License-Identifier: GPL-3.0					#
+#									#
+#########################################################################
+
+#########################################################################
+#									#
+# Changelog								#
+#									#
+# Date		Author	Version	Description				#
+#									#
+# 02/11/2021	MG	1.0.1	First versioned  release.		#
+#									#
+#########################################################################
+
 *.c	diff=cpp
 *.h	diff=cpp
 *.html	diff=html
