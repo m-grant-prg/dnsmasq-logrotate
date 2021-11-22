@@ -19,6 +19,8 @@
 # Date		Author	Version	Description				#
 #									#
 # 27/02/2021	MG	1.0.1	Initial release.                        #
+# 22/11/2021    MG      1.0.2   Get tags as needed for git-enhanced     #
+#                               AC_INIT.                                #
 #									#
 #########################################################################
 
@@ -38,6 +40,8 @@ jobs:
     steps:
       # Check-out the repository under $GITHUB_WORKSPACE.
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Get all incl tags, needed for git-enhanced AC_INIT
 
       - name: Add the extra PPA
         run: sudo add-apt-repository ppa:m-grant-prg/utils -y
