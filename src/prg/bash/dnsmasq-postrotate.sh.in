@@ -9,10 +9,10 @@
 #########################################################################
 #									#
 # Script ID: dnsmasq-postrotate.sh					#
-# Author: Copyright (C) 2018-2019  Mark Grant				#
+# Author: Copyright (C) 2018-2019, 2021  Mark Grant			#
 #									#
 # Released under the GPLv3 only.					#
-# SPDX-License-Identifier: GPL-3.0					#
+# SPDX-License-Identifier: GPL-3.0-only					#
 #									#
 # Purpose:								#
 # To ask the daemon to re-open it's log file which is necessary after	#
@@ -104,6 +104,7 @@
 #				via configure.				#
 # 10/08/2019	MG	1.0.7	Correct getopt CL for proper quoting.	#
 # 11/10/2019	MG	1.0.8	Move script_exit() before it is used.	#
+# 22/11/2021	MG	1.0.9	Tighten SPDX tag.			#
 #									#
 #########################################################################
 
@@ -111,7 +112,7 @@
 # Script-wide variables #
 #########################
 readonly outputprefix="$(basename $0):"
-readonly version=1.0.8				# script version
+readonly version=1.0.9				# script version
 readonly packageversion=@pkgversion@		# package version
 
 readonly logrotatefile="@sysconfdir@/logrotate.d/dnsmasq"

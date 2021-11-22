@@ -4,7 +4,7 @@
 # Author: Copyright (C) 2018-2021  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
-# SPDX-License-Identifier: GPL-3.0					#
+# SPDX-License-Identifier: GPL-3.0-only					#
 #									#
 # Purpose:								#
 # AutoConf script file to configure dnsmasq-logrotate project.		#
@@ -61,6 +61,7 @@
 # 22/11/2021	MG	1.0.6	If git is available and we are inside a	#
 #				git tree then use git describe to add	#
 #				further package version information.	#
+#				Tighten SPDX tag.			#
 #									#
 #########################################################################
 

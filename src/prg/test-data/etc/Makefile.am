@@ -1,10 +1,10 @@
 #########################################################################
 #									#
 # Script ID: src/prg/test-data/etc/Makefile.am				#
-# Author: Copyright (C) 2019  Mark Grant				#
+# Author: Copyright (C) 2019, 2021  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
-# SPDX-License-Identifier: GPL-3.0					#
+# SPDX-License-Identifier: GPL-3.0-only					#
 #									#
 # Purpose:								#
 # AutoMake script file to generate dnsmasq-logrotate test-data.		#
@@ -19,6 +19,7 @@
 #									#
 # 03/04/2019	MG	1.0.1	First release.				#
 #				Remove shebang.				#
+# 22/11/2021	MG	1.0.2	Tighten SPDX tag.			#
 #									#
 #########################################################################
 

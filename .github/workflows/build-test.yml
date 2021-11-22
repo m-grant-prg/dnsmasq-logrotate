@@ -4,7 +4,7 @@
 # Author: Copyright (C) 2021  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
-# SPDX-License-Identifier: GPL-3.0					#
+# SPDX-License-Identifier: GPL-3.0-only					#
 #									#
 # Purpose:								#
 # Configuration file for GitHub Actions build tests. Perform a standard #
@@ -21,6 +21,7 @@
 # 27/02/2021	MG	1.0.1	Initial release.                        #
 # 22/11/2021    MG      1.0.2   Get tags as needed for git-enhanced     #
 #                               AC_INIT.                                #
+#                               Tighten SPDX tag.                       #
 #									#
 #########################################################################
 

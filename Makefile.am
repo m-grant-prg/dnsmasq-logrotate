@@ -4,7 +4,7 @@
 # Author: Copyright (C) 2018-2019, 2021  Mark Grant			#
 #									#
 # Released under the GPLv3 only.					#
-# SPDX-License-Identifier: GPL-3.0					#
+# SPDX-License-Identifier: GPL-3.0-only					#
 #									#
 # Purpose:								#
 # AutoMake script file to generate dnsmasq-logrotate project.		#
@@ -36,6 +36,7 @@
 #				so set the configure flags to be used	#
 #				by make distcheck.			#
 # 08/11/2021	MG	1.0.6	Add misc directory to DIST.		#
+# 22/11/2021	MG	1.0.7	Tighten SPDX tag.			#
 #									#
 #########################################################################
 
