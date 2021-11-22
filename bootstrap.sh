@@ -12,7 +12,7 @@
 # Author: Copyright (C) 2014-2019, 2021  Mark Grant			#
 #									#
 # Released under the GPLv3 only.					#
-# SPDX-License-Identifier: GPL-3.0					#
+# SPDX-License-Identifier: GPL-3.0-only					#
 #									#
 # Purpose:								#
 # To simplify the AutoTools distribution build.				#
@@ -153,6 +153,7 @@
 #				dialog and redirection.			#
 #				Use a temporary file to get result back	#
 #				from configurable-options.sh		#
+# 21/11/2021	MG	1.4.10	Tighten SPDX tag.			#
 #									#
 #########################################################################
 
@@ -161,8 +162,8 @@
 # Init variables #
 ##################
 
-readonly version=1.4.9			# set version variable
-readonly packageversion=1.3.12	# Version of the complete package
+readonly version=1.4.10			# set version variable
+readonly packageversion=1.3.13	# Version of the complete package
 
 # Set defaults
 atonly=""
