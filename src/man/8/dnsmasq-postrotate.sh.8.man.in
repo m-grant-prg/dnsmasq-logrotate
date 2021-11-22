@@ -3,13 +3,25 @@ dnsmasq-postrotate.sh - postrotate script for dnsmasq
 SYNOPSIS
 dnsmasq-postrotate.sh [OPTION]
 DESCRIPTION
-The dnsmasq-postrotate.sh script has two functions; a setup function and a post-rotate function.
+The dnsmasq-postrotate.sh script has two functions; a setup function and a
+post-rotate function.
 
-Running dnsmasq-postrotate.sh with the --setup option interrogates the dnsmasq configuration and command line to locate the log file and write this location in the logrotate control file. This is run during the package installation and should be run after configuration changes to dnsmasq.
+Running dnsmasq-postrotate.sh with the --setup option interrogates the dnsmasq
+configuration and command line to locate the log file and write this location in
+the logrotate control file. This is run during the package installation and
+should be run after configuration changes to dnsmasq.
 
-In normal day-to-day operation after logrotate has rotated the log file dnsmasq-postrotate.sh is run with the --post-rotate option whereby SIGUSR1 and SIGUSR2 are sent to dnsmasq to ask it to dump stats to the log file and to close and reopen it's log file.
+In normal day-to-day operation after logrotate has rotated the log file
+dnsmasq-postrotate.sh is run with the --post-rotate option whereby SIGUSR1 and
+SIGUSR2 are sent to dnsmasq to ask it to dump stats to the log file and to close
+and reopen it's log file.
 
-During setup the script must determine the log file location and during post-rotate the script must determine the dnsmasq pid file. The two file locations can be specified to dnsmasq with the log-facility and pid-file options. These can be provided via a configuration file or on the command line. Configuration files can be nested via the conf-file and / or conf-dir options. The logic for finding these directives is as follows:-
+During setup the script must determine the log file location and during
+post-rotate the script must determine the dnsmasq pid file. The two file
+locations can be specified to dnsmasq with the log-facility and pid-file
+options. These can be provided via a configuration file or on the command line.
+Configuration files can be nested via the conf-file and / or conf-dir options.
+The logic for finding these directives is as follows:-
 
 	a)	Configuration files are processed sequentially and in the
 		order they are found.
