@@ -4,7 +4,7 @@
 # Author: Copyright (C) 2015-2019, 2021  Mark Grant			#
 #									#
 # Released under the GPLv3 only.					#
-# SPDX-License-Identifier: GPL-3.0					#
+# SPDX-License-Identifier: GPL-3.0-only					#
 #									#
 # N.B.									#
 # If a file pattern to be ignored can only exist in a specific		#
@@ -31,6 +31,7 @@
 # 27/09/2021	MG	1.0.4	Add exclusion of tags temporary files.	#
 # 28/09/2021	MG	1.0.5	Add exclusion of .bak files.		#
 # 02/11/2021	MG	1.0.6	Create editor section and add .vimrc	#
+# 21/11/2021	MG	1.0.7	Tighten SPDX tag.			#
 #									#
 #########################################################################
 
