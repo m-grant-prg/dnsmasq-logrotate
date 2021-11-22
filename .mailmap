@@ -4,7 +4,7 @@
 # Author: Copyright (C) 2021  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
-# SPDX-License-Identifier: GPL-3.0					#
+# SPDX-License-Identifier: GPL-3.0-only					#
 #									#
 # N.B.									#
 # For format details, see "MAPPING AUTHORS" in "man git-shortlog".	#
@@ -20,6 +20,7 @@
 # Date		Author	Version	Description				#
 #									#
 # 02/11/2021	MG	1.0.1	First versioned release.		#
+# 21/11/2021	MG	1.0.2	Tighten SPDX tag.			#
 #									#
 #########################################################################
 
