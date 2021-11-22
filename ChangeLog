@@ -1,3 +1,13 @@
+2021-11-22 v1.0.13 Mark Grant <m.grant.prg@gmail.com>
+	* man: Correct source formatting
+      at: Add AC_COPYRIGHT macro
+      all: Tighten SPDX tags
+      at: Upgrade bootstrap.sh to v1.4.10
+      git: Update mailmap to v1.0.2
+      git: Update gitignore to v1.0.7
+      git: Update gitattributes to v1.0.2
+      at: Use git to enhance package version
+
 2021-11-08 v1.0.12 Mark Grant <m.grant.prg@gmail.com>
 	* at: Add misc directory to DIST
 	lxcu: Add openSUSE
