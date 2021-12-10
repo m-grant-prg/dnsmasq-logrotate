@@ -16,6 +16,8 @@
 #									#
 # 02/11/2021	MG	1.0.1	First versioned  release.		#
 # 21/11/2021	MG	1.0.2	Tighten SPDX tag.			#
+# 30/11/2021	MG	1.0.3	Ignore some Java and NetBeans files for	#
+#				a git archive command.			#
 #									#
 #########################################################################
 
@@ -26,4 +28,11 @@
 *.md	diff=markdown
 *.sh	diff=bash
 *.sh.in	diff=bash
+
+# Specify Files and directories to ignore from a git archive command.
+# Java and NetBeans
+**/nbproject		export-ignore
+manifest.mf		export-ignore
+credisttar		export-ignore
+build.xml		export-ignore
 
