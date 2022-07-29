@@ -9,7 +9,7 @@
 #########################################################################
 #									#
 # Script ID: bootstrap.sh						#
-# Author: Copyright (C) 2014-2019, 2021  Mark Grant			#
+# Author: Copyright (C) 2014-2019, 2021, 2022  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -18,6 +18,7 @@
 # To simplify the AutoTools distribution build.				#
 #									#
 # Syntax:	bootstrap.sh	[ -a || --at-only ] ||			#
+#				[ -A || --analyzer ] ||			#
 #				[ -b || --build ] ||			#
 #				[ -c || --config ] ||			#
 #				[ -C || --distcheck ] ||		#
@@ -154,6 +155,7 @@
 #				Use a temporary file to get result back	#
 #				from configurable-options.sh		#
 # 21/11/2021	MG	1.4.10	Tighten SPDX tag.			#
+# 07/06/2022	MG	1.5.1	Add compiler option -A --analyzer.	#
 #									#
 #########################################################################
 
@@ -162,11 +164,12 @@
 # Init variables #
 ##################
 
-readonly version=1.4.10			# set version variable
-readonly packageversion=1.3.13	# Version of the complete package
+readonly version=1.5.1			# set version variable
+readonly packageversion=1.4.1	# Version of the complete package
 
 # Set defaults
 atonly=""
+analyzer=""
 build=false
 check=false
 config=false
@@ -204,6 +207,7 @@ Usage:- acmbuild.sh / $0 [options] [-- configure options to pass on]
 		Java jar in datadir but in AT builds and installations this
 		may expand to /usr/local/share... So a substitution is required
 		for this scenario.
+	-A or --analyzer enable compiler analyzer output
 	-b or --build make the project
 	-c or --config congigure the project
 	-C or --distcheck perform normal distcheck
@@ -285,9 +289,9 @@ proc_CL()
 	local script_name="acmbuild.sh/bootstrap.sh"
 	local tmp
 
-	tmp="getopt -o abcCdDghHKmp::stTvV "
-	tmp+="--long at-only,build,check,config,distcheck,debug,dist,gnulib"
-	tmp+=",help,header-check,menu-config,parallel-jobs::,sparse"
+	tmp="getopt -o aAbcCdDghHKmp::stTvV "
+	tmp+="--long at-only,analyzer,build,check,config,distcheck,debug,dist"
+	tmp+=",gnulib,help,header-check,menu-config,parallel-jobs::,sparse"
 	tmp+=",source-tarball,testing-hacks,verbose,version"
 	GETOPTTEMP=$($tmp -n "$script_name" -- "$@")
 	std_cmd_err_handler $?
@@ -299,6 +303,10 @@ proc_CL()
 		case "$1" in
 		-a|--at-only)
 			atonly=" --enable-atonly=yes"
+			shift
+			;;
+		-A|--analyzer)
+			analyzer=" --enable-analyzer=yes"
 			shift
 			;;
 		-b|--build)
@@ -419,10 +427,10 @@ proc_CL()
 		esac
 	done
 
-	if [[ $atonly || $debug || $headercheck || $sparse || $testinghacks ]] \
-		|| $verbose ; then
+	if [[ $atonly || $analyzer || $debug || $headercheck || $sparse \
+		|| $testinghacks ]] || $verbose ; then
 		if ! $config ; then
-			msg="Options a, d, H, s, t and v require option c."
+			msg="Options a, A, d, H, s, t and v require option c."
 			output "$msg" 1
 			script_exit 64
 		fi
@@ -518,7 +526,7 @@ proc_config()
 	std_cmd_err_handler $status
 
 	cmdline="$basedir/configure$configcli_extra_args$verboseconfig"
-	cmdline+="$atonly$debug$headercheck$sparse$testinghacks"
+	cmdline+="$atonly$analyzer$debug$headercheck$sparse$testinghacks"
 
 	eval "$cmdline"
 	status=$?
