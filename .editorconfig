@@ -1,0 +1,46 @@
+#########################################################################
+#									#
+# File ID: ./.editorconfig						#
+# Author: Copyright (C) 2022  Mark Grant				#
+#									#
+# Released under the GPLv3 only.					#
+# SPDX-License-Identifier: GPL-3.0-only					#
+#									#
+#########################################################################
+
+#########################################################################
+#									#
+# Changelog								#
+#									#
+# Date		Author	Version	Description				#
+#									#
+# 09/08/2022	MG	1.0.1	Initial version.			#
+# 09/08/2022	MG	1.0.2	Add YAML.				#
+# 09/08/2022	MG	1.0.3	Add trim_trailing_whitespace.		#
+#									#
+#########################################################################
+
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# If clang-format is used then values for .c and .h files must agree both here
+# and in .clang-format.
+indent_style = tab
+tab_width = 8
+
+[*.{py,py.in}]
+indent_style = space
+indent_size = 4
+
+[*.{yml,yml.in}]
+indent_style = space
+indent_size = 2
+
+[COMMIT_EDITMSG]
+max_line_length = 72
