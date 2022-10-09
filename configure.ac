@@ -63,6 +63,7 @@
 #				further package version information.	#
 #				Tighten SPDX tag.			#
 #				Add AC_COPYRIGHT macro.			#
+# 09/10/2022	MG	1.0.7	Use AC MSG CHECKING where appropriate.	#
 #									#
 #########################################################################
 
@@ -77,7 +78,7 @@ AC_COPYRIGHT([Copyright (C) 2018-2021  Mark Grant
 	      This script is free to copy or distribute under the terms set out
 	      in the package license. See COPYING for details.])
 
-AC_REVISION([$Revision: 1.0.6 $])
+AC_REVISION([$Revision: 1.0.7 $])
 
 AC_PREREQ([2.69])
 
@@ -153,12 +154,13 @@ AC_ARG_ENABLE(distcheckfake,
 	esac],distcheckfake=false)
 AM_CONDITIONAL(DISTCHECKFAKE, test x$distcheckfake = xtrue)
 
+AC_MSG_CHECKING([whether to use workarounds to facilitate distcheck])
 if test "x${distcheckfake}" = xtrue; then
 	AC_SUBST(logrotateloc, "$sysconfdir/logrotate.d")
-	AC_MSG_NOTICE(using substitute paths to facilitate distcheck)
+	AC_MSG_RESULT([yes])
 else
 	AC_SUBST(logrotateloc, "/etc/logrotate.d")
-	AC_MSG_NOTICE(using distcheck incompatible absolute based paths)
+	AC_MSG_RESULT([no])
 fi
 
 
