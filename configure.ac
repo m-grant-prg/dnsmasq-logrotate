@@ -64,6 +64,8 @@
 #				Tighten SPDX tag.			#
 #				Add AC_COPYRIGHT macro.			#
 # 09/10/2022	MG	1.0.7	Use AC MSG CHECKING where appropriate.	#
+#				Separate AutoTools generated files from	#
+#				project root.				#
 #									#
 #########################################################################
 
@@ -108,6 +110,9 @@ AC_INIT([Logrotate for dnsmasq], m4_esyscmd([ \
 AC_MSG_NOTICE(initialisation and setup)
 
 AC_SUBST(pkgversion, $PACKAGE_VERSION)
+
+# Separate AutoTools generated files from project root.
+AC_CONFIG_AUX_DIR([build-aux])
 
 #
 # Passes the options to all am files. Puts objects in the sub-directory
