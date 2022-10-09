@@ -22,11 +22,13 @@
 #				[ -b || --build ] ||			#
 #				[ -c || --config ] ||			#
 #				[ -C || --distcheck ] ||		#
+#				[       --CC] ||			#
 #				[ -d || --debug ] ||			#
 #				[ -D || --dist ] ||			#
 #				[ -g || --gnulib ] ||			#
 #				[ -h || --help ] ||			#
 #				[ -H || --header-check ] ||		#
+#				[ -i || --iwyu ] ||			#
 #				[ -K || --check ] ||			#
 #				[ -m || --menu-config ] ||		#
 #				[ -p || --parallel-jobs ] ||		#
@@ -156,6 +158,12 @@
 #				from configurable-options.sh		#
 # 21/11/2021	MG	1.4.10	Tighten SPDX tag.			#
 # 07/06/2022	MG	1.5.1	Add compiler option -A --analyzer.	#
+# 28/08/2022	MG	1.5.2	Add --CC option for compiler. Same as	#
+#				bootstrap.sh -c . -- CC=clang		#
+#				Add option for include-what-you-use.	#
+# 30/08/2022	MG	1.5.3	Allow --CC to be specified alongside -i.#
+# 06/09/2022	MG	1.5.4	Add missing $verbosemake to iwyu make	#
+#				CL.					#
 #									#
 #########################################################################
 
@@ -164,13 +172,14 @@
 # Init variables #
 ##################
 
-readonly version=1.5.1			# set version variable
-readonly packageversion=1.4.1	# Version of the complete package
+readonly version=1.5.4			# set version variable
+readonly packageversion=1.4.4	# Version of the complete package
 
 # Set defaults
 atonly=""
 analyzer=""
 build=false
+cc=""
 check=false
 config=false
 debug=""
@@ -178,6 +187,7 @@ dist=false
 distcheck=false
 gnulib=false
 headercheck=""
+iwyu=false
 menuconfig=false
 par_jobs=""
 sparse=""
@@ -211,11 +221,13 @@ Usage:- acmbuild.sh / $0 [options] [-- configure options to pass on]
 	-b or --build make the project
 	-c or --config congigure the project
 	-C or --distcheck perform normal distcheck
+	      --CC=compiler Compiler to use, eg gcc, clang etc
 	-d or --debug build with appropriate debug flags
 	-D or --dist perform a make dist
 	-g or --gnulib run gnulib-tool --update
 	-h or --help displays usage information
 	-H or --header-check show include stack depth
+	-i or --iwyu Use clang's include-what-you-use
 	-K or --check run make check
 	-m or --menu-config Invoke menu of configurable options
 	-p[X] or --parallel-jobs[=X] number of jobs to pass to make as --jobs=
@@ -289,10 +301,10 @@ proc_CL()
 	local script_name="acmbuild.sh/bootstrap.sh"
 	local tmp
 
-	tmp="getopt -o aAbcCdDghHKmp::stTvV "
-	tmp+="--long at-only,analyzer,build,check,config,distcheck,debug,dist"
-	tmp+=",gnulib,help,header-check,menu-config,parallel-jobs::,sparse"
-	tmp+=",source-tarball,testing-hacks,verbose,version"
+	tmp="getopt -o aAbcCdDghHiKmp::stTvV "
+	tmp+="--long at-only,analyzer,build,CC:,check,config,distcheck,debug"
+	tmp+=",dist,gnulib,help,header-check,iwyu,menu-config,parallel-jobs::"
+	tmp+=",sparse,source-tarball,testing-hacks,verbose,version"
 	GETOPTTEMP=$($tmp -n "$script_name" -- "$@")
 	std_cmd_err_handler $?
 
@@ -333,6 +345,10 @@ proc_CL()
 			distcheck=true
 			shift
 			;;
+		--CC)
+			cc=" CC=$2"
+			shift 2
+			;;
 		-d|--debug)
 			debug=" --enable-debug=yes"
 			shift
@@ -358,6 +374,10 @@ proc_CL()
 			;;
 		-H|--header-check)
 			headercheck=" --enable-headercheck=yes"
+			shift
+			;;
+		-i| --iwyu)
+			iwyu=true
 			shift
 			;;
 		-K|--check)
@@ -427,19 +447,39 @@ proc_CL()
 		esac
 	done
 
-	if [[ $atonly || $analyzer || $debug || $headercheck || $sparse \
-		|| $testinghacks ]] || $verbose ; then
+	if [[ $atonly || $analyzer || $cc || $debug || $headercheck \
+		|| $sparse || $testinghacks ]] || $verbose ; then
 		if ! $config ; then
-			msg="Options a, A, d, H, s, t and v require option c."
+			msg="Options a, A, CC, d, H, s, t and v require"
+			msg+=" option c."
 			output "$msg" 1
 			script_exit 64
 		fi
 	fi
 
+	# include-what-you-use cannot be used with a number of other options.
+	if [[ $atonly || $analyzer || $debug || $headercheck || $sparse \
+		|| $testinghacks ]] || $build || $check || $dist || $distcheck \
+		|| $gnulib || $menuconfig || $tarball || $verbose ; then
+		if $iwyu ; then
+			msg="Options a, A, b, C, d, D, g, H, k, m, s, t, T and"
+			msg+=" v cannot be used with option i"
+			output "$msg" 1
+			script_exit 64
+		fi
+	fi
+
+	# Sparse and CC conflict, both setting the CC variable.
+	if [[ $cc && $sparse ]]; then
+		msg="Options CC and s are mutually exclusive."
+		output "$msg" 1
+		script_exit 64
+	fi
+
 	# One option has to be selected.
 	if ! $build && ! $check && ! $config && ! $distcheck && ! $dist \
-		&& ! $gnulib && ! $tarball ; then
-		output "Either b, c, C, D, g, K or T must be set." 1
+		&& ! $gnulib && ! $iwyu && ! $tarball ; then
+		output "Either b, c, C, D, g, i, K or T must be set." 1
 		script_exit 64
 	fi
 
@@ -525,7 +565,7 @@ proc_config()
 	output "$msg" $status
 	std_cmd_err_handler $status
 
-	cmdline="$basedir/configure$configcli_extra_args$verboseconfig"
+	cmdline="$basedir/configure$cc$configcli_extra_args$verboseconfig"
 	cmdline+="$atonly$analyzer$debug$headercheck$sparse$testinghacks"
 
 	eval "$cmdline"
@@ -559,6 +599,11 @@ proc_make()
 
 	if $dist ; then
 		cmdline="make"$verbosemake$par_jobs" dist clean"
+	fi
+
+	if $iwyu ; then
+		cmdline="make"$verbosemake$par_jobs" -k"
+		cmdline+=" CC=include-what-you-use"
 	fi
 
 	if $tarball ; then
