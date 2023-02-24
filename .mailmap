@@ -1,7 +1,11 @@
 #########################################################################
 #									#
 # File ID: ./.mailmap							#
-# Author: Copyright (C) 2021  Mark Grant				#
+# Author: Copyright (C) 2021, 2023  Mark Grant				#
+#									#
+# This file is maintained in the project at:-				#
+#	https://github.com/m-grant-prg/project-misc			#
+#		new versions are merely copied to consumer projects.	#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -21,6 +25,8 @@
 #									#
 # 02/11/2021	MG	1.0.1	First versioned release.		#
 # 21/11/2021	MG	1.0.2	Tighten SPDX tag.			#
+# 23/02/2023	MG	1.0.3	Add a comment that this file is		#
+#				maintained in another project.		#
 #									#
 #########################################################################
 
