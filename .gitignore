@@ -1,7 +1,11 @@
 #########################################################################
 #									#
 # File ID: ./.gitignore							#
-# Author: Copyright (C) 2015-2019, 2021, 2022  Mark Grant		#
+# Author: Copyright (C) 2015-2019, 2021-2023  Mark Grant		#
+#									#
+# This file is maintained in the project at:-				#
+#	https://github.com/m-grant-prg/project-misc			#
+#		new versions are merely copied to consumer projects.	#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -35,6 +39,9 @@
 # 18/08/2022	MG	1.0.8	Remove local vimrc exclusion.		#
 # 04/10/2022	MG	1.0.9	Exclude build-aux directory. Used by	#
 #				AC_CONFIG_AUX_DIR.			#
+# 03/01/2023	MG	1.0.10	Add *.tmp files.			#
+# 23/02/2023	MG	1.0.11	Add a comment that this file is		#
+#				maintained in another project.		#
 #									#
 #########################################################################
 
@@ -82,6 +89,7 @@ test-driver
 # General
 **/*.log
 **/*.tar.gz
+**/*.tmp
 **/patches
 
 # Java Extras
