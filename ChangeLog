@@ -1,12 +1,27 @@
+2023-08-02 v1.1.1 Mark Grant <m.grant.prg@gmail.com>
+	* at: Add support for ~ in version number
+	lxcu: Remove txt2man, rely on txt2manwrap dependencies
+	lxcu: Add in-file help text
+	at: Upgrade bootstrap.sh to v1.5.6
+	actions: Remove txt2man, rely on txt2manwrap dependencies
+	actions: Run on jammy
+	git: Update mailmap to v1.0.3
+	git: Update gitignore to v1.0.11
+	git: Update gitattributes to v1.0.4
+	editors: Update editorconfig to v1.0.4
+	at: Correct Copyright dates
+	at: Use AC_CONFIG_AUX_DIR
+	at: Use AC_MSG_CHECKING where appropriate
+
 2021-11-22 v1.0.13 Mark Grant <m.grant.prg@gmail.com>
 	* man: Correct source formatting
-      at: Add AC_COPYRIGHT macro
-      all: Tighten SPDX tags
-      at: Upgrade bootstrap.sh to v1.4.10
-      git: Update mailmap to v1.0.2
-      git: Update gitignore to v1.0.7
-      git: Update gitattributes to v1.0.2
-      at: Use git to enhance package version
+	at: Add AC_COPYRIGHT macro
+	all: Tighten SPDX tags
+	at: Upgrade bootstrap.sh to v1.4.10
+	git: Update mailmap to v1.0.2
+	git: Update gitignore to v1.0.7
+	git: Update gitattributes to v1.0.2
+	at: Use git to enhance package version
 
 2021-11-08 v1.0.12 Mark Grant <m.grant.prg@gmail.com>
 	* at: Add misc directory to DIST
