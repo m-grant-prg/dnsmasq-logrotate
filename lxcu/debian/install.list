@@ -1,3 +1,6 @@
+# This file should contain packages required to satisfy the Build-Depends of
+# this package.
+
 autoconf automake autotools-dev
 txt2man txt2manwrap
 
