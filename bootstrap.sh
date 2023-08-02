@@ -9,7 +9,7 @@
 #########################################################################
 #									#
 # Script ID: bootstrap.sh						#
-# Author: Copyright (C) 2014-2019, 2021, 2022  Mark Grant		#
+# Author: Copyright (C) 2014-2019, 2021-2023  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -33,6 +33,7 @@
 #				[ -m || --menu-config ] ||		#
 #				[ -p || --parallel-jobs ] ||		#
 #				[ -s || --sparse ] ||			#
+#				[ -S || --scan-build ] ||		#
 #				[ -t || --testing-hacks ] ||		#
 #				[ -T || --source-tarball ] ||		#
 #				[ -v || --verbose ] ||			#
@@ -164,6 +165,14 @@
 # 30/08/2022	MG	1.5.3	Allow --CC to be specified alongside -i.#
 # 06/09/2022	MG	1.5.4	Add missing $verbosemake to iwyu make	#
 #				CL.					#
+# 05/03/2023	MG	1.5.5	configure must use clang for		#
+#				include-what-you-use.			#
+#				Pass enable-iwyu to configure which	#
+#				allows it to do  some checking.		#
+# 09/03/2023	MG	1.5.6	Fix conditional for cc when iwyu is	#
+#				selected.				#
+#				Add -S --scan-build option to support	#
+#				clang's scan-build static analyser.	#
 #									#
 #########################################################################
 
@@ -172,14 +181,15 @@
 # Init variables #
 ##################
 
-readonly version=1.5.4			# set version variable
-readonly packageversion=1.4.4	# Version of the complete package
+readonly version=1.5.6			# set version variable
+readonly packageversion=1.5.2	# Version of the complete package
 
 # Set defaults
 atonly=""
 analyzer=""
 build=false
 cc=""
+cc_cli=""
 check=false
 config=false
 debug=""
@@ -187,9 +197,10 @@ dist=false
 distcheck=false
 gnulib=false
 headercheck=""
-iwyu=false
+iwyu=""
 menuconfig=false
 par_jobs=""
+scan_build=""
 sparse=""
 tarball=false
 testinghacks=""
@@ -234,6 +245,7 @@ Usage:- acmbuild.sh / $0 [options] [-- configure options to pass on]
 		If not specified make is sequential
 		If no value X is given then defaults to nproc
 	-s or --sparse build using sparse
+	-S or --scan-build Use clang's scan-build static analyser
 	-t or --testing-hacks some build changes may be required for testing
 		purposes. e.g. A script may invoke a project jar file which
 		when installed will be somewhere under datadir, but during
@@ -301,10 +313,10 @@ proc_CL()
 	local script_name="acmbuild.sh/bootstrap.sh"
 	local tmp
 
-	tmp="getopt -o aAbcCdDghHiKmp::stTvV "
+	tmp="getopt -o aAbcCdDghHiKmp::sStTvV "
 	tmp+="--long at-only,analyzer,build,CC:,check,config,distcheck,debug"
 	tmp+=",dist,gnulib,help,header-check,iwyu,menu-config,parallel-jobs::"
-	tmp+=",sparse,source-tarball,testing-hacks,verbose,version"
+	tmp+=",sparse,scan-build,source-tarball,testing-hacks,verbose,version"
 	GETOPTTEMP=$($tmp -n "$script_name" -- "$@")
 	std_cmd_err_handler $?
 
@@ -346,7 +358,8 @@ proc_CL()
 			shift
 			;;
 		--CC)
-			cc=" CC=$2"
+			cc="$2"
+			cc_cli=" CC=$2"
 			shift 2
 			;;
 		-d|--debug)
@@ -377,7 +390,7 @@ proc_CL()
 			shift
 			;;
 		-i| --iwyu)
-			iwyu=true
+			iwyu=" --enable-iwyu=yes"
 			shift
 			;;
 		-K|--check)
@@ -410,6 +423,10 @@ proc_CL()
 			;;
 		-s|--sparse)
 			sparse=" --enable-sparse=yes"
+			shift
+			;;
+		-S| --scan-build)
+			scan_build=" --enable-scan-build=yes"
 			shift
 			;;
 		-t|--testing-hacks)
@@ -448,9 +465,10 @@ proc_CL()
 	done
 
 	if [[ $atonly || $analyzer || $cc || $debug || $headercheck \
-		|| $sparse || $testinghacks ]] || $verbose ; then
+		|| $iwyu || $sparse || $scan_build || $testinghacks ]] \
+		|| $verbose ; then
 		if ! $config ; then
-			msg="Options a, A, CC, d, H, s, t and v require"
+			msg="Options a, A, CC, d, H, i, s, S, t and v require"
 			msg+=" option c."
 			output "$msg" 1
 			script_exit 64
@@ -458,12 +476,24 @@ proc_CL()
 	fi
 
 	# include-what-you-use cannot be used with a number of other options.
-	if [[ $atonly || $analyzer || $debug || $headercheck || $sparse \
-		|| $testinghacks ]] || $build || $check || $dist || $distcheck \
-		|| $gnulib || $menuconfig || $tarball || $verbose ; then
-		if $iwyu ; then
-			msg="Options a, A, b, C, d, D, g, H, k, m, s, t, T and"
-			msg+=" v cannot be used with option i"
+	if [[ $atonly || $analyzer || $debug || $headercheck || $scan_build \
+		|| $sparse || $testinghacks ]] || $build || $check || $dist \
+		|| $distcheck || $gnulib || $menuconfig || $tarball ; then
+		if [[ $iwyu ]]; then
+			msg="Options a, A, b, C, d, D, g, H, k, m, s, S, t and"
+			msg+=" T cannot be used with option i"
+			output "$msg" 1
+			script_exit 64
+		fi
+	fi
+
+	# scan-build cannot be used with a number of other options.
+	if [[ $atonly || $analyzer || $debug || $headercheck || $iwyu \
+		|| $sparse || $testinghacks ]] || $build || $check || $dist \
+		|| $distcheck || $gnulib || $menuconfig || $tarball ; then
+		if [[ $scan_build ]] ; then
+			msg="Options a, A, b, C, d, D, g, H, i, k, m, s, t"
+			msg+=" and T cannot be used with option S"
 			output "$msg" 1
 			script_exit 64
 		fi
@@ -476,10 +506,17 @@ proc_CL()
 		script_exit 64
 	fi
 
+	# include-what-you-use needs clang as compiler.
+	if [[ $iwyu && -z $cc ]]; then
+		cc="clang"
+		cc_cli=" CC=clang"
+	fi
+
 	# One option has to be selected.
 	if ! $build && ! $check && ! $config && ! $distcheck && ! $dist \
-		&& ! $gnulib && ! $iwyu && ! $tarball ; then
-		output "Either b, c, C, D, g, i, K or T must be set." 1
+		&& ! $gnulib && ! $tarball \
+		&& [[ ! $iwyu || ! $scan_build ]]; then
+		output "Either b, c, C, D, g, i, K, S  or T must be set." 1
 		script_exit 64
 	fi
 
@@ -565,8 +602,9 @@ proc_config()
 	output "$msg" $status
 	std_cmd_err_handler $status
 
-	cmdline="$basedir/configure$cc$configcli_extra_args$verboseconfig"
-	cmdline+="$atonly$analyzer$debug$headercheck$sparse$testinghacks"
+	cmdline="$basedir/configure$cc_cli$configcli_extra_args$verboseconfig"
+	cmdline+="$atonly$analyzer$debug$headercheck$iwyu$sparse"
+	cmdline+="$scan_build$testinghacks"
 
 	eval "$cmdline"
 	status=$?
@@ -601,9 +639,18 @@ proc_make()
 		cmdline="make"$verbosemake$par_jobs" dist clean"
 	fi
 
-	if $iwyu ; then
+	if [[ $iwyu ]]; then
 		cmdline="make"$verbosemake$par_jobs" -k"
 		cmdline+=" CC=include-what-you-use"
+	fi
+
+	if [[ $scan_build ]]; then
+		if [[ $cc ]]; then
+			cmdline="scan-build --use-cc=$cc make"$verbosemake
+			cmdline+=$par_jobs" -k"
+		else
+			cmdline="scan-build make"$verbosemake$par_jobs" -k"
+		fi
 	fi
 
 	if $tarball ; then
