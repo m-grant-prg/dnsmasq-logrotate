@@ -24,6 +24,8 @@
 #                               Tighten SPDX tag.                       #
 # 14/10/2022    MG      1.0.3   Run on focal 20.04                      #
 # 02/08/2023    MG      1.0.4   Run on jammy.                           #
+#                               Remove txt2man, rely on txt2manwrap     #
+#                               dependencies.                           #
 #									#
 #########################################################################
 
@@ -51,7 +53,7 @@ jobs:
       - name: Update the package list
         run: sudo apt-get update
       - name: Add the extra PPA packages
-        run: sudo apt-get install -y txt2man txt2manwrap
+        run: sudo apt-get install -y txt2manwrap
 
       - name: Autoreconf
         run: autoreconf -if .
