@@ -173,16 +173,20 @@
 #				selected.				#
 #				Add -S --scan-build option to support	#
 #				clang's scan-build static analyser.	#
+# 28/08/2023	MG	1.5.7	Fix shellcheck warnings.		#
 #									#
 #########################################################################
+
+
+set -o pipefail
 
 
 ##################
 # Init variables #
 ##################
 
-readonly version=1.5.6			# set version variable
-readonly packageversion=1.5.2	# Version of the complete package
+readonly version=1.5.7			# set version variable
+readonly packageversion=1.6.1	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -209,7 +213,7 @@ verboseconfig=" --enable-silent-rules=yes"
 verbosemake=" --quiet"
 basedir="."			# Retain quotes
 basedirunq=$basedir		# Without retaining quotes
-configcli_extra_args=""
+configcli_extra_args=()
 
 
 #############
@@ -275,7 +279,7 @@ output()
 # No return value.
 script_exit()
 {
-	exit $1
+	exit "$1"
 }
 
 # Standard function to test command error and exit if non-zero.
@@ -284,13 +288,15 @@ script_exit()
 std_cmd_err_handler()
 {
 	if (( $1 )); then
-		script_exit $1
+		script_exit "$1"
 	fi
 }
 
 # Standard trap exit function.
 # No parameters.
 # No return value.
+# shellcheck disable=SC2317  # Do not warn about unreachable commands in trap
+# functions, they are legitimate.
 trap_exit()
 {
 	local -i exit_code=$?
@@ -298,7 +304,7 @@ trap_exit()
 
 	msg="Script terminating with exit code $exit_code due to trap received."
 	output "$msg" 1
-	script_exit $exit_code
+	script_exit "$exit_code"
 }
 
 # Setup trap
@@ -406,7 +412,7 @@ proc_CL()
 		-m|--menu-config)
 			which whiptail > /dev/null
 			status=$?
-			if (( $status != 0 )); then
+			if (( status != 0 )); then
 				output "Please first install whiptail." 1
 				script_exit 64
 			fi
@@ -535,7 +541,7 @@ proc_CL()
 		basedir=${1@Q}
 		basedirunq="$1"		# Unquoted version
 		shift
-		configcli_extra_args+=" "${@@Q}
+		configcli_extra_args+=( ' ' "$@" )
 	fi
 }
 
@@ -568,7 +574,10 @@ proc_gnulib()
 proc_menuconfig()
 {
 	local msg
-	local readonly tmp_file=/tmp/$$.$(basename $0).tmp
+	local tmp_extra_args=()
+	local tmp_file
+	tmp_file=/tmp/$$.$(basename "$0").tmp
+	readonly tmp_file
 
 	if [[ ! -f $basedirunq/configurable-options.sh \
 		|| ! -r $basedirunq/configurable-options.sh \
@@ -578,11 +587,13 @@ proc_menuconfig()
 		output "$msg" 1
 		script_exit 77
 	fi
-	$basedirunq/configurable-options.sh $tmp_file
+	"$basedirunq"/configurable-options.sh "$tmp_file"
 	std_cmd_err_handler $?
-	configcli_extra_args+=$(cat < $tmp_file)
+	mapfile -t tmp_extra_args < <( head -n 1 "$tmp_file" )
 	std_cmd_err_handler $?
-	rm -f $tmp_file
+	configcli_extra_args+=( "${tmp_extra_args[@]}" )
+	std_cmd_err_handler $?
+	rm -f "$tmp_file"
 	std_cmd_err_handler $?
 }
 
@@ -598,12 +609,12 @@ proc_config()
 	cmdline="autoreconf -if $basedir"
 	eval "$cmdline"
 	status=$?
-	msg="autoreconf -if "$basedir" completed with exit status: $status"
+	msg="autoreconf -if $basedir completed with exit status: $status"
 	output "$msg" $status
 	std_cmd_err_handler $status
 
-	cmdline="$basedir/configure$cc_cli$configcli_extra_args$verboseconfig"
-	cmdline+="$atonly$analyzer$debug$headercheck$iwyu$sparse"
+	cmdline="$basedir/configure$cc_cli${configcli_extra_args[*]}"
+	cmdline+="$verboseconfig$atonly$analyzer$debug$headercheck$iwyu$sparse"
 	cmdline+="$scan_build$testinghacks"
 
 	eval "$cmdline"
