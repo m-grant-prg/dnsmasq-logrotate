@@ -9,7 +9,7 @@
 #########################################################################
 #									#
 # Script ID: dnsmasq-postrotate.sh					#
-# Author: Copyright (C) 2018-2019, 2021  Mark Grant			#
+# Author: Copyright (C) 2018-2019, 2021, 2023  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -105,14 +105,15 @@
 # 10/08/2019	MG	1.0.7	Correct getopt CL for proper quoting.	#
 # 11/10/2019	MG	1.0.8	Move script_exit() before it is used.	#
 # 22/11/2021	MG	1.0.9	Tighten SPDX tag.			#
+# 08/09/2023	MG	1.0.10	Fix shellcheck warnings.		#
 #									#
 #########################################################################
 
 #########################
 # Script-wide variables #
 #########################
-readonly outputprefix="$(basename $0):"
-readonly version=1.0.9				# script version
+readonly outputprefix="$(basename "$0"):"
+readonly version=1.0.10				# script version
 readonly packageversion=@pkgversion@		# package version
 
 readonly logrotatefile="@sysconfdir@/logrotate.d/dnsmasq"
@@ -163,9 +164,9 @@ output()
 	if (( ! $3 )) || ((( $3 == 1 )) && $verbose) \
 		|| ((( $3 == 2 )) && $trace); then
 		if (( ! $2 )); then
-			printf "%s %s\n" $outputprefix "$1"
+			printf "%s %s\n" "$outputprefix" "$1"
 		else
-			printf "%s %s\n" $outputprefix "$1" 1>&2
+			printf "%s %s\n" "$outputprefix" "$1" 1>&2
 		fi
 		logger "$outputprefix $1"
 		std_cmd_err_handler $?
@@ -177,7 +178,7 @@ output()
 # No return value.
 script_exit()
 {
-	exit $1
+	exit "$1"
 }
 
 # Standard function to test command error and exit if non-zero.
@@ -186,7 +187,7 @@ script_exit()
 std_cmd_err_handler()
 {
 	if (( $1 )); then
-		script_exit $1
+		script_exit "$1"
 	fi
 }
 
@@ -200,7 +201,7 @@ trap_exit()
 
 	msg="Script terminating with exit code $exit_code due to trap received."
 	output "$msg" 1 0
-	script_exit $exit_code
+	script_exit "$exit_code"
 }
 
 # Setup trap.
@@ -247,8 +248,8 @@ proc_CL()
 			shift
 			;;
 		-V|--version)
-			printf "%s Script version %s\n" $0 $version
-			printf "%s Package version %s\n" $0 $packageversion
+			printf "%s Script version %s\n" "$0" $version
+			printf "%s Package version %s\n" "$0" $packageversion
 			shift
 			script_exit 0
 			;;
@@ -296,7 +297,7 @@ proc_conf_dir ()
 
 		fi
 	done
-	tmp_conf_list=`eval $find_cmd 2>/dev/null | xargs`
+	tmp_conf_list=`eval "$find_cmd" 2>/dev/null | xargs`
 	next_conf_file_list+=$tmp_conf_list" "
 	output "Find command used was: $find_cmd" 0 2
 	msg="conf-files $tmp_conf_list from ${array[0]} added to the "
@@ -330,7 +331,7 @@ cmd_line_parse()
 			msg="conf-dir $2 found on command line and "
 			msg+="being processed"
 			output "$msg" 0 2
-			proc_conf_dir $2
+			proc_conf_dir "$2"
 			shift 2
 			;;
 		-8|--log-facility)
@@ -343,7 +344,7 @@ cmd_line_parse()
 			msg+="overrides default $init_conffile. $2 "
 			msg+="added to the list to process, if present"
 			output "$msg" 0 2
-			init_conffile="$(ls $2 2>/dev/null) "
+			init_conffile="$(ls "$2" 2>/dev/null) "
 			if [[ "$init_conffile" != " " ]]; then
 				output "$2 found" 0 2
 			else
@@ -378,7 +379,7 @@ proc_conf_file()
 	IFS="="
 
 	output "Processing conf-file $1" 0 2
-	exec 3<$1
+	exec 3<"$1"
 	while read -u3 -ra input; do
 		# Ignore comment lines and blank lines.
 		if [[ ${input[0]} = "#"* || ! ${input[0]} ]]; then
@@ -390,7 +391,7 @@ proc_conf_file()
 			msg="conf-dir ${input[1]} found and being "
 			msg+="processed"
 			output "$msg" 0 2
-			proc_conf_dir ${input[1]}
+			proc_conf_dir "${input[1]}"
 			;;
 		log-facility)
 			# If already found, skip
@@ -405,7 +406,7 @@ proc_conf_file()
 			msg="conf-file ${input[1]} found and added to "
 			msg+="the list to process, if present"
 			output "$msg" 0 2
-			tmp_conffile="$(ls ${input[1]} 2>/dev/null) "
+			tmp_conffile="$(ls "${input[1]}" 2>/dev/null) "
 			next_conf_file_list+=$tmp_conffile
 			if [[ $tmp_conffile != " " ]]; then
 				output "${input[1]} found" 0 2
@@ -441,7 +442,7 @@ proc_conf_file_list()
 
 	next_conf_file_list=""
 	for conffile in "$@"; do
-		proc_conf_file $conffile
+		proc_conf_file "$conffile"
 	done
 }
 
@@ -494,7 +495,7 @@ proc_get_setup()
 	cmd_line_loglocation=""
 	pidfile=""
 	cmd_line_pidfile=""
-	ps_pid_file=/tmp/$$.$(basename $0)
+	ps_pid_file=/tmp/$$.$(basename "$0")
 	init_conffile=""
 	next_conf_file_list=""
 
@@ -512,7 +513,7 @@ proc_get_setup()
 	fi
 
 	if [[ $cmd_line ]]; then
-		ps --no-headers -C dnsmasq -o pid  > $ps_pid_file
+		ps --no-headers -C dnsmasq -o pid  > "$ps_pid_file"
 		cmd_line_parse "$cmd_line"
 	else
 		ps_pid_file=""
@@ -527,7 +528,7 @@ proc_get_setup()
 		if [[ $loglocation && $pidfile ]]; then
 			 break
 		fi
-		proc_conf_file_list $next_conf_file_list
+		proc_conf_file_list "$next_conf_file_list"
 	done
 
 	# If not found use command line values, if present.
@@ -548,10 +549,10 @@ proc_get_setup()
 	fi
 
 	if [[ $pidfile ]]; then
-		pidnum=$(cat $pidfile)
+		pidnum=$(cat "$pidfile")
 	fi
 	# Remove temp pid file.
-	rm -f $ps_pid_file
+	rm -f "$ps_pid_file"
 
 	output "Current loglocation is $oldloglocation" 0 2
 	output "Final loglocation is $loglocation" 0 2
@@ -572,12 +573,12 @@ proc_get_setup()
 signal_dnsmasq()
 {
 	# Request the daemon to write summary stats to the syslog.
-	kill -s SIGUSR1 $pidnum
+	kill -s SIGUSR1 "$pidnum"
 	std_cmd_err_handler $?
 	output "Daemon requested to log summary stats." 0 1
 
 	# Request the daemon to close and re-open it's log file.
-	kill -s SIGUSR2 $pidnum
+	kill -s SIGUSR2 "$pidnum"
 	std_cmd_err_handler $?
 	output "Daemon requested to close and re-open it's log file." 0 1
 }
