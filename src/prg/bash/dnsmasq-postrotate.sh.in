@@ -629,7 +629,7 @@ proc_CL "$@"
 proc_get_setup
 
 if $setup ; then
-	if [[ $oldloglocation != $loglocation ]]; then
+	if [[ $oldloglocation != "$loglocation" ]]; then
 		setup_logrotate
 	else
 		output "No change required in logrotate file." 0 1
