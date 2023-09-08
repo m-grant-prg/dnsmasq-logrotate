@@ -194,6 +194,8 @@ std_cmd_err_handler()
 # Standard trap exit function.
 # No parameters.
 # No return value.
+# shellcheck disable=SC2317  # Do not warn about unreachable commands in trap
+# functions, they are legitimate.
 trap_exit()
 {
 	local -i exit_code=$?
