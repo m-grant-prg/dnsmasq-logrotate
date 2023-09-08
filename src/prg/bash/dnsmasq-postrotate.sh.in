@@ -300,7 +300,7 @@ proc_conf_dir ()
 
 		fi
 	done
-	tmp_conf_list=`eval "$find_cmd" 2>/dev/null | xargs`
+	tmp_conf_list=$(eval "$find_cmd" 2>/dev/null | xargs)
 	next_conf_file_list+=$tmp_conf_list" "
 	output "Find command used was: $find_cmd" 0 2
 	msg="conf-files $tmp_conf_list from ${array[0]} added to the "
