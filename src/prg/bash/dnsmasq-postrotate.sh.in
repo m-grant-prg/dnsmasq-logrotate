@@ -112,7 +112,8 @@
 #########################
 # Script-wide variables #
 #########################
-readonly outputprefix="$(basename "$0"):"
+outputprefix="$(basename "$0"):"
+readonly outputprefix
 readonly version=1.0.10				# script version
 readonly packageversion=@pkgversion@		# package version
 
