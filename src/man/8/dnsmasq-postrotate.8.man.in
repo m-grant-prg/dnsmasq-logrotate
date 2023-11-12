@@ -1,7 +1,9 @@
 NAME
 dnsmasq-postrotate - postrotate script for dnsmasq
 SYNOPSIS
-dnsmasq-postrotate [OPTION]
+dnsmasq-postrotate {-h|-V}
+dnsmasq-postrotate [-p] [-s] [-t] [-v]
+dnsmasq-postrotate [OPTIONS]
 DESCRIPTION
 The dnsmasq-postrotate script has two functions; a setup function and a
 post-rotate function.
