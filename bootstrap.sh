@@ -8,7 +8,6 @@
 
 #########################################################################
 #									#
-# Script ID: bootstrap.sh						#
 # Author: Copyright (C) 2014-2019, 2021-2023  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
@@ -17,29 +16,7 @@
 # Purpose:								#
 # To simplify the AutoTools distribution build.				#
 #									#
-# Syntax:	bootstrap.sh	[ -a || --at-only ] ||			#
-#				[ -A || --analyzer ] ||			#
-#				[ -b || --build ] ||			#
-#				[ -c || --config ] ||			#
-#				[ -C || --distcheck ] ||		#
-#				[       --CC] ||			#
-#				[ -d || --debug ] ||			#
-#				[ -D || --dist ] ||			#
-#				[ -g || --gnulib ] ||			#
-#				[ -h || --help ] ||			#
-#				[ -H || --header-check ] ||		#
-#				[ -i || --iwyu ] ||			#
-#				[ -K || --check ] ||			#
-#				[ -m || --menu-config ] ||		#
-#				[ -p || --parallel-jobs ] ||		#
-#				[ -s || --sparse ] ||			#
-#				[ -S || --scan-build ] ||		#
-#				[ -t || --testing-hacks ] ||		#
-#				[ -T || --source-tarball ] ||		#
-#				[ -v || --verbose ] ||			#
-#				[ -V || --version ] ||			#
-#				[ -- ]					#
-#				[ non-option arguments ]		#
+# Syntax:	See usage().						#
 #									#
 # Exit codes used:-							#
 # Bash standard Exit Codes:	0 - success				#
@@ -69,114 +46,6 @@
 #									#
 #########################################################################
 
-#########################################################################
-#									#
-# Changelog								#
-#									#
-# Date		Author	Version	Description				#
-#									#
-# 25/06/2014	MG	1.0.1	Created.				#
-# 02/08/2014	MG	1.0.2	Change naming from AutoTools to		#
-#				AutoConf and Make.			#
-# 27/10/2014	MG	1.0.3	Seperated each command in order to test	#
-#				exit status.				#
-# 13/11/2014	MG	1.0.4	Switched from getopts to GNU getopt to	#
-#				allow long options.			#
-# 16/11/2014	MG	1.0.5	Modify getopt processing to allow for	#
-#				FreeBSD's quirk of 2 different getopt	#
-#				programs. See comments at the start of	#
-#				"Main"					#
-# 16/11/2014	MG	1.0.6	Remove erroneous option.		#
-# 18/11/2014	MG	1.0.7	Change FreeBSD specifics to *BSD and	#
-#				change Linux to be the default.		#
-# 24/11/2014	MG	1.0.8	Add overall package version to -V.	#
-# 28/03/2015	MG	1.0.9	Remove BSD support.			#
-# 31/01/2017	MG	1.1.1	Add debug make dist and make options.	#
-# 25/02/2017	MG	1.2.0	Add distcheck & distcheckfake options.	#
-# 25/06/2017	MG	1.2.1	Enforce 80 column rule.			#
-# 01/12/2017	MG	1.2.2	Add SPDX license tags to source files.	#
-# 04/12/2017	MG	1.2.3	Adopt standard exit codes; 0 on success	#
-#				1 on failure.				#
-# 06/02/2018	MG	1.3.1	Renamed from acmbuild.			#
-#				Add -g option.				#
-#				General script tidy up.			#
-# 09/02/2018	MG	1.3.2	Remove script name from -V --version	#
-#				print as this may have been invoked by	#
-#				acmbuild.sh.				#
-# 24/03/2018	MG	1.3.3	Add support for sparse CLA.		#
-#				Add stderr log file.			#
-# 07/04/2018	MG	1.3.4	Add -t --source-tarball CLA to build a	#
-#				source tarball.				#
-# 01/07/2018	MG	1.3.5	Separate configure from build actions	#
-#				and make options more standardised.	#
-# 06/08/2018	MG	1.3.6	Add -H --header-check option.		#
-#				Change error log file to build log.	#
-# 22/08/2018	MG	1.3.7	Add verbose option.			#
-# 24/03/2019	MG	1.4.1	Style if, for and while loops after C.	#
-#				Use -proper- booleans.			#
-#				Remove script_exit_code variable 	#
-#				propogating the exit code as a function	#
-#				argument instead.			#
-#				Improve trap exit code handling.	#
-#				Re-factor into functions.		#
-#				Introduce more meaningful exit codes.	#
-#				Tidy up local and global variables.	#
-#				Add -a --at-only option.		#
-#				Add -t --testing-hacks option.		#
-#				Add support for non-option arguments	#
-#				which are not option arguments being	#
-#				passed straight through to the		#
-#				configure command line apart from the	#
-#				first which is the base directory. This	#
-#				allows support for things like		#
-#				--prefix=... etc.			#
-#				Add missing error check after getopt.	#
-#				Replace #! env bash with absolute path	#
-#				via configure.				#
-# 05/04/2019	MG	1.4.2	Just execute getopt command AOT eval.	#
-#				Setup trap as early as possible.	#
-# 30/04/2019	MG	1.4.3	Correct getopt CL for proper quoting.	#
-#				Ensure variables used as input to other	#
-#				commands are inputised and evaluated	#
-#				with eval.				#
-# 18/06/2019	MG	1.4.4	Add -K --check option to run		#
-#				make --quiet check.			#
-# 25/06/2019	MG	1.4.5	Remove distcheckfake option. Now done	#
-#				by distcheck with configure flags in	#
-#				top level makefile.			#
-# 28/10/2019	MG	1.4.6	Move script_exit() before it is used.	#
-#				Cannot test for existence of file with	#
-#				a variable which has retained quotes,	#
-#				so introduce unquoted basedirunq.	#
-# 01/12/2019	MG	1.4.7	Add parallel jobs option to pass to	#
-#				make as --jobs				#
-# 14/04/2021	MG	1.4.8	Add menu-config option to invoke menu	#
-#				of configurable options.		#
-# 28/05/2021	MG	1.4.9	Process menuconfig before using tee for	#
-#				the build log as menuconfig may involve	#
-#				dialog and redirection.			#
-#				Use a temporary file to get result back	#
-#				from configurable-options.sh		#
-# 21/11/2021	MG	1.4.10	Tighten SPDX tag.			#
-# 07/06/2022	MG	1.5.1	Add compiler option -A --analyzer.	#
-# 28/08/2022	MG	1.5.2	Add --CC option for compiler. Same as	#
-#				bootstrap.sh -c . -- CC=clang		#
-#				Add option for include-what-you-use.	#
-# 30/08/2022	MG	1.5.3	Allow --CC to be specified alongside -i.#
-# 06/09/2022	MG	1.5.4	Add missing $verbosemake to iwyu make	#
-#				CL.					#
-# 05/03/2023	MG	1.5.5	configure must use clang for		#
-#				include-what-you-use.			#
-#				Pass enable-iwyu to configure which	#
-#				allows it to do  some checking.		#
-# 09/03/2023	MG	1.5.6	Fix conditional for cc when iwyu is	#
-#				selected.				#
-#				Add -S --scan-build option to support	#
-#				clang's scan-build static analyser.	#
-# 28/08/2023	MG	1.5.7	Fix shellcheck warnings.		#
-#									#
-#########################################################################
-
 
 set -o pipefail
 
@@ -185,8 +54,8 @@ set -o pipefail
 # Init variables #
 ##################
 
-readonly version=1.5.7			# set version variable
-readonly packageversion=1.6.1	# Version of the complete package
+readonly version=1.6.0			# set version variable
+readonly packageversion=1.6.2	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -223,10 +92,27 @@ configcli_extra_args=()
 # -h --help output.
 # No parameters
 # No return value
-usage ()
+usage()
 {
 cat << EOF
-Usage:- acmbuild.sh / $0 [options] [-- configure options to pass on]
+Usage is also true for acmbuild
+Usage is:-
+${0##*/} -b [-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v]]
+		[-g] [-K] [-pX] [-- PASS_THRU_OPTIONS ...]
+${0##*/} -c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-pX] [-t] [-v]
+		[-- PASS_THRU_OPTIONS ...]
+${0##*/} -c {-i|-S} [--CC=COMPILER] [-pX] [-v] [-- PASS_THRU_OPTIONS ...]
+${0##*/} {-C|-D|-T} [-c] [-g] [-pX] [-- PASS_THRU_OPTIONS ...]
+${0##*/} -g [-b]
+		[-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v]]
+		[-K] [-pX] [-- PASS_THRU_OPTIONS ...]
+${0##*/} {-h|-V}
+${0##*/} -K [-b]
+		[-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v]]
+		[-g] [-pX] [-- PASS_THRU_OPTIONS ...]
+
+Usage is:-
+${0##*/} [OPTIONS] [-- PASS_THRU_OPTIONS ...]
 	-a or --at-only during testing and for an AutoTools-only install, some
 		build changes are required. e.g. You may reference an external
 		Java jar in datadir but in AT builds and installations this
@@ -257,6 +143,9 @@ Usage:- acmbuild.sh / $0 [options] [-- configure options to pass on]
 	-T or --source-tarball create source tarball
 	-v or --verbose emit extra information
 	-V or --version displays version information
+
+	-- PASS_THRU_OPTIONS The -- stops processing command line arguments and
+		instead passes subsequent arguments on, as-is, to AutoTools
 EOF
 }
 
@@ -316,7 +205,7 @@ trap trap_exit SIGHUP SIGINT SIGQUIT SIGTERM
 proc_CL()
 {
 	local GETOPTTEMP
-	local script_name="acmbuild.sh/bootstrap.sh"
+	local script_name="acmbuild/bootstrap.sh"
 	local tmp
 
 	tmp="getopt -o aAbcCdDghHiKmp::sStTvV "
