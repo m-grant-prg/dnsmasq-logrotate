@@ -18,10 +18,7 @@
 # rotating the logs. Also request the daemon to write summary stats to	#
 # the syslog.								#
 #									#
-# Syntax:	dnsmasq-postrotate [ -h --help || -p --post-rotate	#
-#					|| -s --setup || -t --trace 	#
-#					|| -v --verbose			#
-#					|| -V --version ]		#
+# Syntax:	See usage()						#
 #									#
 # Exit codes used:-							#
 # Bash standard Exit Codes:	0 - success				#
@@ -77,20 +74,17 @@ verbose=false
 # -h --help output.
 # No parameters
 # No return value
-usage ()
+usage()
 {
 cat << EOF
+Usage is $0 {-h|-V}
+Usage is $0 [-p] [-s] [-t] [-v]
 Usage is $0 [options]
 	-h or --help displays usage information
-	OR
 	-p or --post-rotate perform post-rotate function
-	OR
 	-s or --setup perform logrotate file setup
-	OR
 	-t or --trace output the analysis of configuration parameters
-	OR
 	-v or --verbose verbose output
-	OR
 	-V or --version displays version information
 EOF
 }
