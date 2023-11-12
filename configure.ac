@@ -8,8 +8,15 @@
 # Purpose:								#
 # AutoConf script file to configure dnsmasq-logrotate project.		#
 #									#
-# configure cmd line syntax:						#
-# ./configure	[--enable-distcheckfake=<yes|no> [default: no]]		#
+# cmd line syntax of standard configure:				#
+# ./configure --help							#
+#									#
+# cmd line syntax of additional functionality:				#
+# ./configure	[--enable-distcheckfake[={yes|no}]]			#
+# Parameter defaults:							#
+#	When specified on the CL, but without the [={yes|no}], the	#
+#	default is yes.							#
+#	When not specified the default is no.				#
 #									#
 # Parameters generic description. For specifics to this configure.ac	#
 # please see inline comments at the point of definition:-		#
