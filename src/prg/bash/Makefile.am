@@ -11,19 +11,19 @@
 #########################################################################
 
 
-dnsmasq-postrotate.sh: Makefile
+dnsmasq-postrotate: Makefile
 	mkdir -p $(@D)
 	rm -f $@ $@.tmp
 	test -f ./$@.in || srcdir=$(srcdir)/; \
-	$(edit) $${srcdir}$(@F).in > $@.tmp
+	$(edit) $${srcdir}$(@F).sh.in > $@.tmp
 	mv $@.tmp $@
 	chmod a+x $@
-dnsmasq-postrotate.sh: $(srcdir)/dnsmasq-postrotate.sh.in
+dnsmasq-postrotate: $(srcdir)/dnsmasq-postrotate.sh.in
 
 
-sbin_SCRIPTS = dnsmasq-postrotate.sh
+sbin_SCRIPTS = dnsmasq-postrotate
 
 
 EXTRA_DIST = $(srcdir)/dnsmasq-postrotate.sh.in
 
-CLEANFILES = *.tmp dnsmasq-postrotate.sh
+CLEANFILES = *.tmp dnsmasq-postrotate

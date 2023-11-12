@@ -11,7 +11,7 @@
 #########################################################################
 
 
-dnsmasq-postrotate.sh.8: Makefile
+dnsmasq-postrotate.8: Makefile
 	mkdir -p $(@D)
 	rm -f $@ $@.tmp
 	$(edit) $(srcdir)/$(@F).man.in > $@.tmp
@@ -30,10 +30,10 @@ dnsmasq-postrotate.sh.8: Makefile
 	txt2manwrap $(@F) $$section "dnsmasq-logrotate Manual" $@.tmp $@
 	rm -f $@.tmp
 
-dnsmasq-postrotate.sh.8: $(srcdir)/dnsmasq-postrotate.sh.8.man.in
+dnsmasq-postrotate.8: $(srcdir)/dnsmasq-postrotate.8.man.in
 
-man_MANS = dnsmasq-postrotate.sh.8
+man_MANS = dnsmasq-postrotate.8
 
-EXTRA_DIST = $(srcdir)/dnsmasq-postrotate.sh.8.man.in
+EXTRA_DIST = $(srcdir)/dnsmasq-postrotate.8.man.in
 
-CLEANFILES = *.tmp dnsmasq-postrotate.sh.8
+CLEANFILES = *.tmp dnsmasq-postrotate.8

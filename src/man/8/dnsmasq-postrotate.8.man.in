@@ -1,18 +1,18 @@
 NAME
-dnsmasq-postrotate.sh - postrotate script for dnsmasq
+dnsmasq-postrotate - postrotate script for dnsmasq
 SYNOPSIS
-dnsmasq-postrotate.sh [OPTION]
+dnsmasq-postrotate [OPTION]
 DESCRIPTION
-The dnsmasq-postrotate.sh script has two functions; a setup function and a
+The dnsmasq-postrotate script has two functions; a setup function and a
 post-rotate function.
 
-Running dnsmasq-postrotate.sh with the --setup option interrogates the dnsmasq
+Running dnsmasq-postrotate with the --setup option interrogates the dnsmasq
 configuration and command line to locate the log file and write this location in
 the logrotate control file. This is run during the package installation and
 should be run after configuration changes to dnsmasq.
 
 In normal day-to-day operation after logrotate has rotated the log file
-dnsmasq-postrotate.sh is run with the --post-rotate option whereby SIGUSR1 and
+dnsmasq-postrotate is run with the --post-rotate option whereby SIGUSR1 and
 SIGUSR2 are sent to dnsmasq to ask it to dump stats to the log file and to close
 and reopen it's log file.
 
@@ -81,7 +81,7 @@ Written by Mark Grant.
 REPORTING BUGS
 Report bugs to <m.grant.prg@gmail.com>
 COPYRIGHT
-Copyright (C) 2018-2019, 2021 Mark Grant.
+Copyright (C) 2018-2019, 2021, 2023 Mark Grant.
 .br
 License GPLv3: GNU GPL version 3 only
 .br

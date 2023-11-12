@@ -1,7 +1,7 @@
 #! @bashlocation@
 #########################################################################
 #									#
-#	dnsmasq-postrotate.sh is automatically generated,		#
+#	dnsmasq-postrotate is automatically generated,			#
 #		please do not modify!					#
 #									#
 #########################################################################
@@ -18,7 +18,7 @@
 # rotating the logs. Also request the daemon to write summary stats to	#
 # the syslog.								#
 #									#
-# Syntax:	dnsmasq-postrotate.sh [ -h --help || -p --post-rotate	#
+# Syntax:	dnsmasq-postrotate [ -h --help || -p --post-rotate	#
 #					|| -s --setup || -t --trace 	#
 #					|| -v --verbose			#
 #					|| -V --version ]		#

@@ -8,6 +8,6 @@ compress
 delaycompress
 create 0640 dnsmasq root
 postrotate
-/usr/sbin/dnsmasq-postrotate.sh --post-rotate --verbose
+/usr/sbin/dnsmasq-postrotate --post-rotate --verbose
 endscript
 }
