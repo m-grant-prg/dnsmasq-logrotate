@@ -1,6 +1,5 @@
 #########################################################################
 #									#
-# Script ID: ./configure.ac						#
 # Author: Copyright (C) 2018-2023  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
@@ -23,7 +22,6 @@
 #	would normally fail.						#
 #									#
 # Layout: (Only relevant sections will exist).				#
-# ChangeLog : High level ChangeLog					#
 # SECTION  1: Initialisation & Setup					#
 # SECTION  2: Architecture, target and host checks			#
 # SECTION  3: Command line arguments					#
@@ -39,34 +37,6 @@
 # SECTION 13: Check for system services					#
 # SECTION 14: Additional checks & variables				#
 # SECTION 15: Specify the output files					#
-#									#
-#########################################################################
-
-#########################################################################
-#									#
-# ChangeLog								#
-#									#
-# Date		Author	Version	Description				#
-#									#
-# 24/05/2018	MG	1.0.1	First release.				#
-# 29/05/2018	MG	1.0.2	Add logger check for syslog entries.	#
-# 22/12/2018	MG	1.0.3	Re-vamp to new standard layout.		#
-# 03/04/2019	MG	1.0.4	Add test-data build.			#
-#				Remove leading v from package version.	#
-#				Pass bash path to scripts and Makefiles	#
-# 10/08/2019	MG	1.0.5	Improve configure CLA description in	#
-#				header comments above.			#
-#				Correct AC_MSG_NOTICE texts.		#
-#				Correct ARG_ENABLE help text.		#
-# 22/11/2021	MG	1.0.6	If git is available and we are inside a	#
-#				git tree then use git describe to add	#
-#				further package version information.	#
-#				Tighten SPDX tag.			#
-#				Add AC_COPYRIGHT macro.			#
-# 09/10/2022	MG	1.0.7	Use AC MSG CHECKING where appropriate.	#
-#				Separate AutoTools generated files from	#
-#				project root.				#
-# 02/08/2023	MG	1.0.8	Update Copyright for 2023.		#
 #									#
 #########################################################################
 

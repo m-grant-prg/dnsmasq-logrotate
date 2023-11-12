@@ -1,7 +1,6 @@
 #########################################################################
 #									#
-# Script ID: src/conf/rootetc/logrotate/Makefile.am			#
-# Author: Copyright (C) 2018-2019, 2021  Mark Grant			#
+# Author: Copyright (C) 2018-2019, 2021, 2023  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -13,17 +12,6 @@
 #									#
 #########################################################################
 
-#########################################################################
-#									#
-# Changelog								#
-#									#
-# Date		Author	Version	Description				#
-#									#
-# 24/05/2018	MG	1.0.1	First release.				#
-# 03/04/2019	MG	1.0.2	Remove shebang.				#
-# 22/11/2021	MG	1.0.3	Tighten SPDX tag.			#
-#									#
-#########################################################################
 
 # logrotateloc is set in configure.ac to provide a conditional target depending
 # on whether distcheck is being run.

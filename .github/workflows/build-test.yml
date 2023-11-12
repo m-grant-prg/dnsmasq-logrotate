@@ -1,6 +1,5 @@
 #########################################################################
 #									#
-# File ID: ./.github/workflows/build-test.yml				#
 # Author: Copyright (C) 2021-2023  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
@@ -9,23 +8,6 @@
 # Purpose:								#
 # Configuration file for GitHub Actions build tests. Perform a standard #
 # build, check and distcheck.                   			#
-#									#
-#########################################################################
-
-#########################################################################
-#									#
-# Changelog								#
-#									#
-# Date		Author	Version	Description				#
-#									#
-# 27/02/2021	MG	1.0.1	Initial release.                        #
-# 22/11/2021    MG      1.0.2   Get tags as needed for git-enhanced     #
-#                               AC_INIT.                                #
-#                               Tighten SPDX tag.                       #
-# 14/10/2022    MG      1.0.3   Run on focal 20.04                      #
-# 02/08/2023    MG      1.0.4   Run on jammy.                           #
-#                               Remove txt2man, rely on txt2manwrap     #
-#                               dependencies.                           #
 #									#
 #########################################################################
 

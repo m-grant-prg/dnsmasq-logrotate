@@ -1,6 +1,5 @@
 #########################################################################
 #									#
-# File ID: ./.github/dependabot.yml                                     #
 # Author: Copyright (C) 2023  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
@@ -8,16 +7,6 @@
 #									#
 # Purpose:								#
 # Configuration file for GitHub dependabot checks and updates.          #
-#									#
-#########################################################################
-
-#########################################################################
-#									#
-# Changelog								#
-#									#
-# Date		Author	Version	Description				#
-#									#
-# 06/09/2023	MG	1.0.1	Initial release.                        #
 #									#
 #########################################################################
 

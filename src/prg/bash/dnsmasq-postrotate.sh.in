@@ -8,7 +8,6 @@
 
 #########################################################################
 #									#
-# Script ID: dnsmasq-postrotate.sh					#
 # Author: Copyright (C) 2018-2019, 2021, 2023  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
@@ -52,62 +51,6 @@
 #									#
 #########################################################################
 
-#########################################################################
-#									#
-# Changelog								#
-#									#
-# Date		Author	Version	Description				#
-#									#
-# 25/05/2018	MG	1.0.1	First release.				#
-# 29/05/2018	MG	1.0.2	Make script run silently by default	#
-#				when error-free. Add verbose option.	#
-#				Log any output to syslog.		#
-# 28/07/2018	MG	1.0.3	If the daemon is not running it cannot	#
-#				be construed as an error, so terminate	#
-#				normally.				#
-#				Make find more robust - do not descend	#
-#				into non-readable directories. Do not	#
-#				descend into directories on other	#
-#				(mounted) filesystems. (e.g. avoids	#
-#				gvfs).					#
-#				Use AutoConf runstatedir substitution	#
-#				variable instead of hard-coded /var/run	#
-# 14/12/2018	MG	1.0.4	Refactor help output into a function.	#
-#				Do not hard code outputprefix contents.	#
-#				Make verbose a 'true' boolean.		#
-#				Make relevant script-wide variables	#
-#				readonly.				#
-#				Refactor CL processing into a function.	#
-#				Enhance the pid and log-facility search	#
-#				to conform to dnsmasq rules on		#
-#				conf-file and conf-dir parameters and	#
-#				the CL. Also add a trace CLA to show	#
-#				progress of analysis.			#
-#				Add function to retrieve the current	#
-#				log location from the log rotate file.	#
-#				Refactor postrotate functionality into	#
-#				a function with a CLA.			#
-#				Add setup function to populate		#
-#				logrotate file with correct log file	#
-#				location.				#
-# 22/12/2018	MG	1.0.5	Use more standard printf instead of	#
-#				echo.					#
-#				Remove script_exit_code variable 	#
-#				propogating the exit code as a function	#
-#				argument instead.			#
-#				Introduce more meaningful exit codes.	#
-# 03/04/2019	MG	1.0.6	Tidy getopt and $@ processing.		#
-#				When processing conf-dir use only	#
-#				normal files.				#
-#				Ensure numerics use (( ... )).		#
-#				Replace #! env bash with absolute path	#
-#				via configure.				#
-# 10/08/2019	MG	1.0.7	Correct getopt CL for proper quoting.	#
-# 11/10/2019	MG	1.0.8	Move script_exit() before it is used.	#
-# 22/11/2021	MG	1.0.9	Tighten SPDX tag.			#
-# 08/09/2023	MG	1.0.10	Fix shellcheck warnings.		#
-#									#
-#########################################################################
 
 #########################
 # Script-wide variables #
