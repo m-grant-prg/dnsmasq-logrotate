@@ -79,7 +79,7 @@ usage()
 cat << EOF
 Usage is $0 {-h|-V}
 Usage is $0 [-p] [-s] [-t] [-v]
-Usage is $0 [options]
+Usage is $0 [OPTIONS]
 	-h or --help displays usage information
 	-p or --post-rotate perform post-rotate function
 	-s or --setup perform logrotate file setup
