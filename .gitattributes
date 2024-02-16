@@ -1,6 +1,5 @@
 #########################################################################
 #									#
-# File ID: ./.gitattributes						#
 # Author: Copyright (C) 2021, 2023  Mark Grant				#
 #									#
 # This file is maintained in the project at:-				#
@@ -14,18 +13,10 @@
 
 #########################################################################
 #									#
-# Changelog								#
-#									#
-# Date		Author	Version	Description				#
-#									#
-# 02/11/2021	MG	1.0.1	First versioned  release.		#
-# 21/11/2021	MG	1.0.2	Tighten SPDX tag.			#
-# 30/11/2021	MG	1.0.3	Ignore some Java and NetBeans files for	#
-#				a git archive command.			#
-# 23/02/2023	MG	1.0.4	Add a comment that this file is		#
-#				maintained in another project.		#
+# Version	v1.0.5							#
 #									#
 #########################################################################
+
 
 *.c	diff=cpp
 *.h	diff=cpp
