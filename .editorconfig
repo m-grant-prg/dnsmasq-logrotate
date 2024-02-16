@@ -1,7 +1,6 @@
 #########################################################################
 #									#
-# File ID: ./.editorconfig						#
-# Author: Copyright (C) 2022, 2023  Mark Grant				#
+# Author: Copyright (C) 2022-2024  Mark Grant				#
 #									#
 # This file is maintained in the project at:-				#
 #	https://github.com/m-grant-prg/project-misc			#
@@ -14,15 +13,7 @@
 
 #########################################################################
 #									#
-# Changelog								#
-#									#
-# Date		Author	Version	Description				#
-#									#
-# 09/08/2022	MG	1.0.1	Initial version.			#
-# 09/08/2022	MG	1.0.2	Add YAML.				#
-# 09/08/2022	MG	1.0.3	Add trim_trailing_whitespace.		#
-# 23/02/2023	MG	1.0.4	Add a comment that this file is		#
-#				maintained in another project.		#
+# Version	v1.0.6							#
 #									#
 #########################################################################
 
@@ -38,13 +29,13 @@ trim_trailing_whitespace = true
 # If clang-format is used then values for .c and .h files must agree both here
 # and in .clang-format.
 indent_style = tab
-tab_width = 8
+indent_size = 8
 
 [*.{py,py.in}]
 indent_style = space
 indent_size = 4
 
-[*.{yml,yml.in}]
+[*.{yaml,yaml.in,yml,yml.in}]
 indent_style = space
 indent_size = 2
 
