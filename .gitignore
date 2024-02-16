@@ -1,6 +1,5 @@
 #########################################################################
 #									#
-# File ID: ./.gitignore							#
 # Author: Copyright (C) 2015-2019, 2021-2023  Mark Grant		#
 #									#
 # This file is maintained in the project at:-				#
@@ -23,27 +22,10 @@
 
 #########################################################################
 #									#
-# Changelog								#
-#									#
-# Date		Author	Version	Description				#
-#									#
-# 07/06/2019	MG	1.0.1	Initial release.			#
-# 16/06/2019	MG	1.0.2	Add test-driver which is auto-generated	#
-#				when make check is setup and TESTS run.	#
-# 18/07/2021	MG	1.0.3	Add ctags.				#
-#				Refine AutoTools section.		#
-# 27/09/2021	MG	1.0.4	Add exclusion of tags temporary files.	#
-# 28/09/2021	MG	1.0.5	Add exclusion of .bak files.		#
-# 02/11/2021	MG	1.0.6	Create editor section and add .vimrc	#
-# 21/11/2021	MG	1.0.7	Tighten SPDX tag.			#
-# 18/08/2022	MG	1.0.8	Remove local vimrc exclusion.		#
-# 04/10/2022	MG	1.0.9	Exclude build-aux directory. Used by	#
-#				AC_CONFIG_AUX_DIR.			#
-# 03/01/2023	MG	1.0.10	Add *.tmp files.			#
-# 23/02/2023	MG	1.0.11	Add a comment that this file is		#
-#				maintained in another project.		#
+# Version	v1.0.12							#
 #									#
 #########################################################################
+
 
 # AutoTools
 compile
