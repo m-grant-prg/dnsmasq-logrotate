@@ -8,7 +8,7 @@
 
 #########################################################################
 #									#
-# Author: Copyright (C) 2018-2019, 2021, 2023  Mark Grant		#
+# Author: Copyright (C) 2018-2019, 2021, 2023, 2024  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -54,7 +54,7 @@
 #########################
 outputprefix="$(basename "$0"):"
 readonly outputprefix
-readonly version=1.0.10				# script version
+readonly version=1.0.11				# script version
 readonly packageversion=@pkgversion@		# package version
 
 readonly logrotatefile="@sysconfdir@/logrotate.d/dnsmasq"
@@ -381,7 +381,7 @@ proc_conf_file_list()
 	local conffile
 
 	next_conf_file_list=""
-	for conffile in "$@"; do
+	for conffile in $@; do
 		proc_conf_file "$conffile"
 	done
 }
