@@ -381,6 +381,8 @@ proc_conf_file_list()
 	local conffile
 
 	next_conf_file_list=""
+	# shellcheck disable=SC2068	# We want seperate elements to iterate
+	# through, not just one string.
 	for conffile in $@; do
 		proc_conf_file "$conffile"
 	done
