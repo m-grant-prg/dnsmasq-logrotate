@@ -54,7 +54,7 @@
 #########################
 outputprefix="$(basename "$0"):"
 readonly outputprefix
-readonly version=1.0.11				# script version
+readonly version=1.0.12				# script version
 readonly packageversion=@pkgversion@		# package version
 
 readonly logrotatefile="@sysconfdir@/logrotate.d/dnsmasq"
@@ -99,8 +99,8 @@ EOF
 # No return value.
 output()
 {
-	if (( ! $3 )) || ((( $3 == 1 )) && $verbose) \
-		|| ((( $3 == 2 )) && $trace); then
+	if (( ! $3 )) || [[ (( $3 == 1 )) && $verbose ]] \
+		|| [[ (( $3 == 2 )) && $trace ]]; then
 		if (( ! $2 )); then
 			printf "%s %s\n" "$outputprefix" "$1"
 		else
