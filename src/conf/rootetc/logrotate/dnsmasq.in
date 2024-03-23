@@ -7,6 +7,9 @@
 	compress
 	delaycompress
 	create 0640 dnsmasq root
+	prerotate
+		@sbindir@/dnsmasq-postrotate
+	endscript
 	postrotate
 		@sbindir@/dnsmasq-postrotate --post-rotate
 	endscript
