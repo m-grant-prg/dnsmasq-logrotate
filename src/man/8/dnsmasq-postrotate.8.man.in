@@ -2,26 +2,27 @@ NAME
 dnsmasq-postrotate - postrotate script for dnsmasq
 SYNOPSIS
 dnsmasq-postrotate {-h|-V}
-dnsmasq-postrotate [-p] [-s] [-t] [-v]
+dnsmasq-postrotate [-p] [-t] [-v]
 dnsmasq-postrotate [OPTIONS]
 DESCRIPTION
-The dnsmasq-postrotate script has two functions; a setup function and a
-post-rotate function.
+The dnsmasq-postrotate script has two objectives; to update the dnsmasq logfile
+location in the logrotate control file and an optional function to tidy up after
+log rotation.
 
-Running dnsmasq-postrotate with the --setup option interrogates the dnsmasq
-configuration and command line to locate the log file and write this location in
-the logrotate control file. This is run during the package installation and
-should be run after configuration changes to dnsmasq.
+Running dnsmasq-postrotate always interrogates the dnsmasq configuration and
+command line to locate the log file and write this location in the logrotate
+control file. This is run during the package installation, during prerotate and
+postrotate and should be run after configuration changes to dnsmasq.
 
 In normal day-to-day operation after logrotate has rotated the log file
 dnsmasq-postrotate is run with the --post-rotate option whereby SIGUSR1 and
 SIGUSR2 are sent to dnsmasq to ask it to dump stats to the log file and to close
 and reopen it's log file.
 
-During setup the script must determine the log file location and during
-post-rotate the script must determine the dnsmasq pid file. The two file
-locations can be specified to dnsmasq with the log-facility and pid-file
-options. These can be provided via a configuration file or on the command line.
+The script must determine the log file location and during post-rotate the
+script must determine the dnsmasq pid file. The two file locations can be
+specified to dnsmasq with the log-facility and pid-file options. These can be
+provided via a configuration file or on the command line.
 Configuration files can be nested via the conf-file and / or conf-dir options.
 The logic for finding these directives is as follows:-
 
@@ -55,10 +56,6 @@ OPTIONS
 -p, --post-rotate  invoke the normal post rotate processing for dumping summary
 stats and closing and re-opening the log file
 
--s, --setup  determine the location of the log file and write this to the
-logrotate file. (Please refer to the DESCRIPTION section above for the logic of
-how it finds this location)
-
 -t, --trace  print information showing how the interrogation of configuration
 files and the CL result in the pid and log-facility values to use
 
@@ -83,7 +80,7 @@ Written by Mark Grant.
 REPORTING BUGS
 Report bugs to <m.grant.prg@gmail.com>
 COPYRIGHT
-Copyright (C) 2018-2019, 2021, 2023 Mark Grant.
+Copyright (C) 2018-2019, 2021, 2023, 2024 Mark Grant.
 .br
 License GPLv3: GNU GPL version 3 only
 .br
