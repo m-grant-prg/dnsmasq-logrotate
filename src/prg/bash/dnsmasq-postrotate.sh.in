@@ -97,8 +97,8 @@ EOF
 # No return value.
 output()
 {
-	if (( ! $3 )) || [[ (( $3 == 1 )) && $verbose ]] \
-		|| [[ (( $3 == 2 )) && $trace ]]; then
+	if (( ! $3 )) || [[ (( $3 == 1 )) && $verbose == true ]] \
+		|| [[ (( $3 == 2 )) && $trace == true ]]; then
 		if (( ! $2 )); then
 			printf "%s %s\n" "$outputprefix" "$1"
 		else
