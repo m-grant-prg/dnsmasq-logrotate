@@ -1,13 +1,16 @@
-/var/log/dnsmasq.log
+@localstatedir@/log/dnsmasq.log
 {
-rotate 7
-daily
-missingok
-notifempty
-compress
-delaycompress
-create 0640 dnsmasq root
-postrotate
-/usr/sbin/dnsmasq-postrotate --post-rotate --verbose
-endscript
+	rotate 7
+	daily
+	missingok
+	notifempty
+	compress
+	delaycompress
+	create 0640 dnsmasq root
+	prerotate
+		@sbindir@/dnsmasq-postrotate --log-only --verbose
+	endscript
+	postrotate
+		@sbindir@/dnsmasq-postrotate --log-only --post-rotate --verbose
+	endscript
 }
