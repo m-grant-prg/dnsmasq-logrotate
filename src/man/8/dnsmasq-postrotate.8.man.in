@@ -2,7 +2,7 @@ NAME
 dnsmasq-postrotate - postrotate script for dnsmasq
 SYNOPSIS
 dnsmasq-postrotate {-h|-V}
-dnsmasq-postrotate [-p] [-t] [-v]
+dnsmasq-postrotate [-l] [-p] [-t] [-v]
 dnsmasq-postrotate [OPTIONS]
 DESCRIPTION
 The dnsmasq-postrotate script has two objectives; to update the dnsmasq logfile
@@ -52,6 +52,8 @@ The logic for finding these directives is as follows:-
 		the running dnsmasq instance is determined and used.
 OPTIONS
 -h, --help  prints usage information
+
+-l, --log-only  do not emit messages to stdout or stderr, just log them
 
 -p, --post-rotate  invoke the normal post rotate processing for dumping summary
 stats and closing and re-opening the log file

@@ -59,6 +59,7 @@ readonly packageversion=@pkgversion@		# package version
 
 readonly logrotatefile="@sysconfdir@/logrotate.d/dnsmasq"
 loglocation=""
+logonly=false
 oldloglocation=""
 pidnum=""
 postrotate=false
@@ -77,9 +78,10 @@ usage()
 {
 cat << EOF
 Usage is $0 {-h|-V}
-Usage is $0 [-p] [-s] [-t] [-v]
+Usage is $0 [-l] [-p] [-t] [-v]
 Usage is $0 [OPTIONS]
 	-h or --help displays usage information
+	-l or --log-only do not emit messages to stdout or stderr, just log
 	-p or --post-rotate perform post-rotate function
 	-t or --trace output the analysis of configuration parameters
 	-v or --verbose verbose output
@@ -99,13 +101,16 @@ output()
 {
 	if (( ! $3 )) || [[ (( $3 == 1 )) && $verbose == true ]] \
 		|| [[ (( $3 == 2 )) && $trace == true ]]; then
+		logger "$outputprefix $1"
+		std_cmd_err_handler $?
+		if $logonly; then
+			return
+		fi
 		if (( ! $2 )); then
 			printf "%s %s\n" "$outputprefix" "$1"
 		else
 			printf "%s %s\n" "$outputprefix" "$1" 1>&2
 		fi
-		logger "$outputprefix $1"
-		std_cmd_err_handler $?
 	fi
 }
 
@@ -153,8 +158,8 @@ proc_CL()
 	local GETOPTTEMP
 	local tmpGETOPTTEMP
 
-	tmpGETOPTTEMP="getopt -o hptvV --long help,post-rotate,trace,verbose,"
-	tmpGETOPTTEMP+="version"
+	tmpGETOPTTEMP="getopt -o hlptvV --long help,log-only,post-rotate,"
+	tmpGETOPTTEMP+="trace,verbose,version"
 	GETOPTTEMP=$($tmpGETOPTTEMP -n "$0" -- "$@")
 	std_cmd_err_handler $?
 
@@ -167,6 +172,10 @@ proc_CL()
 			usage
 			shift
 			script_exit 0
+			;;
+		-l|--log-only)
+			logonly=true
+			shift
 			;;
 		-p|--post-rotate)
 			postrotate=true
