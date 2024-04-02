@@ -1,6 +1,6 @@
 #########################################################################
 #									#
-# Author: Copyright (C) 2019, 2021, 2023  Mark Grant			#
+# Author: Copyright (C) 2019, 2021, 2023, 2024  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -38,7 +38,7 @@ clean-local:
 	rm -rf ./dnsmasq.d ./logrotate.d
 
 
-noinst_DATA = dnsmasq.conf dnsmasq.d/mg.conf dnsmasq.d/mg0.conf \
+check_DATA = dnsmasq.conf dnsmasq.d/mg.conf dnsmasq.d/mg0.conf \
 	dnsmasq.d/README dnsmasq.d/test.dpkg-dist dnsmasq.d/level1/mg1.conf \
 	dnsmasq.d/level1/level2/mg2.conf \
 	dnsmasq.d/level1/level2/level3/mg3.conf \
