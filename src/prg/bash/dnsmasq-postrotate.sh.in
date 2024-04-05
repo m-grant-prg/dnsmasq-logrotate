@@ -421,7 +421,7 @@ get_oldloglocation()
 
 	if [[ ! -f $logrotatefile ]]; then
 		output "Log rotate file $logrotatefile does not exist." 1 0
-		script_exit 66
+		return
 	fi
 
 	exec 4<$logrotatefile
