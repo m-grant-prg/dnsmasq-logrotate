@@ -263,7 +263,9 @@ cmd_line_parse()
 	cmd+="pid-file:"
 	# No error checking of the following as errors expected (partial options
 	# specified).
-	GETOPTTEMP=$($cmd -n "$0" -- "$@")
+	# shellcheck disable=SC2068	# We want seperate elements to iterate
+	# through, not just one string.
+	GETOPTTEMP=$($cmd -n "$0" -- $@)
 
 	eval set -- "$GETOPTTEMP"
 	std_cmd_err_handler $?
