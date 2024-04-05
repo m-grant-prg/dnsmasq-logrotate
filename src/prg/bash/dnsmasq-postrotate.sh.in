@@ -501,6 +501,11 @@ proc_get_setup()
 	# Remove temp pid file.
 	rm -f "$ps_pid_file"
 
+	# If no log location is found then use default location, the logrotate
+	# file will be updated but if the log does not exist logrotate will just
+	# skip it.
+	[[ ! $loglocation ]] && loglocation=$oldloglocation
+
 	output "Current loglocation is $oldloglocation" 0 2
 	output "Final loglocation is $loglocation" 0 2
 	output "Final pidfile is $pidfile" 0 2
