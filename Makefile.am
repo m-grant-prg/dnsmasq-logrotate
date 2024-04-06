@@ -1,6 +1,6 @@
 #########################################################################
 #									#
-# Author: Copyright (C) 2018-2019, 2021, 2023  Mark Grant		#
+# Author: Copyright (C) 2018-2019, 2021, 2023, 2024  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -18,7 +18,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS = --enable-distcheckfake=yes
 
 
 SUBDIRS = src/prg/bash
-SUBDIRS += src/prg/test-data/etc
+SUBDIRS += src/prg/test-data/etc1
 SUBDIRS += src/man/8
 SUBDIRS += src/conf/rootetc/logrotate
 

@@ -354,7 +354,7 @@ AC_MSG_NOTICE(processing output files)
 # Project Makefiles to create.
 AC_CONFIG_FILES([Makefile
 		src/prg/bash/Makefile
-		src/prg/test-data/etc/Makefile
+		src/prg/test-data/etc1/Makefile
 		src/man/8/Makefile
 		src/conf/rootetc/logrotate/Makefile])
 
