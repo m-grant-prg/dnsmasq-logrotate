@@ -19,6 +19,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS = --enable-distcheckfake=yes
 
 SUBDIRS = src/prg/bash
 SUBDIRS += src/prg/test-data/etc1
+SUBDIRS += src/prg/test-data/etc2
 SUBDIRS += src/man/8
 SUBDIRS += src/conf/rootetc/logrotate
 

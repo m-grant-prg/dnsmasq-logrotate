@@ -1,0 +1,2 @@
+conf-dir=@sysconfdir@/dnsmasq.d/level1/level2,*.conf
+
