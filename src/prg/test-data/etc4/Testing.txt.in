@@ -1,0 +1,55 @@
+Setup aspects
+=============
+dnsmasq packages install sysconfdir/dnsmasq.conf with no log-facility statement.
+
+
+Building for testing
+====================
+The script uses syconfdir so this needs to be set manually to use the test data.
+This can be done with the example commands below (after editing for your
+directory structure).
+
+../bootstrap.sh -cbK .. -- sysconfdir=$HOME/SWDev/Projects/Bash/dnsmasq-logrotate/atbuild/src/prg/test-data/etc4/
+
+
+Testing
+=======
+Testing results depend on whether dnsmasq is installed, and, if so, what
+arguments appear on it's command line.
+
+In this test, ignoring CL overrides, the results should be:-
+root@dnsmasq-logrotate:~/src/prg/bash# ./dnsmasq-postrotate --trace
+dnsmasq-postrotate: default conf is /build/atbuild/src/prg/test-data/etc4/dnsmasq.conf
+dnsmasq-postrotate: cmd_line is empty string
+dnsmasq-postrotate: Processing conf-file /build/atbuild/src/prg/test-data/etc4/dnsmasq.conf
+dnsmasq-postrotate: conf-dir /build/atbuild/src/prg/test-data/etc4/dnsmasq.d found and being processed
+dnsmasq-postrotate: Processing conf-dir /build/atbuild/src/prg/test-data/etc4/dnsmasq.d
+dnsmasq-postrotate: Find command used was: find /build/atbuild/src/prg/test-data/etc4/dnsmasq.d -type f -maxdepth 1 -mindepth 1
+dnsmasq-postrotate: conf-files /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/README /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/mg0.conf /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/mg.conf /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/test.dpkg-dist from /build/atbuild/src/prg/test-data/etc4/dnsmasq.d added to the list to process
+dnsmasq-postrotate: Processing conf-file /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/README
+dnsmasq-postrotate: Processing conf-file /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/mg0.conf
+dnsmasq-postrotate: Processing conf-file /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/mg.conf
+dnsmasq-postrotate: conf-file /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/mg1.conf found and added to the list to process, if present
+dnsmasq-postrotate: /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/mg1.conf found
+dnsmasq-postrotate: Processing conf-file /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/test.dpkg-dist
+dnsmasq-postrotate: conf-file /build/atbuild/src/prg/test-data/etc4/no-such-file.conf found and added to the list to process, if present
+dnsmasq-postrotate: /build/atbuild/src/prg/test-data/etc4/no-such-file.conf not found
+dnsmasq-postrotate: Processing conf-file /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/mg1.conf
+dnsmasq-postrotate: conf-dir /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/level2,*.conf found and being processed
+dnsmasq-postrotate: Processing conf-dir /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/level2
+dnsmasq-postrotate: Find command used was: find /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/level2 -type f -maxdepth 1 -mindepth 1 -name *.conf
+dnsmasq-postrotate: conf-files /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/level2/mg2.conf from /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/level2 added to the list to process
+dnsmasq-postrotate: Processing conf-file /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/level2/mg2.conf
+dnsmasq-postrotate: conf-file /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/level2/level3/mg3.conf found and added to the list to process, if present
+dnsmasq-postrotate: /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/level2/level3/mg3.conf found
+dnsmasq-postrotate: log-facility /usr/local/var/log/level2.log found in /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/level2/mg2.conf
+dnsmasq-postrotate: Processing conf-file /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/level2/level3/mg3.conf
+dnsmasq-postrotate: pid-file /var/run/junk.pid found in /build/atbuild/src/prg/test-data/etc4/dnsmasq.d/level1/level2/level3/mg3.conf
+cat: /var/run/junk.pid: No such file or directory
+dnsmasq-postrotate: Current loglocation is /usr/local/var/log/dnsmasq.log
+dnsmasq-postrotate: Final loglocation is /usr/local/var/log/level2.log
+dnsmasq-postrotate: Final pidfile is /var/run/junk.pid
+dnsmasq-postrotate: Final pidnum is
+dnsmasq-postrotate: dnsmasq daemon not running.
+root@dnsmasq-logrotate:~/src/prg/bash#
+

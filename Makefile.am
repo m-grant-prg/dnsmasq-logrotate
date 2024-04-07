@@ -21,6 +21,7 @@ SUBDIRS = src/prg/bash
 SUBDIRS += src/prg/test-data/etc1
 SUBDIRS += src/prg/test-data/etc2
 SUBDIRS += src/prg/test-data/etc3
+SUBDIRS += src/prg/test-data/etc4
 SUBDIRS += src/man/8
 SUBDIRS += src/conf/rootetc/logrotate
 

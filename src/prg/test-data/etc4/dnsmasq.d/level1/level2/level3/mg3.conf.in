@@ -1,0 +1,3 @@
+log-facility=/var/log/junk.log
+pid-file=/var/run/junk.pid
+

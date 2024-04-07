@@ -1,0 +1,4 @@
+#pid-file=/var/run/dnsmasq.pid
+conf-file=@sysconfdir@/dnsmasq.d/level1/level2/level3/mg3.conf
+log-facility=/usr/local/var/log/level2.log
+

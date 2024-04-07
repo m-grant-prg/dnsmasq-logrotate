@@ -58,7 +58,7 @@ AC_COPYRIGHT([Copyright (C) 2018-2024  Mark Grant
 	      This script is free to copy or distribute under the terms set out
 	      in the package license. See COPYING for details.])
 
-AC_REVISION([$Revision: 1.0.9 $])
+AC_REVISION([$Revision: 1.0.10 $])
 
 AC_PREREQ([2.69])
 
@@ -357,6 +357,7 @@ AC_CONFIG_FILES([Makefile
 		src/prg/test-data/etc1/Makefile
 		src/prg/test-data/etc2/Makefile
 		src/prg/test-data/etc3/Makefile
+		src/prg/test-data/etc4/Makefile
 		src/man/8/Makefile
 		src/conf/rootetc/logrotate/Makefile])
 
