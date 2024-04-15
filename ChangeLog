@@ -1,3 +1,46 @@
+2024-04-15 v1.2.0 Mark Grant <m.grant.prg@gmail.com>
+	* build(deps): bump actions/checkout from 2 to 4
+	dependabot[bot] (1):
+	test-data: Add etc4 test
+	test-data: Add etc3 test
+	test-data: Add etc2 test
+	test-data: Make etc etc1 to allow for more tests
+	test-data: Include some testing instructions
+	bash: Use default location if no log location found
+	bash: Absence of logrotate file is not an error
+	bash: Do not quote string to be iterated over
+	test-data: Move to make check
+	test-data: Update for new script options
+	bash: Provide --log-only CLA
+	conf: Use --verbose in logrotate control file
+	bash: Fix conditional parenthesis
+	conf: Check logfile location in prerotate
+	bash: man: Always update if new logfile location
+	bash: Silence shellcheck false positive
+	bash: Fix incorrect parenthesis
+	bash: Fix for loop iteration
+	at: Update Copyright for 2024
+	git: Update mailmap to v1.0.4
+	git: Update gitignore to v1.0.12
+	git: Update gitattributes to v1.0.5
+	editors: Update editorconfig to v1.0.6
+	bash: Correct capitalisation
+	man: Update CL syntax
+	at: Improve CL syntax description
+	bash: Improve CL syntax description
+	all: Drop.sh extension from scripts in $PATH
+	git: Standardise gitignore format
+	all: Remove most in-file ChangeLogs and versioning
+	at: Upgrade bootstrap.sh to v1.6.0
+	bash: Use $(...) AOT legacy backticks
+	bash: Quote RHS of != to prevent glob matching
+	bash: Declare and assign variables separately
+	bash: Silence unreachable code warning for trap function
+	bash: Double quote to avoid globbing and word splitting
+	Merge pull request #2 from m-grant-prg/dependabot/github_actions/actions/checkout-4
+	github: Add dependabot version update config
+	Mark Grant (46):
+
 2023-08-02 v1.1.1 Mark Grant <m.grant.prg@gmail.com>
 	* at: Add support for ~ in version number
 	lxcu: Remove txt2man, rely on txt2manwrap dependencies
