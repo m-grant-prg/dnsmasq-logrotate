@@ -8,7 +8,7 @@
 
 #########################################################################
 #									#
-# Author: Copyright (C) 2018-2019, 2021, 2023, 2024  Mark Grant		#
+# Author: Copyright (C) 2018-2019, 2021, 2023-2025  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -452,6 +452,10 @@ proc_get_setup()
 	# later be overridden by the CL.
 	init_conffile="$(ls @sysconfdir@/dnsmasq.conf 2>/dev/null) "
 	output "default conf is $init_conffile" 0 2
+
+	# dnsmasq will always look in the dnsmasq.d directory, so add as a
+	# default.
+	proc_conf_dir "@sysconfdir@/dnsmasq.d"
 
 	cmd_line=$(ps --no-headers -C dnsmasq -o args)
 
