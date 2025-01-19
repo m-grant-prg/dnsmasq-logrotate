@@ -1,3 +1,8 @@
+2025-01-19 v1.2.1 Mark Grant <m.grant.prg@gmail.com>
+	* at: Update Copyright for 2025
+	bash: Add dnsmasq.d as a default conf file lookup
+	git: Correct gitignore reasoning
+
 2024-04-15 v1.2.0 Mark Grant <m.grant.prg@gmail.com>
 	* build(deps): bump actions/checkout from 2 to 4
 	dependabot[bot] (1):

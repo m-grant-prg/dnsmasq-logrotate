@@ -1,3 +1,7 @@
+Release 1.2.1 2025-01-19
+No functional changes.
+Technical change information can be found in the ChangeLog.
+
 Release 1.2.0 2024-04-15
 Use default location if no log location found.
 Absence of a logrotate control file is not an error.
