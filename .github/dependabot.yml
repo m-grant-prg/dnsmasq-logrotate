@@ -1,13 +1,13 @@
 #########################################################################
-#									#
-# Author: Copyright (C) 2023  Mark Grant				#
-#									#
-# Released under the GPLv3 only.					#
-# SPDX-License-Identifier: GPL-3.0-only					#
-#									#
-# Purpose:								#
+#                                                                       #
+# Author: Copyright (C) 2023, 2025  Mark Grant                          #
+#                                                                       #
+# Released under the GPLv3 only.                                        #
+# SPDX-License-Identifier: GPL-3.0-only                                 #
+#                                                                       #
+# Purpose:                                                              #
 # Configuration file for GitHub dependabot checks and updates.          #
-#									#
+#                                                                       #
 #########################################################################
 
 
