@@ -219,24 +219,14 @@ if test "x$BASH" = "xno" ; then
 fi
 
 AC_MSG_NOTICE(checking for particular programs required at run time)
+AC_CHECK_PROG(DNSMASQ, dnsmasq, yes, no)
+if test "x$DNSMASQ" = "xno" ; then
+   	AC_MSG_WARN(dnsmasq not found - needed at run time)
+fi
+
 AC_CHECK_PROG(ECHO, echo, yes, no)
 if test "x$ECHO" = "xno" ; then
 	AC_MSG_WARN(echo not found - needed at run time)
-fi
-
-AC_CHECK_PROG(PRINTF, printf, yes, no)
-if test "x$PRINTF" = "xno" ; then
-	AC_MSG_WARN(printf not found - needed at run time)
-fi
-
-AC_CHECK_PROG(PS, ps, yes, no)
-if test "x$PS" = "xno" ; then
-	AC_MSG_WARN(ps not found - needed at run time)
-fi
-
-AC_CHECK_PROG(KILL, kill, yes, no)
-if test "x$KILL" = "xno" ; then
-   	AC_MSG_WARN(kill not found - needed at run time)
 fi
 
 AC_CHECK_PROG(FIND, find, yes, no)
@@ -249,14 +239,24 @@ if test "x$GETOPT" = "xno" ; then
 	AC_MSG_WARN(getopt not found - needed at run time)
 fi
 
+AC_CHECK_PROG(KILL, kill, yes, no)
+if test "x$KILL" = "xno" ; then
+   	AC_MSG_WARN(kill not found - needed at run time)
+fi
+
 AC_CHECK_PROG(LOGGER, logger, yes, no)
 if test "x$LOGGER" = "xno" ; then
    	AC_MSG_WARN(logger not found - needed at run time)
 fi
 
-AC_CHECK_PROG(DNSMASQ, dnsmasq, yes, no)
-if test "x$DNSMASQ" = "xno" ; then
-   	AC_MSG_WARN(dnsmasq not found - needed at run time)
+AC_CHECK_PROG(PRINTF, printf, yes, no)
+if test "x$PRINTF" = "xno" ; then
+	AC_MSG_WARN(printf not found - needed at run time)
+fi
+
+AC_CHECK_PROG(PS, ps, yes, no)
+if test "x$PS" = "xno" ; then
+	AC_MSG_WARN(ps not found - needed at run time)
 fi
 
 
