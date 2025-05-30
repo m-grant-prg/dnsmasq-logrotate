@@ -8,18 +8,14 @@
 # Purpose:								#
 # AutoConf script file to configure dnsmasq-logrotate project.		#
 #									#
-# cmd line syntax of standard configure:				#
-# ./configure --help							#
-#									#
-# cmd line syntax of additional functionality:				#
+# configure cmd line syntax:						#
 # ./configure	[--enable-distcheckfake[={yes|no}]]			#
 # Parameter defaults:							#
 #	When specified on the CL, but without the [={yes|no}], the	#
 #	default is yes.							#
-#	When not specified the default is no.				#
 #									#
-# Parameters generic description. For specifics to this configure.ac	#
-# please see inline comments at the point of definition:-		#
+# Parameters general description. For specifics please see inline	#
+# comments at the point of definition:-					#
 # --enable-distcheckfake						#
 #	Enables the replacement of an absolute directory path specified	#
 #	in a variable, with a value based on AutoTools standard		#
@@ -27,6 +23,7 @@
 #	variable based value when running distcheck and the absolute	#
 #	path for all else. Hence distcheck can now succeed when it	#
 #	would normally fail.						#
+#	If not specified on the CL then the default is no.		#
 #									#
 # Layout: (Only relevant sections will exist).				#
 # SECTION  1: Initialisation & Setup					#
