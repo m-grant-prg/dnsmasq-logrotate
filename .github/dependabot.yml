@@ -17,5 +17,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    target-branch: "tip"
 
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "v1.2.y-tip"
 
