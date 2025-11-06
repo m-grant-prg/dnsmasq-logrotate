@@ -8,7 +8,7 @@
 
 #########################################################################
 #									#
-# Author: Copyright (C) 2014-2019, 2021-2023  Mark Grant		#
+# Author: Copyright (C) 2014-2019, 2021-2023, 2025  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -54,8 +54,8 @@ set -o pipefail
 # Init variables #
 ##################
 
-readonly version=1.6.0			# set version variable
-readonly packageversion=1.6.2	# Version of the complete package
+readonly version=1.6.1			# set version variable
+readonly packageversion=1.7.0	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -444,8 +444,9 @@ proc_gnulib()
 	local status
 
 	if [[ -f "$basedirunq/m4/gnulib-cache.m4" ]]; then
-		cmdline="gnulib-tool --update"$verbosemake$verbosemake
-		cmdline+=" --dir="$basedir
+		cmdline="cd $basedir"
+		cmdline+=" && gnulib-tool --update$verbosemake$verbosemake"
+		cmdline+=" ; cd -"
 		eval "$cmdline"
 		status=$?
 		output "$cmdline completed with exit status: $status" $status
