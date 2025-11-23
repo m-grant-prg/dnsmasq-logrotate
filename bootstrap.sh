@@ -54,8 +54,8 @@ set -o pipefail
 # Init variables #
 ##################
 
-readonly version=1.6.1			# set version variable
-readonly packageversion=1.7.0	# Version of the complete package
+readonly version=1.6.2			# set version variable
+readonly packageversion=1.7.1	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -98,21 +98,24 @@ cat << EOF
 Usage is also true for acmbuild
 Usage is:-
 ${0##*/} -b [-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v]]
-		[-g] [-K] [-pX] [-- PASS_THRU_OPTIONS ...]
-${0##*/} -c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-pX] [-t] [-v]
+		[-g] [-K] [-pX] [PATH_TO_PROJECT_ROOT]
 		[-- PASS_THRU_OPTIONS ...]
-${0##*/} -c {-i|-S} [--CC=COMPILER] [-pX] [-v] [-- PASS_THRU_OPTIONS ...]
-${0##*/} {-C|-D|-T} [-c] [-g] [-pX] [-- PASS_THRU_OPTIONS ...]
+${0##*/} -c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-pX] [-t] [-v]
+		[PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
+${0##*/} -c {-i|-S} [--CC=COMPILER] [-pX] [-v] [PATH_TO_PROJECT_ROOT]
+		[-- PASS_THRU_OPTIONS ...]
+${0##*/} {-C|-D|-T} [-c] [-g] [-pX] [PATH_TO_PROJECT_ROOT]
+		[-- PASS_THRU_OPTIONS ...]
 ${0##*/} -g [-b]
 		[-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v]]
-		[-K] [-pX] [-- PASS_THRU_OPTIONS ...]
+		[-K] [-pX] [PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
 ${0##*/} {-h|-V}
 ${0##*/} -K [-b]
 		[-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v]]
-		[-g] [-pX] [-- PASS_THRU_OPTIONS ...]
+		[-g] [-pX] [PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
 
 Usage is:-
-${0##*/} [OPTIONS] [-- PASS_THRU_OPTIONS ...]
+${0##*/} [OPTIONS] [PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
 	-a or --at-only during testing and for an AutoTools-only install, some
 		build changes are required. e.g. You may reference an external
 		Java jar in datadir but in AT builds and installations this
@@ -144,6 +147,8 @@ ${0##*/} [OPTIONS] [-- PASS_THRU_OPTIONS ...]
 	-v or --verbose emit extra information
 	-V or --version displays version information
 
+	[PATH_TO_PROJECT_ROOT] The absolute or relative path to the project root
+		directory (containing configure)
 	-- PASS_THRU_OPTIONS The -- stops processing command line arguments and
 		instead passes subsequent arguments on, as-is, to AutoTools
 EOF
