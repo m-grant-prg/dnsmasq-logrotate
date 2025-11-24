@@ -26,7 +26,7 @@ jobs:
 
     steps:
       # Check-out the repository under $GITHUB_WORKSPACE.
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # Get all incl tags, needed for git-enhanced AC_INIT
 
