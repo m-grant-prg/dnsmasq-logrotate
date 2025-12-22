@@ -1,0 +1,29 @@
+# shellcheck shell=bash
+#########################################################################
+#									#
+# Author: Copyright (C) 2025  Mark Grant				#
+#									#
+# Released under the GPLv3 only.					#
+# SPDX-License-Identifier: GPL-3.0-only					#
+#									#
+# Purpose:								#
+# Bash completion script.						#
+#									#
+#########################################################################
+
+
+_dnsmasq_postrotate()
+{
+	local cur OPTS
+
+	COMPREPLY=()
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	OPTS="-h -l -p -t -v -V"
+	OPTS+=" --help --log-only --post-rotate --trace --verbose --version"
+	# shellcheck disable=SC2207  # This is _the_ bash completion pattern,
+	# so leave it be.
+	COMPREPLY=( $(compgen -W "${OPTS[*]}" -- "$cur") )
+	return 0
+}
+complete -F _dnsmasq_postrotate dnsmasq-postrotate
+

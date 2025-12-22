@@ -1,6 +1,6 @@
 #########################################################################
 #									#
-# Author: Copyright (C) 2018-2019, 2021, 2023, 2024  Mark Grant		#
+# Author: Copyright (C) 2018-2019, 2021, 2023-2025  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -17,13 +17,14 @@ ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS = --enable-distcheckfake=yes
 
 
-SUBDIRS = src/prg/bash
+SUBDIRS = src/bash-comp
+SUBDIRS += src/conf/rootetc/logrotate
+SUBDIRS += src/man/8
+SUBDIRS += src/prg/bash
 SUBDIRS += src/prg/test-data/etc1
 SUBDIRS += src/prg/test-data/etc2
 SUBDIRS += src/prg/test-data/etc3
 SUBDIRS += src/prg/test-data/etc4
-SUBDIRS += src/man/8
-SUBDIRS += src/conf/rootetc/logrotate
 
 
 doc_DATA = AUTHORS ChangeLog COPYING NEWS README

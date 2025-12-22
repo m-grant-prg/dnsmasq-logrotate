@@ -1,0 +1,32 @@
+#########################################################################
+#									#
+# Author: Copyright (C) 2025  Mark Grant				#
+#									#
+# Released under the GPLv3 only.					#
+# SPDX-License-Identifier: GPL-3.0-only					#
+#									#
+# Purpose:								#
+# AutoMake script file to generate bash-completion from source.		#
+#									#
+#########################################################################
+
+
+bashcompdir = $(datadir)/bash-completion/completions
+
+
+dnsmasq-postrotate: Makefile
+	mkdir -p $(@D)
+	rm -f $@ $@.tmp
+	test -f ./$@.in || srcdir=$(srcdir)/; \
+	$(edit) $${srcdir}$(@F).sh.in > $@.tmp
+	mv $@.tmp $@
+dnsmasq-postrotate: $(srcdir)/dnsmasq-postrotate.sh.in
+
+bashcomp_DATA = dnsmasq-postrotate
+
+
+EXTRA_DIST = $(srcdir)/dnsmasq-postrotate.sh.in
+
+
+CLEANFILES = *.tmp dnsmasq-postrotate
+
