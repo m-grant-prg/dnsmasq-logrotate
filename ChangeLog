@@ -1,3 +1,22 @@
+2025-12-22 v1.3.0 Mark Grant <m.grant.prg@gmail.com>
+	* build(deps): bump actions/checkout from 5 to 6
+	build(deps): bump actions/checkout from 4 to 5
+dependabot[bot] (2):
+
+	bash-comp: Add bash completion
+	bash: Standardise --help layout
+	Merge pull request #6 from m-grant-prg/dependabot/github_actions/tip/actions/checkout-6
+	at: Upgrade bootstrap.sh to v1.6.2
+	at: Upgrade bootstrap.sh to v1.6.1
+	Merge pull request #3 from m-grant-prg/dependabot/github_actions/tip/actions/checkout-5
+	v1.3.0-rc1
+	actions: Run on Noble
+	actions: Set dependabot to target stable and old stable branches
+	at: Improve CL arguments comments
+	at: Re-order program checks alphabetically
+	actions: Fix trivial whitespace formatting errors
+Mark Grant (12):
+
 2025-01-19 v1.2.1 Mark Grant <m.grant.prg@gmail.com>
 	* at: Update Copyright for 2025
 	bash: Add dnsmasq.d as a default conf file lookup
