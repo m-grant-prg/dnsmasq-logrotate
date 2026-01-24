@@ -8,7 +8,7 @@
 
 #########################################################################
 #									#
-# Author: Copyright (C) 2014-2019, 2021-2023, 2025  Mark Grant		#
+# Author: Copyright (C) 2014-2019, 2021-2023, 2025, 2026  Mark Grant	#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -54,8 +54,8 @@ set -o pipefail
 # Init variables #
 ##################
 
-readonly version=1.6.2			# set version variable
-readonly packageversion=1.7.1	# Version of the complete package
+readonly version=1.7.0			# set version variable
+readonly packageversion=1.7.4	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -69,6 +69,7 @@ debug=""
 dist=false
 distcheck=false
 gnulib=false
+gpgsign=false
 headercheck=""
 iwyu=""
 menuconfig=false
@@ -104,7 +105,7 @@ ${0##*/} -c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-pX] [-t] [-v]
 		[PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
 ${0##*/} -c {-i|-S} [--CC=COMPILER] [-pX] [-v] [PATH_TO_PROJECT_ROOT]
 		[-- PASS_THRU_OPTIONS ...]
-${0##*/} {-C|-D|-T} [-c] [-g] [-pX] [PATH_TO_PROJECT_ROOT]
+${0##*/} {-C|-D|-T} [-c] [-g] [-G] [-pX] [PATH_TO_PROJECT_ROOT]
 		[-- PASS_THRU_OPTIONS ...]
 ${0##*/} -g [-b]
 		[-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v]]
@@ -129,6 +130,7 @@ ${0##*/} [OPTIONS] [PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
 	-d or --debug build with appropriate debug flags
 	-D or --dist perform a make dist
 	-g or --gnulib run gnulib-tool --update
+	-G or --gpg-sign sign requested tarball, distribution or source
 	-h or --help displays usage information
 	-H or --header-check show include stack depth
 	-i or --iwyu Use clang's include-what-you-use
@@ -213,10 +215,11 @@ proc_CL()
 	local script_name="acmbuild/bootstrap.sh"
 	local tmp
 
-	tmp="getopt -o aAbcCdDghHiKmp::sStTvV "
+	tmp="getopt -o aAbcCdDgGhHiKmp::sStTvV "
 	tmp+="--long at-only,analyzer,build,CC:,check,config,distcheck,debug"
-	tmp+=",dist,gnulib,help,header-check,iwyu,menu-config,parallel-jobs::"
-	tmp+=",sparse,scan-build,source-tarball,testing-hacks,verbose,version"
+	tmp+=",dist,gnulib,gpg-sign,help,header-check,iwyu,menu-config"
+	tmp+=",parallel-jobs::,sparse,scan-build,source-tarball,testing-hacks"
+	tmp+=",verbose,version"
 	GETOPTTEMP=$($tmp -n "$script_name" -- "$@")
 	std_cmd_err_handler $?
 
@@ -278,6 +281,10 @@ proc_CL()
 			;;
 		-g|--gnulib)
 			gnulib=true
+			shift
+			;;
+		-G|--gpg-sign)
+			gpgsign=true
 			shift
 			;;
 		-h|--help)
@@ -382,6 +389,14 @@ proc_CL()
 		if [[ $iwyu ]]; then
 			msg="Options a, A, b, C, d, D, g, H, k, m, s, S, t and"
 			msg+=" T cannot be used with option i"
+			output "$msg" 1
+			script_exit 64
+		fi
+	fi
+
+	if $gpgsign ; then
+		if ! $dist && ! $distcheck && ! $tarball ; then
+			msg="Option G requires either option C, D or T"
 			output "$msg" 1
 			script_exit 64
 		fi
@@ -575,6 +590,23 @@ proc_make()
 	return $status
 }
 
+# gpg sign output tarball if required.
+# No parameters.
+# Returns 0 or command line error.
+proc_gpgsign()
+{
+	if ! $gpgsign ; then
+		return
+	fi
+
+	cmdline="make"$verbosemake$par_jobs" sign_tarball clean"
+
+	eval "$cmdline"
+	status=$?
+	output "$cmdline completed with exit status: $status" $status
+	return $status
+}
+
 
 ########
 # Main #
@@ -599,6 +631,9 @@ if $config ; then
 fi
 
 proc_make
+std_cmd_err_handler $?
+
+proc_gpgsign
 std_cmd_err_handler $?
 
 script_exit 0
