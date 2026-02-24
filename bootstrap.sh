@@ -54,8 +54,8 @@ set -o pipefail
 # Init variables #
 ##################
 
-readonly version=1.7.0			# set version variable
-readonly packageversion=1.7.4	# Version of the complete package
+readonly version=1.7.1			# set version variable
+readonly packageversion=1.7.5	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -79,7 +79,8 @@ sparse=""
 tarball=false
 testinghacks=""
 verbose=false
-verboseconfig=" --enable-silent-rules=yes"
+verboseautoreconf=""
+verboseconfigure=" --enable-silent-rules=yes"
 verbosemake=" --quiet"
 basedir="."			# Retain quotes
 basedirunq=$basedir		# Without retaining quotes
@@ -98,22 +99,23 @@ usage()
 cat << EOF
 Usage is also true for acmbuild
 Usage is:-
-${0##*/} -b [-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v]]
-		[-g] [-K] [-pX] [PATH_TO_PROJECT_ROOT]
+${0##*/} -b [-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v[X]]]
+		[-g] [-K] [-p[X]] [PATH_TO_PROJECT_ROOT]
 		[-- PASS_THRU_OPTIONS ...]
-${0##*/} -c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-pX] [-t] [-v]
+${0##*/} -c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-p[X]] [-t]
+		[-v[X]]
 		[PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
-${0##*/} -c {-i|-S} [--CC=COMPILER] [-pX] [-v] [PATH_TO_PROJECT_ROOT]
+${0##*/} -c {-i|-S} [--CC=COMPILER] [-p[X]] [-v[X]] [PATH_TO_PROJECT_ROOT]
 		[-- PASS_THRU_OPTIONS ...]
-${0##*/} {-C|-D|-T} [-c] [-g] [-G] [-pX] [PATH_TO_PROJECT_ROOT]
+${0##*/} {-C|-D|-T} [-c [-v[X]]] [-g] [-G] [-p[X]] [PATH_TO_PROJECT_ROOT]
 		[-- PASS_THRU_OPTIONS ...]
 ${0##*/} -g [-b]
-		[-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v]]
-		[-K] [-pX] [PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
+		[-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v[X]]]
+		[-K] [-p[X]] [PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
 ${0##*/} {-h|-V}
 ${0##*/} -K [-b]
-		[-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v]]
-		[-g] [-pX] [PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
+		[-c [-a] [-A] [{--CC=COMPILER|-s}] [-d] [-H] [-m] [-t] [-v[X]]]
+		[-g] [-p[X]] [PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
 
 Usage is:-
 ${0##*/} [OPTIONS] [PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
@@ -146,7 +148,11 @@ ${0##*/} [OPTIONS] [PATH_TO_PROJECT_ROOT] [-- PASS_THRU_OPTIONS ...]
 		when installed will be somewhere under datadir, but during
 		testing it is in the project tree.
 	-T or --source-tarball create source tarball
-	-v or --verbose emit extra information
+	-v[X] or --verbose[=X] emit extra information
+		Without option v configure and make are as quiet as possible.
+		With option v but no X, configure and make return to defaults,
+		so no silent rules and V=0
+		Otherwise X can take values 0 to 3 representing make V=X
 	-V or --version displays version information
 
 	[PATH_TO_PROJECT_ROOT] The absolute or relative path to the project root
@@ -215,11 +221,11 @@ proc_CL()
 	local script_name="acmbuild/bootstrap.sh"
 	local tmp
 
-	tmp="getopt -o aAbcCdDgGhHiKmp::sStTvV "
+	tmp="getopt -o aAbcCdDgGhHiKmp::sStTv::V "
 	tmp+="--long at-only,analyzer,build,CC:,check,config,distcheck,debug"
 	tmp+=",dist,gnulib,gpg-sign,help,header-check,iwyu,menu-config"
 	tmp+=",parallel-jobs::,sparse,scan-build,source-tarball,testing-hacks"
-	tmp+=",verbose,version"
+	tmp+=",verbose::,version"
 	GETOPTTEMP=$($tmp -n "$script_name" -- "$@")
 	std_cmd_err_handler $?
 
@@ -352,10 +358,37 @@ proc_CL()
 			;;
 		-v|--verbose)
 			verbose=true
-			verboseconfig=""
-			verbosemake=""
-			shift
-			;;
+			case "$2" in
+			""|0)
+				verboseautoreconf=""
+				verboseconfigure=""
+				verbosemake=""
+				shift 2
+				;;
+			1)
+				verboseautoreconf=" -v"
+				verboseconfigure=""
+				verbosemake=" V=1"
+				shift 2
+				;;
+			2)
+				verboseautoreconf=" -v"
+				verboseconfigure=""
+				verbosemake=" V=2"
+				shift 2
+				;;
+			3)
+				verboseautoreconf=" -v"
+				verboseconfigure=""
+				verbosemake=" V=3"
+				shift 2
+				;;
+			*)
+				output "Invalid verbosity level" 1
+				script_exit 64
+				;;
+		esac
+		;;
 		-V|--version)
 			printf "Script version %s\n" $version
 			printf "Package version %s\n" $packageversion
@@ -441,14 +474,15 @@ proc_CL()
 		script_exit 64
 	fi
 
-	# First non-option argument which is not an option argument is the base
-	# directory, all others are passed straight to the configure command
-	# line, (to support things like  --prefix=... etc). Both of these need
-	# to be inputised before they are passed on in order to maintain
-	# original quoting. They can then be 'eval'ed.
+	# The first non-option argument is the base directory, anything after
+	# an -- is passed straight to the configure command line, (to support
+	# things like  --prefix=... etc). Both of these need to be inputised
+	# before they are passed on in order to maintain original quoting, they
+	# can then be 'eval'ed.
 	if (( $# )); then
-		basedir=${1@Q}
-		basedirunq="$1"		# Unquoted version
+		basedir=${1%/}
+		basedir=${basedir@Q}
+		basedirunq="${1%/}"		# Unquoted version
 		shift
 		configcli_extra_args+=( ' ' "$@" )
 	fi
@@ -463,9 +497,9 @@ proc_gnulib()
 	local msg
 	local status
 
-	if [[ -f "$basedirunq/m4/gnulib-cache.m4" ]]; then
+	if [[ -f "${basedirunq}/m4/gnulib-cache.m4" ]]; then
 		cmdline="cd $basedir"
-		cmdline+=" && gnulib-tool --update$verbosemake$verbosemake"
+		cmdline+=" && gnulib-tool --update"
 		cmdline+=" ; cd -"
 		eval "$cmdline"
 		status=$?
@@ -473,7 +507,7 @@ proc_gnulib()
 		std_cmd_err_handler $status
 	else
 		msg="Option -g --gnulib ignored - "
-		msg+="missing $basedir/m4/gnulib-cache.m4"
+		msg+="missing ${basedir}/m4/gnulib-cache.m4"
 		output "$msg" 0
 	fi
 }
@@ -489,15 +523,15 @@ proc_menuconfig()
 	tmp_file=/tmp/$$.$(basename "$0").tmp
 	readonly tmp_file
 
-	if [[ ! -f $basedirunq/configurable-options.sh \
-		|| ! -r $basedirunq/configurable-options.sh \
-		|| ! -x $basedirunq/configurable-options.sh ]]; then
+	if [[ ! -f ${basedirunq}/configurable-options.sh \
+		|| ! -r ${basedirunq}/configurable-options.sh \
+		|| ! -x ${basedirunq}/configurable-options.sh ]]; then
 		msg="The script configurable-options.sh must; exist in the"
 		msg+=" project root directory, be readable and be executable."
 		output "$msg" 1
 		script_exit 77
 	fi
-	"$basedirunq"/configurable-options.sh "$tmp_file"
+	"${basedirunq}"/configurable-options.sh "$tmp_file"
 	std_cmd_err_handler $?
 	mapfile -t tmp_extra_args < <( head -n 1 "$tmp_file" )
 	std_cmd_err_handler $?
@@ -516,16 +550,16 @@ proc_config()
 	local msg
 	local status
 
-	cmdline="autoreconf -if $basedir"
+	cmdline="autoreconf -if ${verboseautoreconf} ${basedir}"
 	eval "$cmdline"
 	status=$?
-	msg="autoreconf -if $basedir completed with exit status: $status"
+	msg="$cmdline completed with exit status: $status"
 	output "$msg" $status
 	std_cmd_err_handler $status
 
-	cmdline="$basedir/configure$cc_cli${configcli_extra_args[*]}"
-	cmdline+="$verboseconfig$atonly$analyzer$debug$headercheck$iwyu$sparse"
-	cmdline+="$scan_build$testinghacks"
+	cmdline="${basedir}/configure${cc_cli}${configcli_extra_args[*]}"
+	cmdline+="${verboseconfigure}${atonly}${analyzer}${debug}${headercheck}"
+	cmdline+="${iwyu}${sparse}${scan_build}${testinghacks}"
 
 	eval "$cmdline"
 	status=$?
@@ -542,26 +576,26 @@ proc_make()
 	local status
 
 	if $build ; then
-		cmdline="make"$verbosemake$par_jobs
+		cmdline="make"${verbosemake}${par_jobs}
 	fi
 
 	if $check ; then
 		if [[ ! $cmdline ]]; then
-			cmdline="make"$verbosemake$par_jobs
+			cmdline="make"${verbosemake}${par_jobs}
 		fi
 		cmdline+=" check"
 	fi
 
 	if $distcheck ; then
-		cmdline="make"$verbosemake$par_jobs" distcheck clean"
+		cmdline="make"${verbosemake}${par_jobs}" distcheck clean"
 	fi
 
 	if $dist ; then
-		cmdline="make"$verbosemake$par_jobs" dist clean"
+		cmdline="make"${verbosemake}${par_jobs}" dist clean"
 	fi
 
 	if [[ $iwyu ]]; then
-		cmdline="make"$verbosemake$par_jobs" -k"
+		cmdline="make"${verbosemake}${par_jobs}" -k"
 		cmdline+=" CC=include-what-you-use"
 	fi
 
@@ -570,12 +604,12 @@ proc_make()
 			cmdline="scan-build --use-cc=$cc make"$verbosemake
 			cmdline+=$par_jobs" -k"
 		else
-			cmdline="scan-build make"$verbosemake$par_jobs" -k"
+			cmdline="scan-build make"${verbosemake}${par_jobs}" -k"
 		fi
 	fi
 
 	if $tarball ; then
-		cmdline="make"$verbosemake$par_jobs" srctarball clean"
+		cmdline="make"${verbosemake}${par_jobs}" srctarball clean"
 	fi
 
 	# May get here with cmdline empty if, for example, only the -g option
@@ -599,7 +633,7 @@ proc_gpgsign()
 		return
 	fi
 
-	cmdline="make"$verbosemake$par_jobs" sign_tarball clean"
+	cmdline="make"${verbosemake}${par_jobs}" sign_tarball clean"
 
 	eval "$cmdline"
 	status=$?
