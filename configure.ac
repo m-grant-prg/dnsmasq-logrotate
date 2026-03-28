@@ -299,33 +299,80 @@ AC_MSG_NOTICE(processing additional checks and variables)
 # discretion at sub-directory Makefile.am level.
 # ----------------------
 #
-# prefix	/usr/local (typically)
-#	exec_prefix	${prefix}
-#		bindir	${exec_prefix}/bin	user executables
-#		sbindir	${exec_prefix}/sbin	system admin executables
-#		libexecdir	${exec_prefix}/libexec	program executables
-#		libdir	${exec_prefix}/lib	object code libraries
-#	sysconfdir	${prefix}/etc	read-only single-machine data
-#	sharedstatedir	${prefix}/com	modifiable architecture-independent data
-#	localstatedir	${prefix}/var	modifiable single-machine data
-#	runstatedir	${localstatedir}/run
-#	includedir	${prefix}/include	C header files
-#	oldincludedir	$usr/include	C header files
-#	datarootdir	${prefix}/share	read-only arch.-independent data root
-#		localedir	${datarootdir}/locale	locale-dependent data
-#		datadir	${datarootdir}	read-only architecture-independent data
-#		mandir	${datarootdir}/man	man documentation
-#		infodir	${datarootdir}/info	info documentation
-#		docdir	${datarootdir}/doc/${PACKAGE}	documentation root
-#			htmldir	${docdir}	html documentation
-#			dvidir	${docdir}	dvi documentation
-#			pdfdir	${docdir}	pdf documentation
-#			psdir	${docdir}	ps documentation
-#		lispdir	${datarootdir}/emacs/site-lisp
-#	pkgdatadir	${datarootdir}/${PACKAGE}
-#	pkgincludedir	${includedir}/${PACKAGE}
-#	pkglibdir	${libdir}/${PACKAGE}
-#	pkglibexecdir	${libexecdir}/${PACKAGE}
+# Information gleaned from:-
+# https://www.gnu.org/prep/standards/html_node/Directory-Variables.html
+# and for Debian from running the following command in the packaging root
+# directory containing the configure script
+# dh_auto_configure --no-act --verbose
+# ----------------------
+#
+# AT Installation variable	Description
+# ------------------------	-----------
+#					GNU implementation
+#					------------------
+#					Typical distro setting (if applicable)
+#					--------------------------------------
+# prefix			Installation root
+#					/usr/local
+#					/usr
+#	exec_prefix		Base for executables
+#					${prefix}
+#		bindir		Executables which users can run
+#					${exec_prefix}/bin
+#		sbindir		Executable run by system administrators
+#					${exec_prefix}/sbin
+#		libexecdir	Executables run by other programs
+#					${exec_prefix}/libexec
+#		libdir		Object code libraries
+#					${exec_prefix}/lib
+#					${prefix}/lib/x86_64-linux-gnu
+#	sysconfdir		Host configuration files
+#					${prefix}/etc
+#					/etc
+#	sharedstatedir		Program modifiable arch-independent data
+#					${prefix}/com
+#	localstatedir		Program modifiable host specific data
+#					${prefix}/var
+#					/var
+#	runstatedir		Program modifiable host persistent data
+#					${localstatedir}/run
+#					/run
+#	includedir		C header files
+#					${prefix}/include
+#	oldincludedir		C header files. Do not use, maybe empty
+#					/usr/include
+#	datarootdir		Arch-independant data root
+#					${prefix}/share
+#		localedir	Locale specific files
+#					${datarootdir}/locale
+#		datadir		Arch-independent package data files
+#					${datarootdir}
+#		mandir		Man page root
+#					${datarootdir}/man
+#					${prefix}/share/man
+#		infodir		Info files for this package
+#					${datarootdir}/info
+#					${prefix}/share/info
+#		docdir		Documentation files for this package
+#					${datarootdir}/doc/${PACKAGE}
+#				htmldir	html documentation
+#					${docdir}
+#				dvidir	dvi documentation
+#					${docdir}
+#				pdfdir	pdf documentation
+#					${docdir}
+#				psdir	ps documentation
+#					${docdir}
+#		lispdir		Emacs Lisp dir -  **Often empty, no check**
+#					${datarootdir}/emacs/site-lisp
+#	pkgdatadir		Package-specific data files
+#					${datarootdir}/${PACKAGE}
+#	pkgincludedir		Package-specific include directory
+#					${includedir}/${PACKAGE}
+#	pkglibdir		Package-specific object code libraries
+#					${libdir}/${PACKAGE}
+#	pkglibexecdir		Package-specific Executables run by other programs
+#					${libexecdir}/${PACKAGE}
 #
 AC_SUBST([edit], ["$SED \
 		-e 's|@bashlocation[@]|\$(BASH)|g' \
