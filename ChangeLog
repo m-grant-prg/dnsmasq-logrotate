@@ -1,3 +1,13 @@
+2026-04-14 v1.3.1 Mark Grant <m.grant.prg@gmail.com>
+	* t: Add distro info for Installation Directories
+	at: Upgrade bootstrap.sh to v1.7.1
+	at: Remove old signature file before creating a new one
+	at: Upgrade bootstrap.sh to v1.7.0
+	at: Add sign_tarball target
+	at: Leave source tarball name same as distribution tarball
+	at: Update Copyright for 2026
+Mark Grant (7):
+
 2025-12-22 v1.3.0 Mark Grant <m.grant.prg@gmail.com>
 	* build(deps): bump actions/checkout from 5 to 6
 	build(deps): bump actions/checkout from 4 to 5
