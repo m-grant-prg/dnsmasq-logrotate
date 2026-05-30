@@ -54,8 +54,8 @@ set -o pipefail
 # Init variables #
 ##################
 
-readonly version=1.7.1			# set version variable
-readonly packageversion=1.7.5	# Version of the complete package
+readonly version=1.7.2			# set version variable
+readonly packageversion=1.7.6	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -185,7 +185,7 @@ script_exit()
 }
 
 # Standard function to test command error and exit if non-zero.
-# Parameters - 	$1 is the exit code, (normally $? from the preceeding command).
+# Parameters - 	$1 is the exit code, (normally $? from the preceding command).
 # No return value.
 std_cmd_err_handler()
 {
@@ -197,8 +197,9 @@ std_cmd_err_handler()
 # Standard trap exit function.
 # No parameters.
 # No return value.
-# shellcheck disable=SC2317  # Do not warn about unreachable commands in trap
-# functions, they are legitimate.
+# Do not warn about unreachable commands in trap functions, nor function is
+# never invoked as these are legitimate features of trap handlers.
+# shellcheck disable=SC2317,SC2329
 trap_exit()
 {
 	local -i exit_code=$?
