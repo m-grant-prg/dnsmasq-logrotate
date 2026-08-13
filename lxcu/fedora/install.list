@@ -2,5 +2,6 @@
 # this package.
 
 autoconf automake
+ShellCheck
 txt2manwrap
 
