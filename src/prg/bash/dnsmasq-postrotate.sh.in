@@ -1,4 +1,4 @@
-#! @bashlocation@
+#! @envlocation@ bash
 #########################################################################
 #									#
 #	dnsmasq-postrotate is automatically generated,			#
