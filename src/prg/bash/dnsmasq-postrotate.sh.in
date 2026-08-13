@@ -8,7 +8,7 @@
 
 #########################################################################
 #									#
-# Author: Copyright (C) 2018-2019, 2021, 2023-2025  Mark Grant		#
+# Author: Copyright (C) 2018-2019, 2021, 2023-2026  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -54,7 +54,7 @@
 #########################
 outputprefix="$(basename "$0"):"
 readonly outputprefix
-readonly version=1.1.1				# script version
+readonly version=1.1.2				# script version
 readonly packageversion=@pkgversion@		# package version
 
 readonly logrotatefile="@sysconfdir@/logrotate.d/dnsmasq"
@@ -137,8 +137,9 @@ std_cmd_err_handler()
 # Standard trap exit function.
 # No parameters.
 # No return value.
-# shellcheck disable=SC2317  # Do not warn about unreachable commands in trap
-# functions, they are legitimate.
+# Do not warn about unreachable commands in trap functions, nor function is
+# never invoked as these are legitimate features of trap handlers.
+# shellcheck disable=SC2317,SC2329
 trap_exit()
 {
 	local -i exit_code=$?
