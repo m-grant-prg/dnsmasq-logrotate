@@ -21,10 +21,10 @@ SUBDIRS = src/bash-comp
 SUBDIRS += src/conf/rootetc/logrotate
 SUBDIRS += src/man/8
 SUBDIRS += src/prg/bash
-SUBDIRS += src/prg/test-data/etc1
-SUBDIRS += src/prg/test-data/etc2
-SUBDIRS += src/prg/test-data/etc3
-SUBDIRS += src/prg/test-data/etc4
+SUBDIRS += src/prg/tests/dnsmasq/etc1
+SUBDIRS += src/prg/tests/dnsmasq/etc2
+SUBDIRS += src/prg/tests/dnsmasq/etc3
+SUBDIRS += src/prg/tests/dnsmasq/etc4
 
 
 doc_DATA = AUTHORS ChangeLog COPYING NEWS README

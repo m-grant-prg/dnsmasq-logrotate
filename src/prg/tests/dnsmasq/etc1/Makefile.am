@@ -1,12 +1,12 @@
 #########################################################################
 #									#
-# Author: Copyright (C) 2019, 2021, 2023, 2024  Mark Grant		#
+# Author: Copyright (C) 2019, 2021, 2023, 2024, 2026  Mark Grant	#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
 #									#
 # Purpose:								#
-# AutoMake script file to generate dnsmasq-logrotate test-data.		#
+# AutoMake script file to generate dnsmasq-logrotate test data.		#
 #									#
 #########################################################################
 

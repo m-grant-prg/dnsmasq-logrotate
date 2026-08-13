@@ -59,7 +59,7 @@ AC_COPYRIGHT([Copyright (C) 2018-2026  Mark Grant
 	      This script is free to copy or distribute under the terms set out
 	      in the package license. See COPYING for details.])
 
-AC_REVISION([$Revision: 1.0.13 $])
+AC_REVISION([$Revision: 1.0.14 $])
 
 AC_PREREQ([2.69])
 
@@ -433,10 +433,10 @@ AC_CONFIG_FILES([Makefile
 		src/conf/rootetc/logrotate/Makefile
 		src/man/8/Makefile
 		src/prg/bash/Makefile
-		src/prg/test-data/etc1/Makefile
-		src/prg/test-data/etc2/Makefile
-		src/prg/test-data/etc3/Makefile
-		src/prg/test-data/etc4/Makefile])
+		src/prg/tests/dnsmasq/etc1/Makefile
+		src/prg/tests/dnsmasq/etc2/Makefile
+		src/prg/tests/dnsmasq/etc3/Makefile
+		src/prg/tests/dnsmasq/etc4/Makefile])
 
 AC_OUTPUT
 
