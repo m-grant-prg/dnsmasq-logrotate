@@ -1,6 +1,6 @@
 #########################################################################
 #                                                                       #
-# Author: Copyright (C) 2021-2023, 2025  Mark Grant                     #
+# Author: Copyright (C) 2021-2023, 2025, 2026  Mark Grant               #
 #                                                                       #
 # Released under the GPLv3 only.                                        #
 # SPDX-License-Identifier: GPL-3.0-only                                 #
@@ -46,6 +46,15 @@ jobs:
 
       - name: Check
         run: make --quiet check
+
+      - name: Upload test logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-logs
+          path: |
+            src/prg/run-tests/test-suite.log
+            src/prg/tests/**/*.log
 
       - name: Distcheck
         run: make --quiet distcheck
