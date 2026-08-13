@@ -25,6 +25,8 @@ SUBDIRS += src/prg/tests/dnsmasq/etc1
 SUBDIRS += src/prg/tests/dnsmasq/etc2
 SUBDIRS += src/prg/tests/dnsmasq/etc3
 SUBDIRS += src/prg/tests/dnsmasq/etc4
+SUBDIRS += src/prg/tests/shellcheck
+SUBDIRS += src/prg/run-tests
 
 
 doc_DATA = AUTHORS ChangeLog COPYING NEWS README
