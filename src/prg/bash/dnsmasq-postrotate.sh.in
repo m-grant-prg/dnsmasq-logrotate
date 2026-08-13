@@ -194,8 +194,8 @@ proc_CL()
 			shift
 			;;
 		-V|--version)
-			printf "%s Script version %s\n" "$0" $version
-			printf "%s Package version %s\n" "$0" $packageversion
+			printf "%s Script version %s\n" "$0" "$version"
+			printf "%s Package version %s\n" "$0" "$packageversion"
 			shift
 			script_exit 0
 			;;
@@ -233,7 +233,7 @@ proc_conf_dir ()
 	find_cmd="find ${array[0]} -type f -maxdepth 1 -mindepth 1 "
 	# ${! finds the array index}
 	for index in "${!array[@]}"; do
-		if [ $index == 0 ]; then
+		if [ "$index" == 0 ]; then
 			continue
 		fi
 		if [[ ${array[index]} = \** ]]; then
@@ -427,7 +427,7 @@ get_oldloglocation()
 		return
 	fi
 
-	exec 4<$logrotatefile
+	exec 4<"$logrotatefile"
 	while read -u4 -r inputline; do
 		if [[ $inputline != "#"* && $inputline ]]; then
 			break
@@ -554,7 +554,7 @@ setup_logrotate()
 	fi
 
 	# Copy up to first live line.
-	exec 4<$logrotatefile
+	exec 4<"$logrotatefile"
 	while read -u4 -r inputline; do
 		if [[ $inputline != "#"* && $inputline ]]; then
 			break
@@ -570,10 +570,9 @@ setup_logrotate()
 	exec 4<&-
 
 	# Replace file.
-	rm -f $logrotatefile
-	mv -f $logrotatefile.tmp $logrotatefile
+	rm -f "$logrotatefile"
+	mv -f "$logrotatefile.tmp" "$logrotatefile"
 }
-
 
 
 ########
