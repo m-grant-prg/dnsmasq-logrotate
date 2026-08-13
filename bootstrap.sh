@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 #########################################################################
 #									#
 #	bootstrap.sh is automatically generated,			#
@@ -54,8 +54,8 @@ set -o pipefail
 # Init variables #
 ##################
 
-readonly version=1.7.2			# set version variable
-readonly packageversion=1.7.6	# Version of the complete package
+readonly version=1.7.4			# set version variable
+readonly packageversion=1.7.6-16-g6cadd632	# Version of the complete package
 
 # Set defaults
 atonly=""
@@ -391,8 +391,8 @@ proc_CL()
 		esac
 		;;
 		-V|--version)
-			printf "Script version %s\n" $version
-			printf "Package version %s\n" $packageversion
+			printf "Script version %s\n" "$version"
+			printf "Package version %s\n" "$packageversion"
 			shift
 			script_exit 0
 			;;
@@ -504,8 +504,8 @@ proc_gnulib()
 		cmdline+=" ; cd -"
 		eval "$cmdline"
 		status=$?
-		output "$cmdline completed with exit status: $status" $status
-		std_cmd_err_handler $status
+		output "$cmdline completed with exit status: $status" "$status"
+		std_cmd_err_handler "$status"
 	else
 		msg="Option -g --gnulib ignored - "
 		msg+="missing ${basedir}/m4/gnulib-cache.m4"
@@ -555,8 +555,8 @@ proc_config()
 	eval "$cmdline"
 	status=$?
 	msg="$cmdline completed with exit status: $status"
-	output "$msg" $status
-	std_cmd_err_handler $status
+	output "$msg" "$status"
+	std_cmd_err_handler "$status"
 
 	cmdline="${basedir}/configure${cc_cli}${configcli_extra_args[*]}"
 	cmdline+="${verboseconfigure}${atonly}${analyzer}${debug}${headercheck}"
@@ -564,8 +564,8 @@ proc_config()
 
 	eval "$cmdline"
 	status=$?
-	output "$cmdline completed with exit status: $status" $status
-	std_cmd_err_handler $status
+	output "$cmdline completed with exit status: $status" "$status"
+	std_cmd_err_handler "$status"
 }
 
 # Process the correct make variation.
@@ -621,8 +621,8 @@ proc_make()
 
 	eval "$cmdline"
 	status=$?
-	output "$cmdline completed with exit status: $status" $status
-	return $status
+	output "$cmdline completed with exit status: $status" "$status"
+	return "$status"
 }
 
 # gpg sign output tarball if required.
@@ -638,8 +638,8 @@ proc_gpgsign()
 
 	eval "$cmdline"
 	status=$?
-	output "$cmdline completed with exit status: $status" $status
-	return $status
+	output "$cmdline completed with exit status: $status" "$status"
+	return "$status"
 }
 
 
