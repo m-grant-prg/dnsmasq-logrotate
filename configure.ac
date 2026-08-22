@@ -444,8 +444,8 @@ AC_CONFIG_FILES([Makefile
 		src/prg/tests/dnsmasq/etc2/Makefile
 		src/prg/tests/dnsmasq/etc3/Makefile
 		src/prg/tests/dnsmasq/etc4/Makefile
-		src/prg/tests/shellcheck/Makefile
-		src/prg/run-tests/Makefile])
+		src/tests/shellcheck/Makefile
+		src/run-tests/Makefile])
 
 AC_OUTPUT
 
