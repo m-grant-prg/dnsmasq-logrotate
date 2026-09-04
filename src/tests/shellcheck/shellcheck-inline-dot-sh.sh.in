@@ -57,7 +57,7 @@ cd "$(dirname "$0")"
 # Init variables #
 ##################
 # shellcheck disable=SC2034		# Unused variable left, possibly useful
-readonly version=1.0.1			# set version variable
+readonly version=1.0.2			# set version variable
 # shellcheck disable=SC2034		# Unused variable left, possibly useful
 readonly packageversion=@pkgversion@	# Version of the complete package
 
@@ -119,8 +119,10 @@ trap trap_exit SIGHUP SIGINT SIGQUIT SIGTERM
 # so need to make it /home/Projects/Dev-Tools/mge-make-check-lib
 while IFS= read -r -d '' f; do
 	targets+=("$f")
-done < <(find "$(realpath "@abstopsrcdir@")" -path '@abstopbuilddir@' \
-		-prune -o -type f -name '*.sh' -print0)
+done < <(find "$(realpath "@abstopsrcdir@")" \
+		-path "$(realpath "@abstopbuilddir@")" -prune \
+		-o -path "$(realpath "@abstopsrcdir@/@configauxdir@")" -prune \
+		-o -type f -name '*.sh' -print0)
 
 if [ "${#targets[@]}" -eq 0 ]; then
 	output "No scripts found." "0"
